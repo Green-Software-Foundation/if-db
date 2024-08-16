@@ -1,5 +1,5 @@
-name: if-website-sci
-description:
+name: IF docs website SCI
+description: SCI score for if.greensoftware.foundation website
 tags:
 initialize:
   plugins:

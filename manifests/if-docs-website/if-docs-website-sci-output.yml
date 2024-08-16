@@ -1,0 +1,398 @@
+name: IF docs website SCI
+description: SCI score for if.greensoftware.foundation website
+tags: null
+initialize:
+  plugins:
+    duration-in-hours:
+      path: builtin
+      method: Divide
+      global-config:
+        numerator: duration
+        denominator: 3600
+        output: duration-in-hours
+    storage-and-traffic-from-github-if-docs:
+      path: if-github-plugin
+      method: Github
+      global-config:
+        repo: Green-Software-Foundation/if-docs
+    copy-param-if-docs-repo-size:
+      path: builtin
+      method: Copy
+      global-config:
+        keep-existing: false
+        from: size
+        to: repo-size-if-docs
+    copy-param-if-docs-clones:
+      path: builtin
+      method: Copy
+      global-config:
+        keep-existing: false
+        from: clones
+        to: repo-clones-if-docs
+    storage-in-gb-to-tb-if-docs:
+      path: builtin
+      method: Coefficient
+      global-config:
+        input-parameter: repo-size-if-docs
+        coefficient: 0.001
+        output-parameter: storage-tb-if-docs
+    storage-energy-in-watts-if-docs:
+      path: builtin
+      method: Multiply
+      global-config:
+        input-parameters:
+          - storage-tb-if-docs
+          - watts-per-tb
+        output-parameter: storage-watts-if-docs
+    storage-energy-in-wh-if-docs:
+      path: builtin
+      method: Multiply
+      global-config:
+        input-parameters:
+          - storage-watts-if-docs
+          - duration-in-hours
+        output-parameter: storage-wh-if-docs
+    storage-energy-to-kwh-if-docs:
+      path: builtin
+      method: Coefficient
+      global-config:
+        input-parameter: storage-wh-if-docs
+        coefficient: 0.001
+        output-parameter: storage-energy-kwh-if-docs
+    static-site-size-in-tb:
+      path: builtin
+      method: Divide
+      global-config:
+        numerator: static-site-size-in-mb
+        denominator: 1000000
+        output: static-site-size-in-tb
+    storage-energy-static-site-in-watts:
+      path: builtin
+      method: Multiply
+      global-config:
+        input-parameters:
+          - static-site-size-in-tb
+          - watts-per-tb
+        output-parameter: storage-watts-static-site-at-origin
+    storage-energy-in-wh-static-site:
+      path: builtin
+      method: Multiply
+      global-config:
+        input-parameters:
+          - storage-watts-static-site-at-origin
+          - duration-in-hours
+        output-parameter: storage-wh-static-site-at-origin
+    storage-energy-to-kwh-static-site:
+      path: builtin
+      method: Coefficient
+      global-config:
+        input-parameter: storage-wh-static-site-at-origin
+        coefficient: 0.001
+        output-parameter: storage-energy-kwh-static-site-at-origin
+    storage-energy-per-cdn-node:
+      path: builtin
+      method: Divide
+      global-config:
+        numerator: storage-energy-kwh-static-site-at-origin
+        denominator: 10
+        output: storage-energy-per-cdn-node
+    storage-energy-for-entire-cdn:
+      path: builtin
+      method: Coefficient
+      global-config:
+        input-parameter: storage-energy-per-cdn-node
+        coefficient: 46
+        output-parameter: storage-energy-static-site-cdn
+    sum-serving-static-site-energy-components:
+      path: builtin
+      method: Sum
+      global-config:
+        input-parameters:
+          - storage-energy-static-site-cdn
+          - storage-energy-kwh-static-site-at-origin
+        output-parameter: storing-static-site-energy-kwh
+    static-site-size-in-gb:
+      path: builtin
+      method: Coefficient
+      global-config:
+        input-parameter: static-site-size-in-mb
+        coefficient: 0.000001
+        output-parameter: static-site-size-in-gb
+    network-energy-serving-static-site-per-view:
+      path: builtin
+      method: Multiply
+      global-config:
+        input-parameters:
+          - static-site-size-in-gb
+          - kwh-per-gb-network
+        output-parameter: network-energy-kwh-serving-static-site-per-view
+    network-energy-serving-static-site-total:
+      path: builtin
+      method: Multiply
+      global-config:
+        input-parameters:
+          - network-energy-kwh-serving-static-site-per-view
+          - visits-per-month
+        output-parameter: network-energy-serving-static-site-kwh-total
+    end-user-energy:
+      path: builtin
+      method: Multiply
+      global-config:
+        input-parameters:
+          - visits-per-month
+          - static-site-size-in-gb
+          - end-user-energy-coefficient
+        output-parameter: end-user-energy-kwh
+    interpolate-power-curve:
+      path: builtin
+      method: Interpolation
+      global-config:
+        method: linear
+        x:
+          - 0
+          - 10
+          - 50
+          - 100
+        'y':
+          - 0.12
+          - 0.32
+          - 0.75
+          - 1.02
+        input-parameter: cpu/utilization
+        output-parameter: cpu-factor
+    build-stage-cpu-factor-to-wattage:
+      path: builtin
+      method: Multiply
+      global-config:
+        input-parameters:
+          - cpu-factor
+          - thermal-design-power
+        output-parameter: cpu-wattage
+    build-stage-cpu-wattage-times-build-duration:
+      path: builtin
+      method: Multiply
+      global-config:
+        input-parameters:
+          - cpu-wattage
+          - build-duration
+        output-parameter: cpu-wattage-times-duration
+    build-stage-cpu-wattage-to-energy-kwh:
+      path: builtin
+      method: Divide
+      global-config:
+        numerator: cpu-wattage-times-duration
+        denominator: 3600000
+        output: build-energy-cpu-kwh
+    memory-coefficient-correction:
+      path: builtin
+      method: Coefficient
+      global-config:
+        input-parameter: build-duration
+        coefficient: 0.000006533333
+        output-parameter: memory-coefficient
+    memory-energy-per-build:
+      path: builtin
+      method: Multiply
+      global-config:
+        input-parameters:
+          - build-memory-gb
+          - memory-coefficient
+        output-parameter: build-energy-memory-kwh
+    sum-build-energy-components:
+      path: builtin
+      method: Sum
+      global-config:
+        input-parameters:
+          - build-energy-cpu-kwh
+          - build-energy-memory-kwh
+        output-parameter: build-energy-kwh-per-build
+    build-energy-total:
+      path: builtin
+      method: Multiply
+      global-config:
+        input-parameters:
+          - build-energy-kwh-per-build
+          - builds-per-month
+        output-parameter: build-energy-kwh
+    sum-energy-components:
+      path: builtin
+      method: Sum
+      global-config:
+        input-parameters:
+          - storage-energy-kwh-if-docs
+          - storing-static-site-energy-kwh
+          - network-energy-serving-static-site-kwh-total
+          - build-energy-kwh
+          - end-user-energy-kwh
+        output-parameter: energy
+    energy-to-carbon:
+      path: builtin
+      method: Multiply
+      global-config:
+        input-parameters:
+          - energy
+          - grid-intensity
+        output-parameter: operational-carbon
+    sum-carbon-components:
+      path: builtin
+      method: Sum
+      global-config:
+        input-parameters:
+          - operational-carbon
+          - embodied-carbon-for-site-server
+          - embodied-carbon-for-gh-server
+          - embodied-carbon-for-end-user-devices
+        output-parameter: carbon
+    sci:
+      path: builtin
+      method: Sci
+      global-config:
+        functional-unit: visits-per-month
+execution:
+  command: >-
+    /home/joe/.npm/_npx/1bf7c3c15bf47d04/node_modules/.bin/ts-node
+    /home/joe/Code/if/src/if-run/index.ts -m
+    manifests/examples/if-website-sci.yml -o manifests/outputs/if-website-sci
+  environment:
+    if-version: 0.6.0
+    os: linux
+    os-version: 5.15.0-117-generic
+    node-version: 21.4.0
+    date-time: 2024-08-16T13:59:15.784Z (UTC)
+    dependencies:
+      - '@babel/core@7.22.10'
+      - '@babel/preset-typescript@7.23.3'
+      - '@commitlint/cli@18.6.0'
+      - '@commitlint/config-conventional@18.6.0'
+      - '@grnsft/if-core@0.0.16'
+      - '@grnsft/if-unofficial-plugins@v0.3.1'
+      - '@jest/globals@29.7.0'
+      - '@types/jest@29.5.8'
+      - '@types/js-yaml@4.0.9'
+      - '@types/luxon@3.4.2'
+      - '@types/node@20.9.0'
+      - axios-mock-adapter@1.22.0
+      - axios@1.7.2
+      - cross-env@7.0.3
+      - csv-parse@5.5.6
+      - csv-stringify@6.4.6
+      - fixpack@4.0.0
+      - gts@5.2.0
+      - husky@8.0.3
+      - if-eco-ci-plugin@v0.0.1 extraneous -> file:../../if-eco-ci-plugin
+      - if-github-plugin@v0.0.1 extraneous -> file:../../if-github-plugin
+      - jest@29.7.0
+      - js-yaml@4.1.0
+      - lint-staged@15.2.2
+      - luxon@3.4.4
+      - release-it@16.3.0
+      - rimraf@5.0.5
+      - ts-command-line-args@2.5.1
+      - ts-jest@29.1.1
+      - typescript-cubic-spline@1.0.1
+      - typescript@5.2.2
+      - winston@3.11.0
+      - zod@3.23.8
+  status: success
+tree:
+  children:
+    if:
+      pipeline:
+        compute:
+          - duration-in-hours
+          - storage-and-traffic-from-github-if-docs
+          - copy-param-if-docs-repo-size
+          - copy-param-if-docs-clones
+          - storage-in-gb-to-tb-if-docs
+          - storage-energy-in-watts-if-docs
+          - storage-energy-in-wh-if-docs
+          - storage-energy-to-kwh-if-docs
+          - static-site-size-in-tb
+          - storage-energy-static-site-in-watts
+          - storage-energy-in-wh-static-site
+          - storage-energy-to-kwh-static-site
+          - storage-energy-per-cdn-node
+          - storage-energy-for-entire-cdn
+          - sum-serving-static-site-energy-components
+          - static-site-size-in-gb
+          - network-energy-serving-static-site-per-view
+          - network-energy-serving-static-site-total
+          - end-user-energy
+          - interpolate-power-curve
+          - build-stage-cpu-factor-to-wattage
+          - build-stage-cpu-wattage-times-build-duration
+          - build-stage-cpu-wattage-to-energy-kwh
+          - memory-coefficient-correction
+          - memory-energy-per-build
+          - sum-build-energy-components
+          - build-energy-total
+          - sum-energy-components
+          - energy-to-carbon
+          - sum-carbon-components
+          - sci
+      defaults:
+        watts-per-tb: 0.65
+        grid-intensity: 765.49
+        static-site-size-in-mb: 1.4
+        visits-per-month: 325
+        thermal-design-power: 205
+        kwh-per-gb-network: 0.001
+        end-user-energy-coefficient: 0.08
+        build-duration: 7
+        build-memory-gb: 0.48
+        builds-per-month: 3
+        embodied-carbon-for-site-server: 0.151
+        embodied-carbon-for-gh-server: 0.117
+        embodied-carbon-for-end-user-devices: 31.5
+      inputs:
+        - timestamp: 2024-08-13T00:00
+          duration: 2419200
+          cpu/utilization: 100
+      outputs:
+        - timestamp: 2024-08-13T00:00
+          duration: 2419200
+          cpu/utilization: 100
+          watts-per-tb: 0.65
+          grid-intensity: 765.49
+          static-site-size-in-mb: 1.4
+          visits-per-month: 325
+          thermal-design-power: 205
+          kwh-per-gb-network: 0.001
+          end-user-energy-coefficient: 0.08
+          build-duration: 7
+          build-memory-gb: 0.48
+          builds-per-month: 3
+          embodied-carbon-for-site-server: 0.151
+          embodied-carbon-for-gh-server: 0.117
+          embodied-carbon-for-end-user-devices: 31.5
+          duration-in-hours: 672
+          clones: 0
+          repo-size-if-docs: 0.011354
+          repo-clones-if-docs: 0
+          storage-tb-if-docs: 0.000011354
+          storage-watts-if-docs: 0.0000073801
+          storage-wh-if-docs: 0.0049594272
+          storage-energy-kwh-if-docs: 0.0000049594272
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 9.1e-7
+          storage-wh-static-site-at-origin: 0.0006115199999999999
+          storage-energy-kwh-static-site-at-origin: 6.115199999999999e-7
+          storage-energy-per-cdn-node: 6.115199999999999e-8
+          storage-energy-static-site-cdn: 0.0000028129919999999998
+          storing-static-site-energy-kwh: 0.0000034245119999999995
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          network-energy-serving-static-site-kwh-total: 4.55e-7
+          end-user-energy-kwh: 0.000036400000000000004
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1463.7
+          build-energy-cpu-kwh: 0.00040658333333333334
+          memory-coefficient: 0.000045733331
+          build-energy-memory-kwh: 0.000021951998880000002
+          build-energy-kwh-per-build: 0.00042853533221333336
+          build-energy-kwh: 0.0012856059966400001
+          energy: 0.0013308449358400002
+          operational-carbon: 1.0187484899361618
+          carbon: 32.78674848993616
+          sci: 0.10088230304595741

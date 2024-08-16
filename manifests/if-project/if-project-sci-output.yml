@@ -1,27 +1,18 @@
 name: Impact Framework SCI
 description: SCi score for the IF project, not including website.
-tags:
+tags: null
 initialize:
   plugins:
-
-    # Unit conversions
-    ##################
-
     duration-in-hours:
+      path: builtin
       method: Divide
-      path: "builtin"
       global-config:
         numerator: duration
-        denominator: 3600 # s to hr
+        denominator: 3600
         output: duration-in-hours
-
-
-    ## Github storage for IF
-    ########################
-
     storage-and-traffic-from-github-if:
-      method: Github
       path: if-github-plugin
+      method: Github
       global-config:
         repo: Green-Software-Foundation/if
     copy-param-if-repo-size:
@@ -30,7 +21,7 @@ initialize:
       global-config:
         keep-existing: false
         from: size
-        to: "repo-size-if"
+        to: repo-size-if
     copy-param-if-clones:
       path: builtin
       method: Copy
@@ -39,38 +30,38 @@ initialize:
         from: clones
         to: repo-clones-if
     storage-in-mb-to-tb-if:
+      path: builtin
       method: Coefficient
-      path: builtin
       global-config:
-        input-parameter: repo-size-if # size comes from github api and represents repo size in gb
-        coefficient: 0.000001 # convert size to tb
-        output-parameter: "storage-tb-if"
+        input-parameter: repo-size-if
+        coefficient: 0.000001
+        output-parameter: storage-tb-if
     storage-energy-in-watts-if:
-      method: Multiply
       path: builtin
+      method: Multiply
       global-config:
-        input-parameters: ["storage-tb-if", "watts-per-tb"]
-        output-parameter: "storage-watts-if"
+        input-parameters:
+          - storage-tb-if
+          - watts-per-tb
+        output-parameter: storage-watts-if
     storage-energy-in-wh-if:
-      method: Multiply
       path: builtin
+      method: Multiply
       global-config:
-        input-parameters: ["storage-watts-if", "duration-in-hours"]
-        output-parameter: "storage-wh-if"
+        input-parameters:
+          - storage-watts-if
+          - duration-in-hours
+        output-parameter: storage-wh-if
     storage-energy-to-kwh-if:
-      path: "builtin"
+      path: builtin
       method: Coefficient
       global-config:
         input-parameter: storage-wh-if
         coefficient: 0.001
         output-parameter: storage-kwh-if
-
-    ## Github storage for if-data
-    #############################
-
     storage-and-traffic-from-github-if-data:
-      method: Github
       path: if-github-plugin
+      method: Github
       global-config:
         repo: Green-Software-Foundation/if-data
     copy-param-if-data-repo-size:
@@ -88,38 +79,38 @@ initialize:
         from: clones
         to: repo-clones-if-data
     storage-in-mb-to-tb-if-data:
-      method: Coefficient
       path: builtin
+      method: Coefficient
       global-config:
-        input-parameter: repo-size-if-data # size comes from github api and represents repo size in gb
-        coefficient: 0.000001 # convert size to tb
+        input-parameter: repo-size-if-data
+        coefficient: 0.000001
         output-parameter: storage-tb-if-data
     storage-energy-in-watts-if-data:
-      method: Multiply
       path: builtin
+      method: Multiply
       global-config:
-        input-parameters: ["storage-tb-if-data", "watts-per-tb"]
-        output-parameter: "storage-watts-if-data"
+        input-parameters:
+          - storage-tb-if-data
+          - watts-per-tb
+        output-parameter: storage-watts-if-data
     storage-energy-in-wh-if-data:
-      method: Multiply
       path: builtin
+      method: Multiply
       global-config:
-        input-parameters: ["storage-watts-if-data", "duration-in-hours"]
-        output-parameter: "storage-wh-if-data"
+        input-parameters:
+          - storage-watts-if-data
+          - duration-in-hours
+        output-parameter: storage-wh-if-data
     storage-energy-to-kwh-if-data:
-      path: "builtin"
+      path: builtin
       method: Coefficient
       global-config:
         input-parameter: storage-wh-if-data
         coefficient: 0.001
         output-parameter: storage-kwh-if-data
-
-    ## Github storage for if-docs
-    #############################
-
     storage-and-traffic-from-github-if-docs:
-      method: Github
       path: if-github-plugin
+      method: Github
       global-config:
         repo: Green-Software-Foundation/if-docs
     copy-param-if-docs-repo-size:
@@ -137,23 +128,27 @@ initialize:
         from: clones
         to: repo-clones-if-docs
     storage-in-mb-to-tb-if-docs:
-      method: Coefficient
       path: builtin
+      method: Coefficient
       global-config:
-        input-parameter: repo-size-if-docs # size comes from github api and represents repo size in gb
-        coefficient: 0.000001 # convert size to tb
+        input-parameter: repo-size-if-docs
+        coefficient: 0.000001
         output-parameter: storage-tb-if-docs
     storage-energy-in-watts-if-docs:
-      method: Multiply
       path: builtin
+      method: Multiply
       global-config:
-        input-parameters: ["storage-tb-if-docs", "watts-per-tb"]
+        input-parameters:
+          - storage-tb-if-docs
+          - watts-per-tb
         output-parameter: storage-watts-if-docs
     storage-energy-in-wh-if-docs:
-      method: Multiply
       path: builtin
+      method: Multiply
       global-config:
-        input-parameters: ["storage-watts-if-docs", "duration-in-hours"]
+        input-parameters:
+          - storage-watts-if-docs
+          - duration-in-hours
         output-parameter: storage-wh-if-docs
     storage-energy-to-kwh-if-docs:
       path: builtin
@@ -163,55 +158,59 @@ initialize:
         coefficient: 0.001
         output-parameter: storage-kwh-if-docs
     sum-storage-energy-components:
-      method: Sum
       path: builtin
+      method: Sum
       global-config:
-        input-parameters: ['storage-kwh-if','storage-kwh-if-data','storage-kwh-if-docs']
-        output-parameter: 'storage-energy-kwh'
-    
-    # data downloaded from if repositories
-    ######################################
-
+        input-parameters:
+          - storage-kwh-if
+          - storage-kwh-if-data
+          - storage-kwh-if-docs
+        output-parameter: storage-energy-kwh
     total-data-downloaded-from-if-repo:
-      method: Multiply
-      path: 'builtin'
-      global-config:
-        input-parameters: ["repo-size-if", "repo-clones-if"]
-        output-parameter: "data-egress-if" # data transferred in GB
-    total-data-downloaded-from-if-docs-repo:
-      method: Multiply
-      path: 'builtin'
-      global-config:
-        input-parameters: ["repo-size-if-docs", "repo-clones-if-docs"]
-        output-parameter: "data-egress-if-docs" # data transferred in GB
-    total-data-downloaded-from-if-data-repo:
-      method: Multiply
-      path: 'builtin'
-      global-config:
-        input-parameters: ["repo-size-if-data", "repo-clones-if-data"]
-        output-parameter: "data-egress-if-data" # data transferred in GB
-    sum-repo-download-components:
-      method: Sum
       path: builtin
+      method: Multiply
       global-config:
-        input-parameters: ['data-egress-if','data-egress-if-docs','data-egress-if-data']
+        input-parameters:
+          - repo-size-if
+          - repo-clones-if
+        output-parameter: data-egress-if
+    total-data-downloaded-from-if-docs-repo:
+      path: builtin
+      method: Multiply
+      global-config:
+        input-parameters:
+          - repo-size-if-docs
+          - repo-clones-if-docs
+        output-parameter: data-egress-if-docs
+    total-data-downloaded-from-if-data-repo:
+      path: builtin
+      method: Multiply
+      global-config:
+        input-parameters:
+          - repo-size-if-data
+          - repo-clones-if-data
+        output-parameter: data-egress-if-data
+    sum-repo-download-components:
+      path: builtin
+      method: Sum
+      global-config:
+        input-parameters:
+          - data-egress-if
+          - data-egress-if-docs
+          - data-egress-if-data
         output-parameter: total-data-egress
     repo-downloads-to-energy:
+      path: builtin
       method: Coefficient
-      path: 'builtin'
       global-config:
         input-parameter: total-data-egress
-        coefficient: 0.001 # from https://www.cloudcarbonfootprint.org/docs/methodology/#networking
+        coefficient: 0.001
         output-parameter: github-downloads-energy-kwh
-
-    # Github CI/CD
-    ##############
-
     eco-ci-github-actions-if:
+      path: if-eco-ci-plugin
       method: EcoCI
-      path: "if-eco-ci-plugin"
       global-config:
-        repo: "Green-Software-Foundation/if"
+        repo: Green-Software-Foundation/if
         branch: all
         workflow: 66389738
         start-date: 2024-07-14T08:30
@@ -223,28 +222,28 @@ initialize:
         keep-existing: false
         from: energy
         to: ci-cd-energy-kwh
-
-    ## NPM Storage
-    ##############
-
     storage-in-gb-to-tb-npm:
-      method: Coefficient
       path: builtin
+      method: Coefficient
       global-config:
         input-parameter: npm-storage-size
-        coefficient: 0.001 # convert size to tb
+        coefficient: 0.001
         output-parameter: storage-tb-npm
     storage-energy-in-watts-npm:
-      method: Multiply
       path: builtin
+      method: Multiply
       global-config:
-        input-parameters: ["storage-tb-npm", "watts-per-tb"]
+        input-parameters:
+          - storage-tb-npm
+          - watts-per-tb
         output-parameter: storage-watts-npm
     storage-energy-in-wh-npm:
-      method: Multiply
       path: builtin
+      method: Multiply
       global-config:
-        input-parameters: ["storage-watts-npm", "duration-in-hours"]
+        input-parameters:
+          - storage-watts-npm
+          - duration-in-hours
         output-parameter: storage-wh-npm
     storage-energy-to-kwh-npm:
       path: builtin
@@ -252,29 +251,22 @@ initialize:
       global-config:
         input-parameter: storage-wh-npm
         coefficient: 0.001
-        output-parameter: storage-energy-kwh-npm    
-
-    ## NPM download energy
-    ######################
-
+        output-parameter: storage-energy-kwh-npm
     total-data-downloaded-from-npm:
+      path: builtin
       method: Multiply
-      path: 'builtin'
       global-config:
-        input-parameters: ["npm-storage-size", "npm-downloads-per-month"]
+        input-parameters:
+          - npm-storage-size
+          - npm-downloads-per-month
         output-parameter: data-egress-npm
     npm-downloads-to-energy:
+      path: builtin
       method: Coefficient
-      path: 'builtin'
       global-config:
         input-parameter: data-egress-npm
-        coefficient: 0.001 # from https://www.cloudcarbonfootprint.org/docs/methodology/#networking
+        coefficient: 0.001
         output-parameter: npm-downloads-energy-kwh
-
-
-    # Running IF
-    ############
-
     interpolate-power-curve:
       path: builtin
       method: Interpolation
@@ -313,75 +305,120 @@ initialize:
       method: Divide
       global-config:
         numerator: cpu-wattage-times-run-time-duration
-        denominator: 3600000 # converts watts to kwh
+        denominator: 3600000
         output: cpu-energy-per-run
     cpu-per-run-to-cpu-per-month:
       path: builtin
       method: Multiply
       global-config:
-        input-parameters: [cpu-energy-per-run, runs-per-month]
+        input-parameters:
+          - cpu-energy-per-run
+          - runs-per-month
         output-parameter: if-run-cpu-energy
-    
-    ## Memory used per IF run
-    #########################
-
-    memory-coefficient-correction: # memory coefficient in CCF is given /GB/hr - we want to convert to /GB/run-time-duration then x by run duration in s
+    memory-coefficient-correction:
       path: builtin
       method: Coefficient
       global-config:
         input-parameter: run-time-duration
-        coefficient: 0.000006533333 # this is 0.000392/60 = KW/GB/H -> KW/GB/s
+        coefficient: 0.000006533333
         output-parameter: memory-coefficient
     memory-energy-per-run:
       path: builtin
       method: Multiply
       global-config:
-        input-parameters: [if-run-memory-gb, memory-coefficient]
+        input-parameters:
+          - if-run-memory-gb
+          - memory-coefficient
         output-parameter: if-run-memory-energy-per-run
     memory-energy-per-run-to-memory-energy-per-month:
       path: builtin
       method: Multiply
       global-config:
-        input-parameters: [if-run-memory-energy-per-run, runs-per-month]
+        input-parameters:
+          - if-run-memory-energy-per-run
+          - runs-per-month
         output-parameter: if-run-memory-energy
-
-    ## Sum energy components and convert to carbon
-    ##############################################
-
     sum-energy-components:
-      method: Sum
       path: builtin
+      method: Sum
       global-config:
-        input-parameters: ['storage-energy-kwh','github-downloads-energy-kwh','ci-cd-energy-kwh','storage-energy-kwh-npm', 'npm-downloads-energy-kwh', 'if-run-cpu-energy','if-run-memory-energy']
-        output-parameter: 'energy'
-
+        input-parameters:
+          - storage-energy-kwh
+          - github-downloads-energy-kwh
+          - ci-cd-energy-kwh
+          - storage-energy-kwh-npm
+          - npm-downloads-energy-kwh
+          - if-run-cpu-energy
+          - if-run-memory-energy
+        output-parameter: energy
     energy-to-carbon:
-      method: Multiply
-      path: "builtin"
-      global-config:
-        input-parameters: ["energy", "grid-intensity"]
-        output-parameter: "operational-carbon"
-
-    ## Sum embodied and operational carbon
-    ######################################
-    sum-carbon-components:
-      method: Sum
       path: builtin
+      method: Multiply
       global-config:
-        input-parameters: ['operational-carbon', 'embodied-carbon-for-gh-server', 'embodied-carbon-of-user-devices']
-        output-parameter: 'carbon'
-
-
-    ## Calculate SCI
-    ################
-
+        input-parameters:
+          - energy
+          - grid-intensity
+        output-parameter: operational-carbon
+    sum-carbon-components:
+      path: builtin
+      method: Sum
+      global-config:
+        input-parameters:
+          - operational-carbon
+          - embodied-carbon-for-gh-server
+          - embodied-carbon-of-user-devices
+        output-parameter: carbon
     sci:
-      kind: plugin
+      path: builtin
       method: Sci
-      path: "builtin"
       global-config:
         functional-unit: runs-per-month
-
+execution:
+  command: >-
+    /home/joe/.npm/_npx/1bf7c3c15bf47d04/node_modules/.bin/ts-node
+    /home/joe/Code/if/src/if-run/index.ts -m manifests/examples/if-sci.yml -o
+    manifests/outputs/if-sci-output
+  environment:
+    if-version: 0.6.0
+    os: linux
+    os-version: 5.15.0-117-generic
+    node-version: 21.4.0
+    date-time: 2024-08-16T14:05:54.883Z (UTC)
+    dependencies:
+      - '@babel/core@7.22.10'
+      - '@babel/preset-typescript@7.23.3'
+      - '@commitlint/cli@18.6.0'
+      - '@commitlint/config-conventional@18.6.0'
+      - '@grnsft/if-core@0.0.16'
+      - '@grnsft/if-unofficial-plugins@v0.3.1'
+      - '@jest/globals@29.7.0'
+      - '@types/jest@29.5.8'
+      - '@types/js-yaml@4.0.9'
+      - '@types/luxon@3.4.2'
+      - '@types/node@20.9.0'
+      - axios-mock-adapter@1.22.0
+      - axios@1.7.2
+      - cross-env@7.0.3
+      - csv-parse@5.5.6
+      - csv-stringify@6.4.6
+      - fixpack@4.0.0
+      - gts@5.2.0
+      - husky@8.0.3
+      - if-eco-ci-plugin@v0.0.1 extraneous -> file:../../if-eco-ci-plugin
+      - if-github-plugin@v0.0.1 extraneous -> file:../../if-github-plugin
+      - jest@29.7.0
+      - js-yaml@4.1.0
+      - lint-staged@15.2.2
+      - luxon@3.4.4
+      - release-it@16.3.0
+      - rimraf@5.0.5
+      - ts-command-line-args@2.5.1
+      - ts-jest@29.1.1
+      - typescript-cubic-spline@1.0.1
+      - typescript@5.2.2
+      - winston@3.11.0
+      - zod@3.23.8
+  status: success
 tree:
   children:
     if:
@@ -434,21 +471,80 @@ tree:
           - sum-energy-components
           - energy-to-carbon
           - sum-carbon-components
-          - sci # gCO2eq per run
-
+          - sci
       defaults:
-        watts-per-tb: 0.65 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
-        grid-intensity: 494 # world average according to https://sustainablewebdesign.org/estimating-digital-emissions/
-        npm-storage-size: 0.00000135 # in GB, retrieved from npm site
+        watts-per-tb: 0.65
+        grid-intensity: 494
+        npm-storage-size: 0.00000135
         npm-downloads-per-month: 1080
-        runs-per-month: 3000 # assuming 20 per user, 150 users = 3000
+        runs-per-month: 3000
         cpu/utilization: 95
         thermal-design-power: 45
-        run-time-duration: 7 #how long to run IF on given hardware
+        run-time-duration: 7
         if-run-memory-gb: 0.48
-        embodied-carbon-for-gh-server: 0.117  # embodied carbon for our fraction of the server hosting our GH repos
-        embodied-carbon-of-user-devices: 26.94 # total embodied carbon for all user devices
-        embodied-carbon-npm-server: 0.00084 # embodied carbon for our fraction of the server hosting our npm package
+        embodied-carbon-for-gh-server: 0.117
+        embodied-carbon-of-user-devices: 26.94
+        embodied-carbon-npm-server: 0.00084
       inputs:
-        - timestamp: '2024-08-13T00:00'
+        - timestamp: 2024-08-13T00:00
           duration: 2419200
+      outputs:
+        - timestamp: 2024-08-13T00:00
+          duration: 2419200
+          watts-per-tb: 0.65
+          grid-intensity: 494
+          npm-storage-size: 0.00000135
+          npm-downloads-per-month: 1080
+          runs-per-month: 3000
+          cpu/utilization: 95
+          thermal-design-power: 45
+          run-time-duration: 7
+          if-run-memory-gb: 0.48
+          embodied-carbon-for-gh-server: 0.117
+          embodied-carbon-of-user-devices: 26.94
+          embodied-carbon-npm-server: 0.00084
+          duration-in-hours: 672
+          clones: 0
+          repo-size-if: 0.007084
+          repo-clones-if: 0
+          storage-tb-if: 7.084e-9
+          storage-watts-if: 4.6046000000000004e-9
+          storage-wh-if: 0.0000030942912000000004
+          storage-kwh-if: 3.0942912000000005e-9
+          repo-size-if-data: 0.000462
+          repo-clones-if-data: 0
+          storage-tb-if-data: 4.62e-10
+          storage-watts-if-data: 3.0030000000000004e-10
+          storage-wh-if-data: 2.0180160000000003e-7
+          storage-kwh-if-data: 2.0180160000000004e-10
+          repo-size-if-docs: 0.011354
+          repo-clones-if-docs: 0
+          storage-tb-if-docs: 1.1353999999999999e-8
+          storage-watts-if-docs: 7.380099999999999e-9
+          storage-wh-if-docs: 0.0000049594272
+          storage-kwh-if-docs: 4.9594272e-9
+          storage-energy-kwh: 8.25552e-9
+          data-egress-if: 0
+          data-egress-if-docs: 0
+          data-egress-if-data: 0
+          total-data-egress: 0
+          carbon: 188.71044992380482
+          ci-cd-energy-kwh: 0.000713740814
+          github-downloads-energy-kwh: 0
+          storage-tb-npm: 1.35e-9
+          storage-watts-npm: 8.775000000000001e-10
+          storage-wh-npm: 5.896800000000001e-7
+          storage-energy-kwh-npm: 5.896800000000002e-10
+          data-egress-npm: 0.001458
+          npm-downloads-energy-kwh: 0.000001458
+          cpu-factor: 0.993
+          cpu-wattage: 44.685
+          cpu-wattage-times-run-time-duration: 312.795
+          cpu-energy-per-run: 0.0000868875
+          if-run-cpu-energy: 0.2606625
+          memory-coefficient: 0.000045733331
+          if-run-memory-energy-per-run: 0.000021951998880000002
+          if-run-memory-energy: 0.06585599664000001
+          energy: 0.32723370429920007
+          operational-carbon: 161.65344992380483
+          sci: 0.06290348330793494

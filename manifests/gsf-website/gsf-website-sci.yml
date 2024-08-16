@@ -1,5 +1,5 @@
-name: if-website-sci
-description:
+name: GSF Website SCI
+description: generates SCI score (gCO2eq/visit) for greensoftware.foundation website
 tags:
 initialize:
   plugins:
