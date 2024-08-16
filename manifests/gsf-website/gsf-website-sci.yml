@@ -1,0 +1,319 @@
+name: if-website-sci
+description:
+tags:
+initialize:
+  plugins:
+
+    # Unit conversions
+    ##################
+
+    duration-in-hours:
+      method: Divide
+      path: "builtin"
+      global-config:
+        numerator: duration
+        denominator: 3600 # s to hr
+        output: duration-in-hours
+
+
+    ## Github storage for IF
+    ########################
+
+    storage-and-traffic-from-github-if-docs:
+      method: Github
+      path: if-github-plugin
+      global-config:
+        repo: Green-Software-Foundation/if-docs
+    copy-param-if-docs-repo-size:
+      path: builtin
+      method: Copy
+      global-config:
+        keep-existing: false
+        from: size
+        to: "repo-size-if-docs"
+    copy-param-if-docs-clones:
+      path: builtin
+      method: Copy
+      global-config:
+        keep-existing: false
+        from: clones
+        to: repo-clones-if-docs
+    storage-in-gb-to-tb-if-docs:
+      method: Coefficient
+      path: builtin
+      global-config:
+        input-parameter: repo-size-if-docs # size comes from github api and represents repo size in gb
+        coefficient: 0.001 # convert size to tb
+        output-parameter: "storage-tb-if-docs"
+    storage-energy-in-watts-if-docs:
+      method: Multiply
+      path: builtin
+      global-config:
+        input-parameters: ["storage-tb-if-docs", "watts-per-tb"]
+        output-parameter: "storage-watts-if-docs"
+    storage-energy-in-wh-if-docs:
+      method: Multiply
+      path: builtin
+      global-config:
+        input-parameters: ["storage-watts-if-docs", "duration-in-hours"]
+        output-parameter: "storage-wh-if-docs"
+    storage-energy-to-kwh-if-docs:
+      path: "builtin"
+      method: Coefficient
+      global-config:
+        input-parameter: storage-wh-if-docs
+        coefficient: 0.001
+        output-parameter: storage-energy-kwh-if-docs
+    
+    # storing static site on github pages server
+    ############################################
+    static-site-size-in-tb:
+      method: Divide
+      path: "builtin"
+      global-config:
+        numerator: static-site-size-in-mb
+        denominator: 1000000 # s to hr
+        output: static-site-size-in-tb
+      
+    storage-energy-static-site-in-watts:
+      method: Multiply
+      path: builtin
+      global-config:
+        input-parameters: ["static-site-size-in-tb", "watts-per-tb"]
+        output-parameter: "storage-watts-static-site-at-origin"
+
+    storage-energy-in-wh-static-site:
+      method: Multiply
+      path: builtin
+      global-config:
+        input-parameters: ["storage-watts-static-site-at-origin", "duration-in-hours"]
+        output-parameter: "storage-wh-static-site-at-origin"
+
+    storage-energy-to-kwh-static-site:
+      path: "builtin"
+      method: Coefficient
+      global-config:
+        input-parameter: storage-wh-static-site-at-origin
+        coefficient: 0.001
+        output-parameter: storage-energy-kwh-static-site-at-origin
+
+
+    # CDN
+    ######
+
+    storage-energy-per-cdn-node:
+      method: Divide
+      path: "builtin"
+      global-config:
+        numerator: storage-energy-kwh-static-site-at-origin
+        denominator: 10 # s to hr
+        output: storage-energy-per-cdn-node
+    storage-energy-for-entire-cdn:
+      method: Coefficient
+      path: "builtin"
+      global-config:
+        input-parameter: storage-energy-per-cdn-node
+        coefficient: 46 # there are 46 PoPs on Fastly, which we think GH uses for CDN
+        output-parameter: storage-energy-static-site-cdn
+
+    # sum static site storage components
+    ####################################
+
+    sum-serving-static-site-energy-components:
+      method: Sum
+      path: builtin
+      global-config:
+        input-parameters: ['storage-energy-static-site-cdn','storage-energy-kwh-static-site-at-origin']
+        output-parameter: 'storing-static-site-energy-kwh'
+
+    # Networking energy to serve static site to users
+    #################################################
+
+    static-site-size-in-gb:
+      method: Coefficient
+      path: builtin
+      global-config:
+        input-parameter: static-site-size-in-mb # size comes from github api and represents repo size in gb
+        coefficient: 0.000001 # convert size to tb
+        output-parameter: "static-site-size-in-gb"
+
+    network-energy-serving-static-site-per-view:
+      method: Multiply
+      path: builtin
+      global-config:
+        input-parameters: ["static-site-size-in-gb", "kwh-per-gb-network"]
+        output-parameter: "network-energy-kwh-serving-static-site-per-view"
+
+    network-energy-serving-static-site-total:
+      method: Multiply
+      path: builtin
+      global-config:
+        input-parameters: [network-energy-kwh-serving-static-site-per-view, 'visits-per-month']
+        output-parameter: network-energy-serving-static-site-kwh-total
+
+    ## End user energy
+    ##################
+
+    end-user-energy:
+      method: Multiply
+      path: builtin
+      global-config:
+        input-parameters: [visits-per-month, static-site-size-in-gb, end-user-energy-coefficient]
+        output-parameter: end-user-energy-kwh
+
+    ## Build energy: gh-pages
+    #########################
+    interpolate-power-curve:
+      method: Interpolation
+      path: 'builtin'
+      global-config:
+        method: linear
+        x: [0, 10, 50, 100]
+        y: [0.12, 0.32, 0.75, 1.02]
+        input-parameter: 'cpu/utilization'
+        output-parameter: 'cpu-factor'
+
+    build-stage-cpu-factor-to-wattage:
+      method: Multiply
+      path: builtin
+      global-config:
+        input-parameters: ["cpu-factor", "thermal-design-power"]
+        output-parameter: "cpu-wattage"
+
+    build-stage-cpu-wattage-times-build-duration:
+      method: Multiply
+      path: builtin
+      global-config:
+        input-parameters: ["cpu-wattage", "build-duration"]
+        output-parameter: "cpu-wattage-times-duration"
+
+    build-stage-cpu-wattage-to-energy-kwh:
+      method: Divide
+      path: "builtin"
+      global-config:
+        numerator: cpu-wattage-times-duration
+        denominator: 3600000
+        output: build-energy-cpu-kwh
+
+    memory-coefficient-correction: # memory coefficient in CCF is given /GB/hr - we want to convert to /GB/run-time-duration then x by run duration in s
+      path: builtin
+      method: Coefficient
+      global-config:
+        input-parameter: build-duration
+        coefficient: 0.000006533333 # this is 0.000392/60 = KW/GB/H -> KW/GB/s
+        output-parameter: memory-coefficient
+
+    memory-energy-per-build:
+      path: builtin
+      method: Multiply
+      global-config:
+        input-parameters: [build-memory-gb, memory-coefficient]
+        output-parameter: build-energy-memory-kwh
+
+    sum-build-energy-components:
+      method: Sum
+      path: builtin
+      global-config:
+        input-parameters: ['build-energy-cpu-kwh','build-energy-memory-kwh']
+        output-parameter: 'build-energy-kwh-per-build'
+
+    build-energy-total:
+      path: builtin
+      method: Multiply
+      global-config:
+        input-parameters: [build-energy-kwh-per-build, builds-per-month]
+        output-parameter: build-energy-kwh    
+
+    # Sum all energy components
+    ###########################
+
+    sum-energy-components:
+      method: Sum
+      path: builtin
+      global-config:
+        input-parameters: ['storage-energy-kwh-if-docs','storing-static-site-energy-kwh','network-energy-serving-static-site-kwh-total','build-energy-kwh','end-user-energy-kwh']
+        output-parameter: 'energy'
+
+    energy-to-carbon:
+      method: Multiply
+      path: "builtin"
+      global-config:
+        input-parameters: ["energy", "grid-intensity"]
+        output-parameter: "operational-carbon"
+
+
+    ## Sum embodied and operational carbon
+    ######################################
+    sum-carbon-components:
+      method: Sum
+      path: builtin
+      global-config:
+        input-parameters: ['operational-carbon','embodied-carbon-for-site-server', 'embodied-carbon-for-gh-server', 'embodied-carbon-for-end-user-devices']
+        output-parameter: 'carbon'
+
+    ## Calculate SCI
+    ################
+
+    sci:
+      kind: plugin
+      method: Sci
+      path: "builtin"
+      global-config:
+        functional-unit: visits-per-month
+
+tree:
+  children:
+    if:
+      pipeline:
+        compute:
+          - duration-in-hours
+          - storage-and-traffic-from-github-if-docs
+          - copy-param-if-docs-repo-size
+          - copy-param-if-docs-clones
+          - storage-in-gb-to-tb-if-docs
+          - storage-energy-in-watts-if-docs
+          - storage-energy-in-wh-if-docs
+          - storage-energy-to-kwh-if-docs
+          - static-site-size-in-tb
+          - storage-energy-static-site-in-watts
+          - storage-energy-in-wh-static-site
+          - storage-energy-to-kwh-static-site
+          - storage-energy-per-cdn-node
+          - storage-energy-for-entire-cdn
+          - sum-serving-static-site-energy-components
+          - static-site-size-in-gb
+          - network-energy-serving-static-site-per-view
+          - network-energy-serving-static-site-total
+          - end-user-energy
+          - interpolate-power-curve
+          - build-stage-cpu-factor-to-wattage
+          - build-stage-cpu-wattage-times-build-duration
+          - build-stage-cpu-wattage-to-energy-kwh
+          - memory-coefficient-correction
+          - memory-energy-per-build
+          - sum-build-energy-components
+          - build-energy-total
+          - sum-energy-components
+          - energy-to-carbon
+          - sum-carbon-components
+          - sci
+ 
+      defaults:
+        watts-per-tb: 0.65 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
+        grid-intensity: 765.49 # US average
+        static-site-size-in-mb: 0.809473 # from google pagespeed api
+        visits-per-month: 325 # from google analytics
+        thermal-design-power: 205 # from our if-data
+        kwh-per-gb-network: 0.001 # https://www.cloudcarbonfootprint.org/docs/methodology/#networking
+        end-user-energy-coefficient: 0.080 # https://sustainablewebdesign.org/estimating-digital-emissions/
+        build-duration: 7
+        build-memory-gb: 0.48
+        builds-per-month: 5
+        embodied-carbon-for-site-server: 0.0718
+        embodied-carbon-for-gh-server: 0.0071
+        embodied-carbon-for-end-user-devices: 313.9
+
+      inputs:
+        - timestamp: '2024-08-13T00:00'
+          duration: 2419200
+          cpu/utilization: 100
