@@ -1,6 +1,12 @@
 name: GSF Website SCI
 description: generates SCI score (gCO2eq/visit) for greensoftware.foundation website
 tags:
+aggregation:
+  metrics:
+    - carbon
+    - sci
+  type: both
+
 initialize:
   plugins:
 
@@ -24,6 +30,7 @@ initialize:
       path: if-github-plugin
       global-config:
         repo: Green-Software-Foundation/if-docs
+
     copy-param-if-docs-repo-size:
       path: builtin
       method: Copy
@@ -31,6 +38,7 @@ initialize:
         keep-existing: false
         from: size
         to: "repo-size-if-docs"
+
     copy-param-if-docs-clones:
       path: builtin
       method: Copy
@@ -38,6 +46,7 @@ initialize:
         keep-existing: false
         from: clones
         to: repo-clones-if-docs
+
     storage-in-gb-to-tb-if-docs:
       method: Coefficient
       path: builtin
@@ -45,28 +54,40 @@ initialize:
         input-parameter: repo-size-if-docs # size comes from github api and represents repo size in gb
         coefficient: 0.001 # convert size to tb
         output-parameter: "storage-tb-if-docs"
+
     storage-energy-in-watts-if-docs:
       method: Multiply
       path: builtin
       global-config:
         input-parameters: ["storage-tb-if-docs", "watts-per-tb"]
         output-parameter: "storage-watts-if-docs"
+
     storage-energy-in-wh-if-docs:
       method: Multiply
       path: builtin
       global-config:
         input-parameters: ["storage-watts-if-docs", "duration-in-hours"]
         output-parameter: "storage-wh-if-docs"
+
     storage-energy-to-kwh-if-docs:
       path: "builtin"
       method: Coefficient
       global-config:
         input-parameter: storage-wh-if-docs
         coefficient: 0.001
-        output-parameter: storage-energy-kwh-if-docs
+        output-parameter: energy
     
-    # storing static site on github pages server
-    ############################################
+    energy-to-carbon:
+      method: Multiply
+      path: "builtin"
+      global-config:
+        input-parameters: ["energy", "grid-intensity"]
+        output-parameter: "carbon"
+
+
+    
+    # # storing static site on netlify
+    # ################################
     static-site-size-in-tb:
       method: Divide
       path: "builtin"
@@ -98,8 +119,8 @@ initialize:
         output-parameter: storage-energy-kwh-static-site-at-origin
 
 
-    # CDN
-    ######
+    # # CDN
+    # ######
 
     storage-energy-per-cdn-node:
       method: Divide
@@ -108,26 +129,24 @@ initialize:
         numerator: storage-energy-kwh-static-site-at-origin
         denominator: 10 # s to hr
         output: storage-energy-per-cdn-node
+
     storage-energy-for-entire-cdn:
       method: Coefficient
       path: "builtin"
       global-config:
         input-parameter: storage-energy-per-cdn-node
         coefficient: 46 # there are 46 PoPs on Fastly, which we think GH uses for CDN
-        output-parameter: storage-energy-static-site-cdn
-
-    # sum static site storage components
-    ####################################
+        output-parameter: storage-energy-whole-cdn
 
     sum-serving-static-site-energy-components:
       method: Sum
       path: builtin
       global-config:
-        input-parameters: ['storage-energy-static-site-cdn','storage-energy-kwh-static-site-at-origin']
-        output-parameter: 'storing-static-site-energy-kwh'
+        input-parameters: ['storage-energy-whole-cdn','storage-energy-kwh-static-site-at-origin']
+        output-parameter: 'energy'
 
-    # Networking energy to serve static site to users
-    #################################################
+    # # Networking energy to serve static site to users
+    # #################################################
 
     static-site-size-in-gb:
       method: Coefficient
@@ -149,7 +168,7 @@ initialize:
       path: builtin
       global-config:
         input-parameters: [network-energy-kwh-serving-static-site-per-view, 'visits-per-month']
-        output-parameter: network-energy-serving-static-site-kwh-total
+        output-parameter: energy
 
     ## End user energy
     ##################
@@ -159,7 +178,7 @@ initialize:
       path: builtin
       global-config:
         input-parameters: [visits-per-month, static-site-size-in-gb, end-user-energy-coefficient]
-        output-parameter: end-user-energy-kwh
+        output-parameter: energy
 
     ## Build energy: gh-pages
     #########################
@@ -170,7 +189,7 @@ initialize:
         method: linear
         x: [0, 10, 50, 100]
         y: [0.12, 0.32, 0.75, 1.02]
-        input-parameter: 'cpu/utilization'
+        input-parameter: 'cpu-utilization-during-build'
         output-parameter: 'cpu-factor'
 
     build-stage-cpu-factor-to-wattage:
@@ -222,34 +241,8 @@ initialize:
       method: Multiply
       global-config:
         input-parameters: [build-energy-kwh-per-build, builds-per-month]
-        output-parameter: build-energy-kwh    
+        output-parameter: energy    
 
-    # Sum all energy components
-    ###########################
-
-    sum-energy-components:
-      method: Sum
-      path: builtin
-      global-config:
-        input-parameters: ['storage-energy-kwh-if-docs','storing-static-site-energy-kwh','network-energy-serving-static-site-kwh-total','build-energy-kwh','end-user-energy-kwh']
-        output-parameter: 'energy'
-
-    energy-to-carbon:
-      method: Multiply
-      path: "builtin"
-      global-config:
-        input-parameters: ["energy", "grid-intensity"]
-        output-parameter: "operational-carbon"
-
-
-    ## Sum embodied and operational carbon
-    ######################################
-    sum-carbon-components:
-      method: Sum
-      path: builtin
-      global-config:
-        input-parameters: ['operational-carbon','embodied-carbon-for-site-server', 'embodied-carbon-for-gh-server', 'embodied-carbon-for-end-user-devices']
-        output-parameter: 'carbon'
 
     ## Calculate SCI
     ################
@@ -263,7 +256,7 @@ initialize:
 
 tree:
   children:
-    if:
+    github-storage-for-if-docs:
       pipeline:
         compute:
           - duration-in-hours
@@ -274,46 +267,130 @@ tree:
           - storage-energy-in-watts-if-docs
           - storage-energy-in-wh-if-docs
           - storage-energy-to-kwh-if-docs
+          - energy-to-carbon
+          - sci
+      defaults:
+        watts-per-tb: 1.2 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
+        grid-intensity: 765.49 # US average
+        visits-per-month: 325 # from google analytics
+      inputs:
+        - timestamp: '2024-08-13T00:00'
+          duration: 2419200
+
+    storing-static-site-data-on-netlify:
+      pipeline:
+        compute:
+          - duration-in-hours        
           - static-site-size-in-tb
           - storage-energy-static-site-in-watts
           - storage-energy-in-wh-static-site
           - storage-energy-to-kwh-static-site
-          - storage-energy-per-cdn-node
+          - storage-energy-per-cdn-node        
           - storage-energy-for-entire-cdn
           - sum-serving-static-site-energy-components
+          - energy-to-carbon
+          - sci
+      defaults:
+        static-site-size-in-mb: 0.809473 # from google pagespeed api
+        watts-per-tb: 1.2 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
+        grid-intensity: 765.49 # US average
+        visits-per-month: 325 # from google analytics
+      inputs:
+        - timestamp: '2024-08-13T00:00'
+          duration: 2419200
+
+    networking-energy-to-serve-static-site-over-the-wire:
+      pipeline:
+        compute:
           - static-site-size-in-gb
           - network-energy-serving-static-site-per-view
           - network-energy-serving-static-site-total
+          - energy-to-carbon
+          - sci
+      defaults:
+        static-site-size-in-mb: 0.809473 # from google pagespeed api
+        kwh-per-gb-network: 0.001 # https://www.cloudcarbonfootprint.org/docs/methodology/#networking
+        watts-per-tb: 1.2 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
+        grid-intensity: 765.49 # US average
+        visits-per-month: 325 # from google analytics
+      inputs:
+        - timestamp: '2024-08-13T00:00'
+          duration: 2419200
+
+    end-user-operational-carbon:
+      pipeline:
+        compute:
+          - static-site-size-in-gb
           - end-user-energy
+          - energy-to-carbon
+          - sci
+      defaults:
+        end-user-energy-coefficient: 0.080 # https://sustainablewebdesign.org/estimating-digital-emissions/
+        static-site-size-in-mb: 0.809473 # from google pagespeed api
+        kwh-per-gb-network: 0.001 # https://www.cloudcarbonfootprint.org/docs/methodology/#networking
+        grid-intensity: 765.49 # US average
+        visits-per-month: 325 # from google analytics
+      inputs:
+        - timestamp: '2024-08-13T00:00'
+          duration: 2419200
+
+    netlify-builds:
+      pipeline:
+        compute:
           - interpolate-power-curve
           - build-stage-cpu-factor-to-wattage
           - build-stage-cpu-wattage-times-build-duration
           - build-stage-cpu-wattage-to-energy-kwh
-          - memory-coefficient-correction
+          - memory-coefficient-correction # memory coefficient in CCF is given /GB/hr - we want to convert to /GB/run-time-duration then x by run duration in s
           - memory-energy-per-build
           - sum-build-energy-components
           - build-energy-total
-          - sum-energy-components
           - energy-to-carbon
-          - sum-carbon-components
           - sci
- 
       defaults:
-        watts-per-tb: 0.65 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
-        grid-intensity: 765.49 # US average
-        static-site-size-in-mb: 0.809473 # from google pagespeed api
-        visits-per-month: 325 # from google analytics
-        thermal-design-power: 205 # from our if-data
-        kwh-per-gb-network: 0.001 # https://www.cloudcarbonfootprint.org/docs/methodology/#networking
         end-user-energy-coefficient: 0.080 # https://sustainablewebdesign.org/estimating-digital-emissions/
+        static-site-size-in-mb: 0.809473 # from google pagespeed api
+        kwh-per-gb-network: 0.001 # https://www.cloudcarbonfootprint.org/docs/methodology/#networking
+        grid-intensity: 765.49 # US average
+        visits-per-month: 325 # from google analytics
         build-duration: 7
         build-memory-gb: 0.48
         builds-per-month: 5
-        embodied-carbon-for-site-server: 0.0718
-        embodied-carbon-for-gh-server: 0.0071
-        embodied-carbon-for-end-user-devices: 313.9
-
+        thermal-design-power: 205 # from our if-data
+        cpu-utilization-during-build: 100
       inputs:
         - timestamp: '2024-08-13T00:00'
           duration: 2419200
-          cpu/utilization: 100
+
+    embodied-carbon-for-web-server:
+      pipeline:
+        compute:
+          - sci
+      defaults:
+        visits-per-month: 325 # from google analytics
+      inputs:
+        - timestamp: '2024-08-13T00:00'
+          duration: 2419200
+          carbon: 0.0718
+
+    embodied-carbon-for-github-server:
+      pipeline:
+        compute:
+          - sci
+      defaults:
+        visits-per-month: 325 # from google analytics
+      inputs:
+        - timestamp: '2024-08-13T00:00'
+          duration: 2419200
+          carbon: 0.0071
+
+    embodied-carbon-for-end-user-devices:
+      pipeline:
+        compute:
+          - sci
+      defaults:
+        visits-per-month: 325 # from google analytics
+      inputs:
+        - timestamp: '2024-08-13T00:00'
+          duration: 2419200
+          carbon: 313.9
