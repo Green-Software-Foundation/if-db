@@ -1,6 +1,11 @@
 name: GSF Website SCI
 description: generates SCI score (gCO2eq/visit) for greensoftware.foundation website
-tags:
+tags: null
+aggregation:
+  metrics:
+    - carbon
+    - sci
+  type: both
 initialize:
   plugins:
     duration-in-hours:
@@ -58,7 +63,15 @@ initialize:
       global-config:
         input-parameter: storage-wh-if-docs
         coefficient: 0.001
-        output-parameter: storage-energy-kwh-if-docs
+        output-parameter: energy
+    energy-to-carbon:
+      path: builtin
+      method: Multiply
+      global-config:
+        input-parameters:
+          - energy
+          - grid-intensity
+        output-parameter: carbon
     static-site-size-in-tb:
       path: builtin
       method: Divide
@@ -102,15 +115,15 @@ initialize:
       global-config:
         input-parameter: storage-energy-per-cdn-node
         coefficient: 46
-        output-parameter: storage-energy-static-site-cdn
+        output-parameter: storage-energy-whole-cdn
     sum-serving-static-site-energy-components:
       path: builtin
       method: Sum
       global-config:
         input-parameters:
-          - storage-energy-static-site-cdn
+          - storage-energy-whole-cdn
           - storage-energy-kwh-static-site-at-origin
-        output-parameter: storing-static-site-energy-kwh
+        output-parameter: energy
     static-site-size-in-gb:
       path: builtin
       method: Coefficient
@@ -133,7 +146,7 @@ initialize:
         input-parameters:
           - network-energy-kwh-serving-static-site-per-view
           - visits-per-month
-        output-parameter: network-energy-serving-static-site-kwh-total
+        output-parameter: energy
     end-user-energy:
       path: builtin
       method: Multiply
@@ -142,7 +155,7 @@ initialize:
           - visits-per-month
           - static-site-size-in-gb
           - end-user-energy-coefficient
-        output-parameter: end-user-energy-kwh
+        output-parameter: energy
     interpolate-power-curve:
       path: builtin
       method: Interpolation
@@ -158,7 +171,7 @@ initialize:
           - 0.32
           - 0.75
           - 1.02
-        input-parameter: cpu/utilization
+        input-parameter: cpu-utilization-during-build
         output-parameter: cpu-factor
     build-stage-cpu-factor-to-wattage:
       path: builtin
@@ -213,36 +226,7 @@ initialize:
         input-parameters:
           - build-energy-kwh-per-build
           - builds-per-month
-        output-parameter: build-energy-kwh
-    sum-energy-components:
-      path: builtin
-      method: Sum
-      global-config:
-        input-parameters:
-          - storage-energy-kwh-if-docs
-          - storing-static-site-energy-kwh
-          - network-energy-serving-static-site-kwh-total
-          - build-energy-kwh
-          - end-user-energy-kwh
         output-parameter: energy
-    energy-to-carbon:
-      path: builtin
-      method: Multiply
-      global-config:
-        input-parameters:
-          - energy
-          - grid-intensity
-        output-parameter: operational-carbon
-    sum-carbon-components:
-      path: builtin
-      method: Sum
-      global-config:
-        input-parameters:
-          - operational-carbon
-          - embodied-carbon-for-site-server
-          - embodied-carbon-for-gh-server
-          - embodied-carbon-for-end-user-devices
-        output-parameter: carbon
     sci:
       path: builtin
       method: Sci
@@ -252,13 +236,13 @@ execution:
   command: >-
     /home/joe/.npm/_npx/1bf7c3c15bf47d04/node_modules/.bin/ts-node
     /home/joe/Code/if/src/if-run/index.ts -m manifests/examples/gsf-website.yml
-    -o manifests/outputs/gsf-website-sci
+    -o manifest/outputs/gsf-website-output
   environment:
     if-version: 0.6.0
     os: linux
     os-version: 5.15.0-117-generic
     node-version: 21.4.0
-    date-time: 2024-08-16T13:55:06.725Z (UTC)
+    date-time: 2024-08-19T10:58:12.137Z (UTC)
     dependencies:
       - '@babel/core@7.22.10'
       - '@babel/preset-typescript@7.23.3'
@@ -296,7 +280,7 @@ execution:
   status: success
 tree:
   children:
-    if:
+    github-storage-for-if-docs:
       pipeline:
         compute:
           - duration-in-hours
@@ -307,6 +291,38 @@ tree:
           - storage-energy-in-watts-if-docs
           - storage-energy-in-wh-if-docs
           - storage-energy-to-kwh-if-docs
+          - energy-to-carbon
+          - sci
+      defaults:
+        watts-per-tb: 1.2
+        grid-intensity: 765.49
+        visits-per-month: 325
+      inputs:
+        - timestamp: 2024-08-13T00:00
+          duration: 2419200
+      outputs:
+        - timestamp: 2024-08-13T00:00
+          duration: 2419200
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          visits-per-month: 325
+          duration-in-hours: 672
+          clones: 0
+          repo-size-if-docs: 0.011354
+          repo-clones-if-docs: 0
+          storage-tb-if-docs: 0.000011354
+          storage-watts-if-docs: 0.0000136248
+          storage-wh-if-docs: 0.0091558656
+          energy: 0.0000091558656
+          carbon: 0.007008723558144
+          sci: 0.000021565303255827694
+      aggregated:
+        carbon: 0.007008723558144
+        sci: 0.000021565303255827694
+    storing-static-site-data-on-netlify:
+      pipeline:
+        compute:
+          - duration-in-hours
           - static-site-size-in-tb
           - storage-energy-static-site-in-watts
           - storage-energy-in-wh-static-site
@@ -314,10 +330,103 @@ tree:
           - storage-energy-per-cdn-node
           - storage-energy-for-entire-cdn
           - sum-serving-static-site-energy-components
+          - energy-to-carbon
+          - sci
+      defaults:
+        static-site-size-in-mb: 0.809473
+        watts-per-tb: 1.2
+        grid-intensity: 765.49
+        visits-per-month: 325
+      inputs:
+        - timestamp: 2024-08-13T00:00
+          duration: 2419200
+      outputs:
+        - timestamp: 2024-08-13T00:00
+          duration: 2419200
+          static-site-size-in-mb: 0.809473
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          visits-per-month: 325
+          duration-in-hours: 672
+          static-site-size-in-tb: 8.09473e-7
+          storage-watts-static-site-at-origin: 9.713676e-7
+          storage-wh-static-site-at-origin: 0.0006527590272
+          storage-energy-kwh-static-site-at-origin: 6.527590272e-7
+          storage-energy-per-cdn-node: 6.527590272e-8
+          storage-energy-whole-cdn: 0.0000030026915251199997
+          energy: 0.00000365545055232
+          carbon: 0.0027982108432954367
+          sci: 0.000008609879517832113
+      aggregated:
+        carbon: 0.0027982108432954367
+        sci: 0.000008609879517832113
+    networking-energy-to-serve-static-site-over-the-wire:
+      pipeline:
+        compute:
           - static-site-size-in-gb
           - network-energy-serving-static-site-per-view
           - network-energy-serving-static-site-total
+          - energy-to-carbon
+          - sci
+      defaults:
+        static-site-size-in-mb: 0.809473
+        kwh-per-gb-network: 0.001
+        watts-per-tb: 1.2
+        grid-intensity: 765.49
+        visits-per-month: 325
+      inputs:
+        - timestamp: 2024-08-13T00:00
+          duration: 2419200
+      outputs:
+        - timestamp: 2024-08-13T00:00
+          duration: 2419200
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          visits-per-month: 325
+          static-site-size-in-gb: 8.094729999999999e-7
+          network-energy-kwh-serving-static-site-per-view: 8.094729999999999e-10
+          energy: 2.63078725e-7
+          carbon: 0.00020138413320025
+          sci: 6.1964348677e-7
+      aggregated:
+        carbon: 0.00020138413320025
+        sci: 6.1964348677e-7
+    end-user-operational-carbon:
+      pipeline:
+        compute:
+          - static-site-size-in-gb
           - end-user-energy
+          - energy-to-carbon
+          - sci
+      defaults:
+        end-user-energy-coefficient: 0.08
+        static-site-size-in-mb: 0.809473
+        kwh-per-gb-network: 0.001
+        grid-intensity: 765.49
+        visits-per-month: 325
+      inputs:
+        - timestamp: 2024-08-13T00:00
+          duration: 2419200
+      outputs:
+        - timestamp: 2024-08-13T00:00
+          duration: 2419200
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          visits-per-month: 325
+          static-site-size-in-gb: 8.094729999999999e-7
+          energy: 0.000021046297999999997
+          carbon: 0.01611073065602
+          sci: 0.0000495714789416
+      aggregated:
+        carbon: 0.01611073065602
+        sci: 0.0000495714789416
+    netlify-builds:
+      pipeline:
+        compute:
           - interpolate-power-curve
           - build-stage-cpu-factor-to-wattage
           - build-stage-cpu-wattage-times-build-duration
@@ -326,64 +435,35 @@ tree:
           - memory-energy-per-build
           - sum-build-energy-components
           - build-energy-total
-          - sum-energy-components
           - energy-to-carbon
-          - sum-carbon-components
           - sci
       defaults:
-        watts-per-tb: 0.65
-        grid-intensity: 765.49
-        static-site-size-in-mb: 0.809473
-        visits-per-month: 325
-        thermal-design-power: 205
-        kwh-per-gb-network: 0.001
         end-user-energy-coefficient: 0.08
+        static-site-size-in-mb: 0.809473
+        kwh-per-gb-network: 0.001
+        grid-intensity: 765.49
+        visits-per-month: 325
         build-duration: 7
         build-memory-gb: 0.48
         builds-per-month: 5
-        embodied-carbon-for-site-server: 0.0718
-        embodied-carbon-for-gh-server: 0.0071
-        embodied-carbon-for-end-user-devices: 313.9
+        thermal-design-power: 205
+        cpu-utilization-during-build: 100
       inputs:
         - timestamp: 2024-08-13T00:00
           duration: 2419200
-          cpu/utilization: 100
       outputs:
         - timestamp: 2024-08-13T00:00
           duration: 2419200
-          cpu/utilization: 100
-          watts-per-tb: 0.65
-          grid-intensity: 765.49
-          static-site-size-in-mb: 0.809473
-          visits-per-month: 325
-          thermal-design-power: 205
-          kwh-per-gb-network: 0.001
           end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          visits-per-month: 325
           build-duration: 7
           build-memory-gb: 0.48
           builds-per-month: 5
-          embodied-carbon-for-site-server: 0.0718
-          embodied-carbon-for-gh-server: 0.0071
-          embodied-carbon-for-end-user-devices: 313.9
-          duration-in-hours: 672
-          clones: 0
-          repo-size-if-docs: 0.011354
-          repo-clones-if-docs: 0
-          storage-tb-if-docs: 0.000011354
-          storage-watts-if-docs: 0.0000073801
-          storage-wh-if-docs: 0.0049594272
-          storage-energy-kwh-if-docs: 0.0000049594272
-          static-site-size-in-tb: 8.09473e-7
-          storage-watts-static-site-at-origin: 5.261574500000001e-7
-          storage-wh-static-site-at-origin: 0.00035357780640000004
-          storage-energy-kwh-static-site-at-origin: 3.5357780640000004e-7
-          storage-energy-per-cdn-node: 3.5357780640000004e-8
-          storage-energy-static-site-cdn: 0.0000016264579094400003
-          storing-static-site-energy-kwh: 0.00000198003571584
-          static-site-size-in-gb: 8.094729999999999e-7
-          network-energy-kwh-serving-static-site-per-view: 8.094729999999999e-10
-          network-energy-serving-static-site-kwh-total: 2.63078725e-7
-          end-user-energy-kwh: 0.000021046297999999997
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
           cpu-factor: 1.02
           cpu-wattage: 209.1
           cpu-wattage-times-duration: 1463.7
@@ -391,8 +471,74 @@ tree:
           memory-coefficient: 0.000045733331
           build-energy-memory-kwh: 0.000021951998880000002
           build-energy-kwh-per-build: 0.00042853533221333336
-          build-energy-kwh: 0.0021426766610666667
-          energy: 0.0021709255007075065
-          operational-carbon: 1.6618217615365891
-          carbon: 315.64072176153655
-          sci: 0.9712022208047278
+          energy: 0.0021426766610666667
+          carbon: 1.6401975572799228
+          sci: 0.005046761714707455
+      aggregated:
+        carbon: 1.6401975572799228
+        sci: 0.005046761714707455
+    embodied-carbon-for-web-server:
+      pipeline:
+        compute:
+          - sci
+      defaults:
+        visits-per-month: 325
+      inputs:
+        - timestamp: 2024-08-13T00:00
+          duration: 2419200
+          carbon: 0.0718
+      outputs:
+        - timestamp: 2024-08-13T00:00
+          duration: 2419200
+          carbon: 0.0718
+          visits-per-month: 325
+          sci: 0.00022092307692307694
+      aggregated:
+        carbon: 0.0718
+        sci: 0.00022092307692307694
+    embodied-carbon-for-github-server:
+      pipeline:
+        compute:
+          - sci
+      defaults:
+        visits-per-month: 325
+      inputs:
+        - timestamp: 2024-08-13T00:00
+          duration: 2419200
+          carbon: 0.0071
+      outputs:
+        - timestamp: 2024-08-13T00:00
+          duration: 2419200
+          carbon: 0.0071
+          visits-per-month: 325
+          sci: 0.000021846153846153848
+      aggregated:
+        carbon: 0.0071
+        sci: 0.000021846153846153848
+    embodied-carbon-for-end-user-devices:
+      pipeline:
+        compute:
+          - sci
+      defaults:
+        visits-per-month: 325
+      inputs:
+        - timestamp: 2024-08-13T00:00
+          duration: 2419200
+          carbon: 313.9
+      outputs:
+        - timestamp: 2024-08-13T00:00
+          duration: 2419200
+          carbon: 313.9
+          visits-per-month: 325
+          sci: 0.9658461538461538
+      aggregated:
+        carbon: 313.9
+        sci: 0.9658461538461538
+  outputs:
+    - carbon: 315.64521660647057
+      sci: 0.9712160510968325
+      timestamp: 2024-08-13T00:00
+      duration: 2419200
+  aggregated:
+    carbon: 315.64521660647057
+    sci: 0.9712160510968325
