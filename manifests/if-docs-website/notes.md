@@ -1,8 +1,8 @@
-# How we calculated the SCI score for the GSF website
+# How we calculated the SCI score for the Impact Framework website
 
 ## Introduction
 
-We used the Impact Framework to calculate the Software Carbon Intensity (SCI) for [greensoftware.foundation](https://greensoftware.foundation) in gCO2eq/visit.
+We used the Impact Framework to calculate the Software Carbon Intensity (SCI) for [if.greensoftware.foundation](https://if.greensoftware.foundation) in gCO2eq/visit.
 
 There are several tools out there that measure the carbon emissions of websites, such as:
 
@@ -16,23 +16,25 @@ For this reason, we wanted to try to build our own estimate using a bottom-up ap
 
 These notes will explain the approach taken, the design decisions and assumptions.
 
-You are encouraged to take the manifest file, do a better job and raise a PR!
+
+**You are encouraged to take the manifest file, do a better job and raise a PR!**
 
 
-## About the GSF website
 
-The GSF website is developed using Docusaurus, a React framework. The source code is hosted on Github and it is built and served using Netlify.
+## About the IF website
 
-You can see the site at https://greensoftware.foundation and the github at https://github.com/Green-Software-Foundation/gsf-website
+The IF website is developed using Docusaurus, a React framework. The source code is hosted on Github and it is built and served using github-pages.
+
+You can see the site at https://if.greensoftware.foundation and the github at https://github.com/Green-Software-Foundation/if-docs
 
 ## Application Boundary
 
 We include the following components in our calculations:
 
 - Github storage
-- Netlify builds
-- Netlify static site storage
-- Storage across content delivery network
+- Gh-pages builds
+- Gh-pages static site storage
+- Cache storage across content delivery network
 - Data transferred over network
 - End users viewing site in browser
 - Embodied carbon of Github server (for storing ans serving source code)
@@ -46,20 +48,22 @@ We include the following components in our calculations:
 
 We first used the Github API to determine the storage size for the source code repository and the number of times the repository has been cloned in the most recent month. IF has a plugin that calls this API, here: https://github.com/Green-Software-Foundation/if-github-plugin.
 
-The repository size value returned by the Github API plugin is in Megabytes. We first convert this to TB by multiplying by a factor of 0.000001. Then we multiply the size in Terabytes by a constant 1.2 W/TB for storage energy obtained from Cloud Carbon Footprint (https://www.cloudcarbonfootprint.org/docs/methodology/#storage) to yield power in Watts. We then convert W into Wh by multiplying by the storage duration in hours, and into kWh by dividing by 1000.
+The repository size value returned by the Github API plugin is in Megabytes. We first convert this to TB by multiplying by a factor of 0.000001. Then we multiply the size in Terabytes by a constant 1.2 W/TB for storage energy obtained from Cloud Carbon Footprint (https://www.cloudcarbonfootprint.org/docs/methodology/#storage) to yield power in Watts (actually there is some conversion necessary because the CCF coeffcient is really in Wh/TBh, so we normalize for our observation duration). We then convert W into Wh by multiplying by the storage duration in hours, and into kWh by dividing by 1000.
 
 This yields the energy, in kWh, consumed by storing our source code on Github.
 
 
-## Netlify builds
+## Site builds
 
-We first looked at our Netlify stats to see how many times the website was built in the most recent month.
-We had to establish some heuristics to approximate the hardware used to build the site, in order to then estimate the energy.
+We first checked how many times the website was built in the most recent month.
 
-As of 2022 netlify allow up to 8GB memory and 4 cpu cores to be allocated to a build: https://www.netlify.com/blog/up-to-40-faster-build-times/
+We had to establish some heuristics to approximate the hardware used to build the site, in order to then estimate the energy. We struggled to find information specific to Github pages, so we use Netlify as an analog.
+
+As of 2022 Netlify allow up to 8GB memory and 4 cpu cores to be allocated to a build: https://www.netlify.com/blog/up-to-40-faster-build-times/
 
 We don't know the proportion of these resources we actually use, but we can assume it's not all of it.
-Building the site on my local machine required 100% of 6 CPU cores for about 4 seconds, and 1.5% available meemory (32GB * 0.015 = 0.48 GB). Let's assume on a machine with 4 cores, it will run for 50% longer - i.e. 6 seconds using 4 CPUs at 100% utilization.
+
+Building the site on my local machine required 100% of ~5 CPU cores for about 5 seconds, and 1.2% available meemory (32GB * 0.012 = 0.34 GB). Let's assume on a machine with 4 cores, it will run for 20% longer - i.e. 6 seconds using 4 CPUs at 100% utilization.
 
 We can then work out the energy consumed during this process using the processor power curve.
 
@@ -70,7 +74,7 @@ We interpolated the standard CPU power curve provided here: https://medium.com/t
 We then multiplied this by the processor's actual TDP, yielding the power used by the CPU during the build, in W.
 This was then multiplied by the build duration to yield energy, and then scaled to units of kWh. 
 
-We then accounted for the memory used durign the build process, which we estimated to be 0.48 GB. We multiplied this by a memory-energy factor published by Cloud Carbon Footprint (0.000392 kWh/GBh). We scaled the coeffcient to be in units of kWh/GBs and then multiplied by our build duration to yield kWh/build due to memory.
+We then accounted for the memory used durign the build process, which we estimated to be 0.34 GB. We multiplied this by a memory-energy factor published by Cloud Carbon Footprint (0.000392 kWh/GBh). We scaled the coeffcient to be in units of kWh/GBs and then multiplied by our build duration to yield kWh/build due to memory.
 
 The sum of the CPU energy and memory energy gave the total build energy in kWh.
 
@@ -79,14 +83,15 @@ This was then multiplied by the number of times the build process was executed i
 
 ## Static site storage
 
-Once the build process is finished, the static site is stored on servers waiting to transfer the site data to end users. There is an origin server that stores the whole static site, then a content delivery network (CDN) of servers storing a fraction of the total static site data for fast delivery.
+Once the build process is finished, the static site is stored on servers waiting to transfer the site data to end users. There is an origin server that stores the whole static site, then a content delivery network (CDN) of servers storing a cached fraction of the total static site data for fast delivery.
 
 We determined the total amount of data transferred when a new user loads the site using Google's PageSpeed API.
+
 For the origin server, we applied the CCF's storage coefficient of 1.2 Wh/TBh, multiplying by the total duration in hours, and converting to kWh.
 
-We then assumed the CDN is provided by Fastly - they have a CDN network with 46 Points of Presence (PoP). We have not been able to find quantitative estimates of the ratio of origin to PoP storage, only qualitative statements such as "much less" - we take a conservative guess and set the ratio to 10%. Therefore, for CDN storage we take 10% of the storage at the origin server, then multiply by 46 to accoutn for all the PoPs.
+We then assumed the CDN is provided by Fastly - they have a CDN network with 46 Points of Presence (PoP). We do not have precise information about github-pages CDN set up, but we know they used Fastly in the no so distant past, so we assume they do today too. We have not been able to find quantitative estimates of the ratio of origin to PoP storage, only qualitative statements such as "much less" - we take a conservative guess and set the ratio to 10%. Therefore, for CDN storage we take 10% of the storage at the origin server, then multiply by 46 to account for all the PoPs.
 
-The total energ used to store that static site is therefore
+The total energy used to store that static site is therefore
 
 `data-transfer size + (46 * (transfer size / 10))`
 
@@ -107,7 +112,7 @@ The coefficient we used was 0.081 kWh/GB. We multiplied this by the size of the 
 
 #### Static site server
 
-We don't know what hardware is used to serve the site, so we'' make some educated guesses.
+We don't know what hardware is used to serve the site, so we'll make some educated guesses.
 
 Lets' say the origin server meets the minimum requirements recommended for a Wordpress web server.
 https://kinsta.com/blog/wordpress-server-requirements/
@@ -126,15 +131,15 @@ To scale by this, we divide 1 month in seconds by 4 years in seconds:
 
 `2419200 / 145152000 = 0.016`
 
-Our website uses only 0.8 MB of server storage space for the static site, which is 0.00014% of the total (1GB).
+Our website uses only 1.4MB of server storage space for the static site, which is 0.00014% of the total (1GB).
 We do not scale further by CPU or RAM usage because we cannot get good estimates for this.
 
-`1000000 * 0.016 * 0.0000008 = 0.0128 gCO2eq` for the origin server
+`1000000 * 0.016 * 0.0000014 = 0.0224 gCO2eq` for the origin server
 
-So we end up with 0.0128 g for the origin server, and 0.00128g per CDN node (10% of origin).
-There are 46 CDN servers, so `0.00128 * 46 = 0.058 g CO2e` for the whole CDN network.
+So we end up with 0.0224 g for the origin server, and 0.00224g per CDN node (10% of origin).
+There are 46 CDN servers, so `0.00224 * 46 = 0.103 g CO2e` for the whole CDN network.
 
-The embodied carbon of the static site servers is therefore `0.00128 + 0.058 = 0.059 gCO2eq `
+The embodied carbon of the static site servers is therefore `0.0224 + 0.103 = 0.125 gCO2eq `
 
 
 #### Github server
@@ -173,11 +178,11 @@ So this calculation yielded an estimated embodied carbon value of 18754431 gCO2e
 
 Now we can scale this according to the portion of that storage we actually use.
 
-The `greensoftware.foundation` repo has a storage size of 0.000090896 GB. The storage ratio is therefore `0.000090896/30000 = 3.0298666666666667e-09`.
+The `if-docs` repo has a storage size of 0.000011354 GB. The storage ratio is therefore `0.000011354/30000 = 3.784666666666667e-10`.
 
 Now we can scale the total embodied carbon for the Github server by that ratio to get the embodied carbon we are accountable for:
 
-`18754431*3.0298666666666667e-09 = 0.056 gCO2eq`
+`18754431*3.784666666666667e-10 = 0.0071 gCO2eq`
 
 
 
@@ -211,8 +216,8 @@ Now, take weighted average (assuming users are 90/10 mobile vs laptop):
 Finally, we can multiply the average embodied emissions per user by the number of unique users.
 
 ```
-0.0436 g * n-visits * unique-visitor-ratio = 0.0436*(8000*0.9)
-== 313.9 g carbon 
+0.0436 g * n-visits * unique-visitor-ratio = 0.0436*(325*0.8)
+== 11.34 g carbon 
 ```
 
 
@@ -242,6 +247,6 @@ The total carbon is then scaled by the number of visit in the most recent month,
 
 ## Insights
 
-We compare reasonably well to other websites. The global average web page produces about 0.8 g of C per visit. Our SCI score for the GSF website is 0.97 g C/visit, but we have erred on the side of overestimating values that we couldn't directly measure and been very comprehensive in the factors we included. The embodied carbon for end user devices is the main contributor to the overall SCI score by a very large margin.
+We compare reasonably well to other websites. The global average web page produces about 0.8 g of C per visit. Our SCI score for the IF website is 0.037 g C/visit. We have erred on the side of overestimating values that we couldn't directly measure and been very comprehensive in the factors we included. The embodied carbon for end user devices is the main contributor to the overall SCI score by a very large margin. because we don't have that many visits per month (~300) we do not accoutn for much end-user embodied carbon, keeping our SCI low. There is an interesting dynamic at play where a greater number of users increases the carbon due to network traffic, end user operational carbon, and by far most importantly the end user embodied carbon for their devices, but reduces the SCI for source code and site servers because the number of users/visits is used as a denominator in those calculations.
 
-For comparison, using the SWD model via CO2js forn the GSf site yielded an estimate of 0.447 g oper visit, about half of what we estimate using the SCI via IF.
+For comparison, using the SWD model via CO2js for the IF site yielded an estimate of 0.04 g operational carbon per visit, about as much as we estimate for operational and embodied carbon combined.
