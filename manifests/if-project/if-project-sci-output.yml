@@ -375,8 +375,8 @@ initialize:
         functional-unit: runs-per-month
 execution:
   command: >-
-    /home/joe/.npm/_npx/1bf7c3c15bf47d04/node_modules/.bin/ts-node
-    /home/joe/Code/if/src/if-run/index.ts -m manifests/examples/if-sci.yml -o
+    /home/user/.npm/_npx/1bf7c3c15bf47d04/node_modules/.bin/ts-node
+    /home/user/Code/if/src/if-run/index.ts -m manifests/examples/if-sci.yml -o
     manifests/outputs/if-sci-output
   environment:
     if-version: 0.6.0

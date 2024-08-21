@@ -11,40 +11,29 @@ initialize:
     duration-in-hours:
       path: builtin
       method: Divide
-      global-config:
+      config:
         numerator: duration
         denominator: 3600
         output: duration-in-hours
     storage-and-traffic-from-github-if-docs:
       path: if-github-plugin
       method: Github
-      global-config:
+      mapping:
+        size: repo-size-if-docs
+        clones: repo-clones-if-docs
+      config:
         repo: Green-Software-Foundation/if-docs
-    copy-param-if-docs-repo-size:
-      path: builtin
-      method: Copy
-      global-config:
-        keep-existing: false
-        from: size
-        to: repo-size-if-docs
-    copy-param-if-docs-clones:
-      path: builtin
-      method: Copy
-      global-config:
-        keep-existing: false
-        from: clones
-        to: repo-clones-if-docs
     storage-in-gb-to-tb-if-docs:
       path: builtin
       method: Coefficient
-      global-config:
+      config:
         input-parameter: repo-size-if-docs
         coefficient: 0.001
         output-parameter: storage-tb-if-docs
     storage-energy-in-watts-if-docs:
       path: builtin
       method: Multiply
-      global-config:
+      config:
         input-parameters:
           - storage-tb-if-docs
           - watts-per-tb
@@ -52,7 +41,7 @@ initialize:
     storage-energy-in-wh-if-docs:
       path: builtin
       method: Multiply
-      global-config:
+      config:
         input-parameters:
           - storage-watts-if-docs
           - duration-in-hours
@@ -60,14 +49,14 @@ initialize:
     storage-energy-to-kwh-if-docs:
       path: builtin
       method: Coefficient
-      global-config:
+      config:
         input-parameter: storage-wh-if-docs
         coefficient: 0.001
         output-parameter: energy
     energy-to-carbon:
       path: builtin
       method: Multiply
-      global-config:
+      config:
         input-parameters:
           - energy
           - grid-intensity
@@ -75,14 +64,14 @@ initialize:
     static-site-size-in-tb:
       path: builtin
       method: Divide
-      global-config:
+      config:
         numerator: static-site-size-in-mb
         denominator: 1000000
         output: static-site-size-in-tb
     storage-energy-static-site-in-watts:
       path: builtin
       method: Multiply
-      global-config:
+      config:
         input-parameters:
           - static-site-size-in-tb
           - watts-per-tb
@@ -90,7 +79,7 @@ initialize:
     storage-energy-in-wh-static-site:
       path: builtin
       method: Multiply
-      global-config:
+      config:
         input-parameters:
           - storage-watts-static-site-at-origin
           - duration-in-hours
@@ -98,28 +87,28 @@ initialize:
     storage-energy-to-kwh-static-site:
       path: builtin
       method: Coefficient
-      global-config:
+      config:
         input-parameter: storage-wh-static-site-at-origin
         coefficient: 0.001
         output-parameter: storage-energy-kwh-static-site-at-origin
     storage-energy-per-cdn-node:
       path: builtin
       method: Divide
-      global-config:
+      config:
         numerator: storage-energy-kwh-static-site-at-origin
         denominator: 10
         output: storage-energy-per-cdn-node
     storage-energy-for-entire-cdn:
       path: builtin
       method: Coefficient
-      global-config:
+      config:
         input-parameter: storage-energy-per-cdn-node
         coefficient: 46
         output-parameter: storage-energy-whole-cdn
     sum-serving-static-site-energy-components:
       path: builtin
       method: Sum
-      global-config:
+      config:
         input-parameters:
           - storage-energy-whole-cdn
           - storage-energy-kwh-static-site-at-origin
@@ -127,14 +116,14 @@ initialize:
     static-site-size-in-gb:
       path: builtin
       method: Coefficient
-      global-config:
+      config:
         input-parameter: static-site-size-in-mb
         coefficient: 0.000001
         output-parameter: static-site-size-in-gb
     network-energy-serving-static-site-per-view:
       path: builtin
       method: Multiply
-      global-config:
+      config:
         input-parameters:
           - static-site-size-in-gb
           - kwh-per-gb-network
@@ -142,7 +131,7 @@ initialize:
     network-energy-serving-static-site-total:
       path: builtin
       method: Multiply
-      global-config:
+      config:
         input-parameters:
           - network-energy-kwh-serving-static-site-per-view
           - visits-per-month
@@ -150,7 +139,7 @@ initialize:
     end-user-energy:
       path: builtin
       method: Multiply
-      global-config:
+      config:
         input-parameters:
           - visits-per-month
           - static-site-size-in-gb
@@ -159,7 +148,7 @@ initialize:
     interpolate-power-curve:
       path: builtin
       method: Interpolation
-      global-config:
+      config:
         method: linear
         x:
           - 0
@@ -176,7 +165,7 @@ initialize:
     build-stage-cpu-factor-to-wattage:
       path: builtin
       method: Multiply
-      global-config:
+      config:
         input-parameters:
           - cpu-factor
           - thermal-design-power
@@ -184,7 +173,7 @@ initialize:
     build-stage-cpu-wattage-times-build-duration:
       path: builtin
       method: Multiply
-      global-config:
+      config:
         input-parameters:
           - cpu-wattage
           - build-duration
@@ -192,21 +181,21 @@ initialize:
     build-stage-cpu-wattage-to-energy-kwh:
       path: builtin
       method: Divide
-      global-config:
+      config:
         numerator: cpu-wattage-times-duration
         denominator: 3600000
         output: build-energy-cpu-kwh
     memory-coefficient-correction:
       path: builtin
       method: Coefficient
-      global-config:
+      config:
         input-parameter: build-duration
         coefficient: 0.000006533333
         output-parameter: memory-coefficient
     memory-energy-per-build:
       path: builtin
       method: Multiply
-      global-config:
+      config:
         input-parameters:
           - build-memory-gb
           - memory-coefficient
@@ -214,7 +203,7 @@ initialize:
     sum-build-energy-components:
       path: builtin
       method: Sum
-      global-config:
+      config:
         input-parameters:
           - build-energy-cpu-kwh
           - build-energy-memory-kwh
@@ -222,7 +211,7 @@ initialize:
     build-energy-total:
       path: builtin
       method: Multiply
-      global-config:
+      config:
         input-parameters:
           - build-energy-kwh-per-build
           - builds-per-month
@@ -230,26 +219,25 @@ initialize:
     sci:
       path: builtin
       method: Sci
-      global-config:
+      config:
         functional-unit: visits-per-month
 execution:
   command: >-
-    /home/joe/.npm/_npx/1bf7c3c15bf47d04/node_modules/.bin/ts-node
-    /home/joe/Code/if/src/if-run/index.ts -m manifests/examples/gsf-website.yml
+    /home/user/.npm/_npx/1bf7c3c15bf47d04/node_modules/.bin/ts-node
+    /home/user/Code/if/src/if-run/index.ts -m manifests/examples/gsf-website.yml
     -o manifest/outputs/gsf-website-output
   environment:
     if-version: 0.6.0
     os: linux
     os-version: 5.15.0-117-generic
     node-version: 21.4.0
-    date-time: 2024-08-19T10:58:12.137Z (UTC)
+    date-time: 2024-08-21T13:07:38.360Z (UTC)
     dependencies:
       - '@babel/core@7.22.10'
       - '@babel/preset-typescript@7.23.3'
       - '@commitlint/cli@18.6.0'
       - '@commitlint/config-conventional@18.6.0'
-      - '@grnsft/if-core@0.0.16'
-      - '@grnsft/if-unofficial-plugins@v0.3.1'
+      - '@grnsft/if-core@0.0.17'
       - '@jest/globals@29.7.0'
       - '@types/jest@29.5.8'
       - '@types/js-yaml@4.0.9'
@@ -285,8 +273,6 @@ tree:
         compute:
           - duration-in-hours
           - storage-and-traffic-from-github-if-docs
-          - copy-param-if-docs-repo-size
-          - copy-param-if-docs-clones
           - storage-in-gb-to-tb-if-docs
           - storage-energy-in-watts-if-docs
           - storage-energy-in-wh-if-docs
@@ -307,9 +293,8 @@ tree:
           grid-intensity: 765.49
           visits-per-month: 325
           duration-in-hours: 672
-          clones: 0
+          repo-clones-if-docs: 1
           repo-size-if-docs: 0.011354
-          repo-clones-if-docs: 0
           storage-tb-if-docs: 0.000011354
           storage-watts-if-docs: 0.0000136248
           storage-wh-if-docs: 0.0091558656
