@@ -365,7 +365,7 @@ tree:
       inputs:
         - timestamp: '2024-08-13T00:00'
           duration: 2419200
-          carbon: 0.0718
+          carbon: 0.059
 
     embodied-carbon-for-github-server:
       pipeline:
@@ -376,7 +376,7 @@ tree:
       inputs:
         - timestamp: '2024-08-13T00:00'
           duration: 2419200
-          carbon: 0.0071
+          carbon: 0.056
 
     embodied-carbon-for-end-user-devices:
       pipeline:

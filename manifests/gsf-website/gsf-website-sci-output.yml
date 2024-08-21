@@ -223,15 +223,15 @@ initialize:
         functional-unit: visits-per-month
 execution:
   command: >-
-    /home/user/.npm/_npx/1bf7c3c15bf47d04/node_modules/.bin/ts-node
-    /home/user/Code/if/src/if-run/index.ts -m manifests/examples/gsf-website.yml
-    -o manifest/outputs/gsf-website-output
+    /home/joe/.npm/_npx/1bf7c3c15bf47d04/node_modules/.bin/ts-node
+    /home/joe/Code/if/src/if-run/index.ts -m manifests/examples/gsf-website.yml
+    -o manifests/outputs/gsf-website-sci-output
   environment:
     if-version: 0.6.0
     os: linux
     os-version: 5.15.0-117-generic
     node-version: 21.4.0
-    date-time: 2024-08-21T13:07:38.360Z (UTC)
+    date-time: 2024-08-21T14:06:32.557Z (UTC)
     dependencies:
       - '@babel/core@7.22.10'
       - '@babel/preset-typescript@7.23.3'
@@ -471,16 +471,16 @@ tree:
       inputs:
         - timestamp: 2024-08-13T00:00
           duration: 2419200
-          carbon: 0.0718
+          carbon: 0.059
       outputs:
         - timestamp: 2024-08-13T00:00
           duration: 2419200
-          carbon: 0.0718
+          carbon: 0.059
           visits-per-month: 325
-          sci: 0.00022092307692307694
+          sci: 0.00018153846153846152
       aggregated:
-        carbon: 0.0718
-        sci: 0.00022092307692307694
+        carbon: 0.059
+        sci: 0.00018153846153846152
     embodied-carbon-for-github-server:
       pipeline:
         compute:
@@ -490,16 +490,16 @@ tree:
       inputs:
         - timestamp: 2024-08-13T00:00
           duration: 2419200
-          carbon: 0.0071
+          carbon: 0.056
       outputs:
         - timestamp: 2024-08-13T00:00
           duration: 2419200
-          carbon: 0.0071
+          carbon: 0.056
           visits-per-month: 325
-          sci: 0.000021846153846153848
+          sci: 0.0001723076923076923
       aggregated:
-        carbon: 0.0071
-        sci: 0.000021846153846153848
+        carbon: 0.056
+        sci: 0.0001723076923076923
     embodied-carbon-for-end-user-devices:
       pipeline:
         compute:
@@ -520,10 +520,10 @@ tree:
         carbon: 313.9
         sci: 0.9658461538461538
   outputs:
-    - carbon: 315.64521660647057
-      sci: 0.9712160510968325
+    - carbon: 315.68131660647055
+      sci: 0.9713271280199094
       timestamp: 2024-08-13T00:00
       duration: 2419200
   aggregated:
-    carbon: 315.64521660647057
-    sci: 0.9712160510968325
+    carbon: 315.68131660647055
+    sci: 0.9713271280199094
