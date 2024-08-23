@@ -1,5 +1,5 @@
-name: GSF Website SCI
-description: generates SCI score (gCO2eq/visit) for greensoftware.foundation website
+name: IF Website SCI
+description: generates SCI score (gCO2eq/visit) for if.greensoftware.foundation website
 tags: null
 aggregation:
   metrics:
@@ -134,14 +134,14 @@ initialize:
       config:
         input-parameters:
           - network-energy-kwh-serving-static-site-per-view
-          - visits-per-month
+          - site-visits
         output-parameter: energy
     end-user-energy:
       path: builtin
       method: Multiply
       config:
         input-parameters:
-          - visits-per-month
+          - site-visits
           - static-site-size-in-gb
           - end-user-energy-coefficient
         output-parameter: energy
@@ -216,29 +216,44 @@ initialize:
           - build-energy-kwh-per-build
           - builds-per-month
         output-parameter: energy
+    total-embodied-carbon:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters:
+          - carbon-per-device
+          - site-visits
+        output-parameter: carbon
     sci:
       path: builtin
       method: Sci
       config:
-        functional-unit: visits-per-month
+        functional-unit: site-visits
+      parameter-metadata:
+        outputs:
+          sci:
+            unit: gCO2 / visit
+            description: software carbon intensity
+            aggregation-method: avg
 execution:
   command: >-
     /home/joe/.npm/_npx/1bf7c3c15bf47d04/node_modules/.bin/ts-node
     /home/joe/Code/if/src/if-run/index.ts -m
     manifests/examples/if-website-sci.yml -o
-    manifests/outputs/if-website-sci-output
+    manifests/examples/outputs/if-website-output.yml
   environment:
     if-version: 0.6.0
     os: linux
     os-version: 5.15.0-117-generic
     node-version: 21.4.0
-    date-time: 2024-08-21T14:06:00.960Z (UTC)
+    date-time: 2024-08-23T14:10:08.629Z (UTC)
     dependencies:
       - '@babel/core@7.22.10'
       - '@babel/preset-typescript@7.23.3'
       - '@commitlint/cli@18.6.0'
       - '@commitlint/config-conventional@18.6.0'
       - '@grnsft/if-core@0.0.17'
+      - '@grnsft/if-unofficial-plugins@v0.3.1'
       - '@jest/globals@29.7.0'
       - '@types/jest@29.5.8'
       - '@types/js-yaml@4.0.9'
@@ -283,28 +298,487 @@ tree:
       defaults:
         watts-per-tb: 1.2
         grid-intensity: 765.49
-        visits-per-month: 325
       inputs:
-        - timestamp: 2024-08-13T00:00
-          duration: 2419200
+        - timestamp: '2024-07-22T00:00:00'
+          duration: 86400
+          site-visits: 12
+        - timestamp: '2024-07-23T00:00:00'
+          duration: 86400
+          site-visits: 5
+        - timestamp: '2024-07-24T00:00:00'
+          duration: 86400
+          site-visits: 3
+        - timestamp: '2024-07-25T00:00:00'
+          duration: 86400
+          site-visits: 17
+        - timestamp: '2024-07-26T00:00:00'
+          duration: 86400
+          site-visits: 10
+        - timestamp: '2024-07-27T00:00:00'
+          duration: 86400
+          site-visits: 18
+        - timestamp: '2024-07-28T00:00:00'
+          duration: 86400
+          site-visits: 16
+        - timestamp: '2024-07-29T00:00:00'
+          duration: 86400
+          site-visits: 11
+        - timestamp: '2024-07-30T00:00:00'
+          duration: 86400
+          site-visits: 1
+        - timestamp: '2024-07-31T00:00:00'
+          duration: 86400
+          site-visits: 4
+        - timestamp: '2024-08-01T00:00:00'
+          duration: 86400
+          site-visits: 21
+        - timestamp: '2024-08-02T00:00:00'
+          duration: 86400
+          site-visits: 30
+        - timestamp: '2024-08-03T00:00:00'
+          duration: 86400
+          site-visits: 36
+        - timestamp: '2024-08-04T00:00:00'
+          duration: 86400
+          site-visits: 17
+        - timestamp: '2024-08-05T00:00:00'
+          duration: 86400
+          site-visits: 17
+        - timestamp: '2024-08-06T00:00:00'
+          duration: 86400
+          site-visits: 2
+        - timestamp: '2024-08-07T00:00:00'
+          duration: 86400
+          site-visits: 4
+        - timestamp: '2024-08-08T00:00:00'
+          duration: 86400
+          site-visits: 25
+        - timestamp: '2024-08-09T00:00:00'
+          duration: 86400
+          site-visits: 31
+        - timestamp: '2024-08-10T00:00:00'
+          duration: 86400
+          site-visits: 18
+        - timestamp: '2024-08-11T00:00:00'
+          duration: 86400
+          site-visits: 13
+        - timestamp: '2024-08-12T00:00:00'
+          duration: 86400
+          site-visits: 13
+        - timestamp: '2024-08-13T00:00:00'
+          duration: 86400
+          site-visits: 4
+        - timestamp: '2024-08-14T00:00:00'
+          duration: 86400
+          site-visits: 3
+        - timestamp: '2024-08-15T00:00:00'
+          duration: 86400
+          site-visits: 16
+        - timestamp: '2024-08-16T00:00:00'
+          duration: 86400
+          site-visits: 18
+        - timestamp: '2024-08-17T00:00:00'
+          duration: 86400
+          site-visits: 21
+        - timestamp: '2024-08-18T00:00:00'
+          duration: 86400
+          site-visits: 0
       outputs:
-        - timestamp: 2024-08-13T00:00
-          duration: 2419200
+        - timestamp: '2024-07-22T00:00:00'
+          duration: 86400
+          site-visits: 12
           watts-per-tb: 1.2
           grid-intensity: 765.49
-          visits-per-month: 325
-          duration-in-hours: 672
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.000020991572976
+        - timestamp: '2024-07-23T00:00:00'
+          duration: 86400
+          site-visits: 5
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.0000503797751424
+        - timestamp: '2024-07-24T00:00:00'
+          duration: 86400
+          site-visits: 3
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.000083966291904
+        - timestamp: '2024-07-25T00:00:00'
+          duration: 86400
+          site-visits: 17
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.000014817580924235295
+        - timestamp: '2024-07-26T00:00:00'
+          duration: 86400
+          site-visits: 10
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.0000251898875712
+        - timestamp: '2024-07-27T00:00:00'
+          duration: 86400
+          site-visits: 18
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.000013994381984
+        - timestamp: '2024-07-28T00:00:00'
+          duration: 86400
+          site-visits: 16
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.000015743679732
+        - timestamp: '2024-07-29T00:00:00'
+          duration: 86400
+          site-visits: 11
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.000022899897792
+        - timestamp: '2024-07-30T00:00:00'
+          duration: 86400
+          site-visits: 1
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.000251898875712
+        - timestamp: '2024-07-31T00:00:00'
+          duration: 86400
+          site-visits: 4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.000062974718928
+        - timestamp: '2024-08-01T00:00:00'
+          duration: 86400
+          site-visits: 21
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.000011995184557714287
+        - timestamp: '2024-08-02T00:00:00'
+          duration: 86400
+          site-visits: 30
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.0000083966291904
+        - timestamp: '2024-08-03T00:00:00'
+          duration: 86400
+          site-visits: 36
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.000006997190992
+        - timestamp: '2024-08-04T00:00:00'
+          duration: 86400
+          site-visits: 17
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.000014817580924235295
+        - timestamp: '2024-08-05T00:00:00'
+          duration: 86400
+          site-visits: 17
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.000014817580924235295
+        - timestamp: '2024-08-06T00:00:00'
+          duration: 86400
+          site-visits: 2
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.000125949437856
+        - timestamp: '2024-08-07T00:00:00'
+          duration: 86400
+          site-visits: 4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.000062974718928
+        - timestamp: '2024-08-08T00:00:00'
+          duration: 86400
+          site-visits: 25
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.00001007595502848
+        - timestamp: '2024-08-09T00:00:00'
+          duration: 86400
+          site-visits: 31
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.000008125770184258064
+        - timestamp: '2024-08-10T00:00:00'
+          duration: 86400
+          site-visits: 18
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.000013994381984
+        - timestamp: '2024-08-11T00:00:00'
+          duration: 86400
+          site-visits: 13
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.00001937683659323077
+        - timestamp: '2024-08-12T00:00:00'
+          duration: 86400
+          site-visits: 13
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 13
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.00001937683659323077
+        - timestamp: '2024-08-13T00:00:00'
+          duration: 86400
+          site-visits: 4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
           repo-clones-if-docs: 1
-          repo-size-if-docs: 0.011354
-          storage-tb-if-docs: 0.000011354
-          storage-watts-if-docs: 0.0000136248
-          storage-wh-if-docs: 0.0091558656
-          energy: 0.0000091558656
-          carbon: 0.007008723558144
-          sci: 0.000021565303255827694
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.000062974718928
+        - timestamp: '2024-08-14T00:00:00'
+          duration: 86400
+          site-visits: 3
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.000083966291904
+        - timestamp: '2024-08-15T00:00:00'
+          duration: 86400
+          site-visits: 16
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.000015743679732
+        - timestamp: '2024-08-16T00:00:00'
+          duration: 86400
+          site-visits: 18
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.000013994381984
+        - timestamp: '2024-08-17T00:00:00'
+          duration: 86400
+          site-visits: 21
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.000011995184557714287
+        - timestamp: '2024-08-18T00:00:00'
+          duration: 86400
+          site-visits: 0
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          repo-clones-if-docs: 0
+          repo-size-if-docs: 0.011426
+          storage-tb-if-docs: 0.000011426
+          storage-watts-if-docs: 0.0000137112
+          storage-wh-if-docs: 0.0003290688
+          energy: 3.290688e-7
+          carbon: 0.000251898875712
+          sci: 0.000251898875712
       aggregated:
-        carbon: 0.007008723558144
-        sci: 0.000021565303255827694
+        carbon: 0.007053168519935997
+        sci: 0.00004715456782997622
     storing-static-site-data-on-netlify:
       pipeline:
         compute:
@@ -322,30 +796,543 @@ tree:
         static-site-size-in-mb: 1.4
         watts-per-tb: 1.2
         grid-intensity: 765.49
-        visits-per-month: 325
       inputs:
-        - timestamp: 2024-08-13T00:00
-          duration: 2419200
+        - timestamp: '2024-07-22T00:00:00'
+          duration: 86400
+          site-visits: 12
+        - timestamp: '2024-07-23T00:00:00'
+          duration: 86400
+          site-visits: 5
+        - timestamp: '2024-07-24T00:00:00'
+          duration: 86400
+          site-visits: 3
+        - timestamp: '2024-07-25T00:00:00'
+          duration: 86400
+          site-visits: 17
+        - timestamp: '2024-07-26T00:00:00'
+          duration: 86400
+          site-visits: 10
+        - timestamp: '2024-07-27T00:00:00'
+          duration: 86400
+          site-visits: 18
+        - timestamp: '2024-07-28T00:00:00'
+          duration: 86400
+          site-visits: 16
+        - timestamp: '2024-07-29T00:00:00'
+          duration: 86400
+          site-visits: 11
+        - timestamp: '2024-07-30T00:00:00'
+          duration: 86400
+          site-visits: 1
+        - timestamp: '2024-07-31T00:00:00'
+          duration: 86400
+          site-visits: 4
+        - timestamp: '2024-08-01T00:00:00'
+          duration: 86400
+          site-visits: 21
+        - timestamp: '2024-08-02T00:00:00'
+          duration: 86400
+          site-visits: 30
+        - timestamp: '2024-08-03T00:00:00'
+          duration: 86400
+          site-visits: 36
+        - timestamp: '2024-08-04T00:00:00'
+          duration: 86400
+          site-visits: 17
+        - timestamp: '2024-08-05T00:00:00'
+          duration: 86400
+          site-visits: 17
+        - timestamp: '2024-08-06T00:00:00'
+          duration: 86400
+          site-visits: 2
+        - timestamp: '2024-08-07T00:00:00'
+          duration: 86400
+          site-visits: 4
+        - timestamp: '2024-08-08T00:00:00'
+          duration: 86400
+          site-visits: 25
+        - timestamp: '2024-08-09T00:00:00'
+          duration: 86400
+          site-visits: 31
+        - timestamp: '2024-08-10T00:00:00'
+          duration: 86400
+          site-visits: 18
+        - timestamp: '2024-08-11T00:00:00'
+          duration: 86400
+          site-visits: 13
+        - timestamp: '2024-08-12T00:00:00'
+          duration: 86400
+          site-visits: 13
+        - timestamp: '2024-08-13T00:00:00'
+          duration: 86400
+          site-visits: 4
+        - timestamp: '2024-08-14T00:00:00'
+          duration: 86400
+          site-visits: 3
+        - timestamp: '2024-08-15T00:00:00'
+          duration: 86400
+          site-visits: 16
+        - timestamp: '2024-08-16T00:00:00'
+          duration: 86400
+          site-visits: 18
+        - timestamp: '2024-08-17T00:00:00'
+          duration: 86400
+          site-visits: 21
+        - timestamp: '2024-08-18T00:00:00'
+          duration: 86400
+          site-visits: 0
       outputs:
-        - timestamp: 2024-08-13T00:00
-          duration: 2419200
+        - timestamp: '2024-07-22T00:00:00'
+          duration: 86400
+          site-visits: 12
           static-site-size-in-mb: 1.4
           watts-per-tb: 1.2
           grid-intensity: 765.49
-          visits-per-month: 325
-          duration-in-hours: 672
+          duration-in-hours: 24
           static-site-size-in-tb: 0.0000014
           storage-watts-static-site-at-origin: 0.0000016799999999999998
-          storage-wh-static-site-at-origin: 0.0011289599999999998
-          storage-energy-kwh-static-site-at-origin: 0.0000011289599999999999
-          storage-energy-per-cdn-node: 1.1289599999999998e-7
-          storage-energy-whole-cdn: 0.000005193215999999999
-          energy: 0.0000063221759999999996
-          carbon: 0.00483956250624
-          sci: 0.000014890961557661539
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.000014403459839999999
+        - timestamp: '2024-07-23T00:00:00'
+          duration: 86400
+          site-visits: 5
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.000034568303615999995
+        - timestamp: '2024-07-24T00:00:00'
+          duration: 86400
+          site-visits: 3
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.000057613839359999994
+        - timestamp: '2024-07-25T00:00:00'
+          duration: 86400
+          site-visits: 17
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.00001016714812235294
+        - timestamp: '2024-07-26T00:00:00'
+          duration: 86400
+          site-visits: 10
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.000017284151807999998
+        - timestamp: '2024-07-27T00:00:00'
+          duration: 86400
+          site-visits: 18
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.00000960230656
+        - timestamp: '2024-07-28T00:00:00'
+          duration: 86400
+          site-visits: 16
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.000010802594879999999
+        - timestamp: '2024-07-29T00:00:00'
+          duration: 86400
+          site-visits: 11
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.00001571286528
+        - timestamp: '2024-07-30T00:00:00'
+          duration: 86400
+          site-visits: 1
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.00017284151807999998
+        - timestamp: '2024-07-31T00:00:00'
+          duration: 86400
+          site-visits: 4
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.000043210379519999996
+        - timestamp: '2024-08-01T00:00:00'
+          duration: 86400
+          site-visits: 21
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.00000823054848
+        - timestamp: '2024-08-02T00:00:00'
+          duration: 86400
+          site-visits: 30
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.000005761383936
+        - timestamp: '2024-08-03T00:00:00'
+          duration: 86400
+          site-visits: 36
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.00000480115328
+        - timestamp: '2024-08-04T00:00:00'
+          duration: 86400
+          site-visits: 17
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.00001016714812235294
+        - timestamp: '2024-08-05T00:00:00'
+          duration: 86400
+          site-visits: 17
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.00001016714812235294
+        - timestamp: '2024-08-06T00:00:00'
+          duration: 86400
+          site-visits: 2
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.00008642075903999999
+        - timestamp: '2024-08-07T00:00:00'
+          duration: 86400
+          site-visits: 4
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.000043210379519999996
+        - timestamp: '2024-08-08T00:00:00'
+          duration: 86400
+          site-visits: 25
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.000006913660723199999
+        - timestamp: '2024-08-09T00:00:00'
+          duration: 86400
+          site-visits: 31
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.000005575532841290322
+        - timestamp: '2024-08-10T00:00:00'
+          duration: 86400
+          site-visits: 18
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.00000960230656
+        - timestamp: '2024-08-11T00:00:00'
+          duration: 86400
+          site-visits: 13
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.000013295501390769229
+        - timestamp: '2024-08-12T00:00:00'
+          duration: 86400
+          site-visits: 13
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.000013295501390769229
+        - timestamp: '2024-08-13T00:00:00'
+          duration: 86400
+          site-visits: 4
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.000043210379519999996
+        - timestamp: '2024-08-14T00:00:00'
+          duration: 86400
+          site-visits: 3
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.000057613839359999994
+        - timestamp: '2024-08-15T00:00:00'
+          duration: 86400
+          site-visits: 16
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.000010802594879999999
+        - timestamp: '2024-08-16T00:00:00'
+          duration: 86400
+          site-visits: 18
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.00000960230656
+        - timestamp: '2024-08-17T00:00:00'
+          duration: 86400
+          site-visits: 21
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.00000823054848
+        - timestamp: '2024-08-18T00:00:00'
+          duration: 86400
+          site-visits: 0
+          static-site-size-in-mb: 1.4
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          duration-in-hours: 24
+          static-site-size-in-tb: 0.0000014
+          storage-watts-static-site-at-origin: 0.0000016799999999999998
+          storage-wh-static-site-at-origin: 0.000040319999999999993
+          storage-energy-kwh-static-site-at-origin: 4.031999999999999e-8
+          storage-energy-per-cdn-node: 4.031999999999999e-9
+          storage-energy-whole-cdn: 1.8547199999999998e-7
+          energy: 2.2579199999999996e-7
+          carbon: 0.00017284151807999998
+          sci: 0.00017284151807999998
       aggregated:
-        carbon: 0.00483956250624
-        sci: 0.000014890961557661539
+        carbon: 0.004839562506239997
+        sci: 0.00003235531347689598
     networking-energy-to-serve-static-site-over-the-wire:
       pipeline:
         compute:
@@ -359,26 +1346,431 @@ tree:
         kwh-per-gb-network: 0.001
         watts-per-tb: 1.2
         grid-intensity: 765.49
-        visits-per-month: 325
       inputs:
-        - timestamp: 2024-08-13T00:00
-          duration: 2419200
+        - timestamp: '2024-07-22T00:00:00'
+          duration: 86400
+          site-visits: 12
+        - timestamp: '2024-07-23T00:00:00'
+          duration: 86400
+          site-visits: 5
+        - timestamp: '2024-07-24T00:00:00'
+          duration: 86400
+          site-visits: 3
+        - timestamp: '2024-07-25T00:00:00'
+          duration: 86400
+          site-visits: 17
+        - timestamp: '2024-07-26T00:00:00'
+          duration: 86400
+          site-visits: 10
+        - timestamp: '2024-07-27T00:00:00'
+          duration: 86400
+          site-visits: 18
+        - timestamp: '2024-07-28T00:00:00'
+          duration: 86400
+          site-visits: 16
+        - timestamp: '2024-07-29T00:00:00'
+          duration: 86400
+          site-visits: 11
+        - timestamp: '2024-07-30T00:00:00'
+          duration: 86400
+          site-visits: 1
+        - timestamp: '2024-07-31T00:00:00'
+          duration: 86400
+          site-visits: 4
+        - timestamp: '2024-08-01T00:00:00'
+          duration: 86400
+          site-visits: 21
+        - timestamp: '2024-08-02T00:00:00'
+          duration: 86400
+          site-visits: 30
+        - timestamp: '2024-08-03T00:00:00'
+          duration: 86400
+          site-visits: 36
+        - timestamp: '2024-08-04T00:00:00'
+          duration: 86400
+          site-visits: 17
+        - timestamp: '2024-08-05T00:00:00'
+          duration: 86400
+          site-visits: 17
+        - timestamp: '2024-08-06T00:00:00'
+          duration: 86400
+          site-visits: 2
+        - timestamp: '2024-08-07T00:00:00'
+          duration: 86400
+          site-visits: 4
+        - timestamp: '2024-08-08T00:00:00'
+          duration: 86400
+          site-visits: 25
+        - timestamp: '2024-08-09T00:00:00'
+          duration: 86400
+          site-visits: 31
+        - timestamp: '2024-08-10T00:00:00'
+          duration: 86400
+          site-visits: 18
+        - timestamp: '2024-08-11T00:00:00'
+          duration: 86400
+          site-visits: 13
+        - timestamp: '2024-08-12T00:00:00'
+          duration: 86400
+          site-visits: 13
+        - timestamp: '2024-08-13T00:00:00'
+          duration: 86400
+          site-visits: 4
+        - timestamp: '2024-08-14T00:00:00'
+          duration: 86400
+          site-visits: 3
+        - timestamp: '2024-08-15T00:00:00'
+          duration: 86400
+          site-visits: 16
+        - timestamp: '2024-08-16T00:00:00'
+          duration: 86400
+          site-visits: 18
+        - timestamp: '2024-08-17T00:00:00'
+          duration: 86400
+          site-visits: 21
+        - timestamp: '2024-08-18T00:00:00'
+          duration: 86400
+          site-visits: 0
       outputs:
-        - timestamp: 2024-08-13T00:00
-          duration: 2419200
+        - timestamp: '2024-07-22T00:00:00'
+          duration: 86400
+          site-visits: 12
           static-site-size-in-mb: 1.4
           kwh-per-gb-network: 0.001
           watts-per-tb: 1.2
           grid-intensity: 765.49
-          visits-per-month: 325
           static-site-size-in-gb: 0.0000014
           network-energy-kwh-serving-static-site-per-view: 1.4e-9
-          energy: 4.55e-7
-          carbon: 0.00034829795
+          energy: 1.6799999999999998e-8
+          carbon: 0.000012860231999999998
+          sci: 0.0000010716859999999999
+        - timestamp: '2024-07-23T00:00:00'
+          duration: 86400
+          site-visits: 5
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 7.e-9
+          carbon: 0.00000535843
+          sci: 0.0000010716859999999999
+        - timestamp: '2024-07-24T00:00:00'
+          duration: 86400
+          site-visits: 3
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 4.1999999999999996e-9
+          carbon: 0.0000032150579999999996
+          sci: 0.0000010716859999999999
+        - timestamp: '2024-07-25T00:00:00'
+          duration: 86400
+          site-visits: 17
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 2.3799999999999998e-8
+          carbon: 0.000018218661999999998
+          sci: 0.0000010716859999999999
+        - timestamp: '2024-07-26T00:00:00'
+          duration: 86400
+          site-visits: 10
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 1.4e-8
+          carbon: 0.00001071686
+          sci: 0.0000010716859999999999
+        - timestamp: '2024-07-27T00:00:00'
+          duration: 86400
+          site-visits: 18
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 2.5199999999999997e-8
+          carbon: 0.000019290348
+          sci: 0.0000010716859999999999
+        - timestamp: '2024-07-28T00:00:00'
+          duration: 86400
+          site-visits: 16
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 2.24e-8
+          carbon: 0.000017146975999999998
+          sci: 0.0000010716859999999999
+        - timestamp: '2024-07-29T00:00:00'
+          duration: 86400
+          site-visits: 11
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 1.54e-8
+          carbon: 0.000011788546
           sci: 0.000001071686
+        - timestamp: '2024-07-30T00:00:00'
+          duration: 86400
+          site-visits: 1
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 1.4e-9
+          carbon: 0.0000010716859999999999
+          sci: 0.0000010716859999999999
+        - timestamp: '2024-07-31T00:00:00'
+          duration: 86400
+          site-visits: 4
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 5.6e-9
+          carbon: 0.0000042867439999999995
+          sci: 0.0000010716859999999999
+        - timestamp: '2024-08-01T00:00:00'
+          duration: 86400
+          site-visits: 21
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 2.94e-8
+          carbon: 0.000022505406
+          sci: 0.0000010716859999999999
+        - timestamp: '2024-08-02T00:00:00'
+          duration: 86400
+          site-visits: 30
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 4.2e-8
+          carbon: 0.00003215058
+          sci: 0.000001071686
+        - timestamp: '2024-08-03T00:00:00'
+          duration: 86400
+          site-visits: 36
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 5.0399999999999995e-8
+          carbon: 0.000038580696
+          sci: 0.0000010716859999999999
+        - timestamp: '2024-08-04T00:00:00'
+          duration: 86400
+          site-visits: 17
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 2.3799999999999998e-8
+          carbon: 0.000018218661999999998
+          sci: 0.0000010716859999999999
+        - timestamp: '2024-08-05T00:00:00'
+          duration: 86400
+          site-visits: 17
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 2.3799999999999998e-8
+          carbon: 0.000018218661999999998
+          sci: 0.0000010716859999999999
+        - timestamp: '2024-08-06T00:00:00'
+          duration: 86400
+          site-visits: 2
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 2.8e-9
+          carbon: 0.0000021433719999999997
+          sci: 0.0000010716859999999999
+        - timestamp: '2024-08-07T00:00:00'
+          duration: 86400
+          site-visits: 4
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 5.6e-9
+          carbon: 0.0000042867439999999995
+          sci: 0.0000010716859999999999
+        - timestamp: '2024-08-08T00:00:00'
+          duration: 86400
+          site-visits: 25
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 3.4999999999999996e-8
+          carbon: 0.000026792149999999997
+          sci: 0.0000010716859999999999
+        - timestamp: '2024-08-09T00:00:00'
+          duration: 86400
+          site-visits: 31
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 4.34e-8
+          carbon: 0.000033222265999999996
+          sci: 0.0000010716859999999999
+        - timestamp: '2024-08-10T00:00:00'
+          duration: 86400
+          site-visits: 18
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 2.5199999999999997e-8
+          carbon: 0.000019290348
+          sci: 0.0000010716859999999999
+        - timestamp: '2024-08-11T00:00:00'
+          duration: 86400
+          site-visits: 13
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 1.8199999999999998e-8
+          carbon: 0.000013931917999999999
+          sci: 0.0000010716859999999999
+        - timestamp: '2024-08-12T00:00:00'
+          duration: 86400
+          site-visits: 13
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 1.8199999999999998e-8
+          carbon: 0.000013931917999999999
+          sci: 0.0000010716859999999999
+        - timestamp: '2024-08-13T00:00:00'
+          duration: 86400
+          site-visits: 4
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 5.6e-9
+          carbon: 0.0000042867439999999995
+          sci: 0.0000010716859999999999
+        - timestamp: '2024-08-14T00:00:00'
+          duration: 86400
+          site-visits: 3
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 4.1999999999999996e-9
+          carbon: 0.0000032150579999999996
+          sci: 0.0000010716859999999999
+        - timestamp: '2024-08-15T00:00:00'
+          duration: 86400
+          site-visits: 16
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 2.24e-8
+          carbon: 0.000017146975999999998
+          sci: 0.0000010716859999999999
+        - timestamp: '2024-08-16T00:00:00'
+          duration: 86400
+          site-visits: 18
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 2.5199999999999997e-8
+          carbon: 0.000019290348
+          sci: 0.0000010716859999999999
+        - timestamp: '2024-08-17T00:00:00'
+          duration: 86400
+          site-visits: 21
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 2.94e-8
+          carbon: 0.000022505406
+          sci: 0.0000010716859999999999
+        - timestamp: '2024-08-18T00:00:00'
+          duration: 86400
+          site-visits: 0
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          watts-per-tb: 1.2
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          network-energy-kwh-serving-static-site-per-view: 1.4e-9
+          energy: 0
+          carbon: 0
+          sci: 0
       aggregated:
-        carbon: 0.00034829795
-        sci: 0.000001071686
+        carbon: 0.0004136707959999999
+        sci: 0.0000010334115000000001
     end-user-operational-carbon:
       pipeline:
         compute:
@@ -391,25 +1783,403 @@ tree:
         static-site-size-in-mb: 1.4
         kwh-per-gb-network: 0.001
         grid-intensity: 765.49
-        visits-per-month: 325
       inputs:
-        - timestamp: 2024-08-13T00:00
-          duration: 2419200
+        - timestamp: '2024-07-22T00:00:00'
+          duration: 86400
+          site-visits: 12
+        - timestamp: '2024-07-23T00:00:00'
+          duration: 86400
+          site-visits: 5
+        - timestamp: '2024-07-24T00:00:00'
+          duration: 86400
+          site-visits: 3
+        - timestamp: '2024-07-25T00:00:00'
+          duration: 86400
+          site-visits: 17
+        - timestamp: '2024-07-26T00:00:00'
+          duration: 86400
+          site-visits: 10
+        - timestamp: '2024-07-27T00:00:00'
+          duration: 86400
+          site-visits: 18
+        - timestamp: '2024-07-28T00:00:00'
+          duration: 86400
+          site-visits: 16
+        - timestamp: '2024-07-29T00:00:00'
+          duration: 86400
+          site-visits: 11
+        - timestamp: '2024-07-30T00:00:00'
+          duration: 86400
+          site-visits: 1
+        - timestamp: '2024-07-31T00:00:00'
+          duration: 86400
+          site-visits: 4
+        - timestamp: '2024-08-01T00:00:00'
+          duration: 86400
+          site-visits: 21
+        - timestamp: '2024-08-02T00:00:00'
+          duration: 86400
+          site-visits: 30
+        - timestamp: '2024-08-03T00:00:00'
+          duration: 86400
+          site-visits: 36
+        - timestamp: '2024-08-04T00:00:00'
+          duration: 86400
+          site-visits: 17
+        - timestamp: '2024-08-05T00:00:00'
+          duration: 86400
+          site-visits: 17
+        - timestamp: '2024-08-06T00:00:00'
+          duration: 86400
+          site-visits: 2
+        - timestamp: '2024-08-07T00:00:00'
+          duration: 86400
+          site-visits: 4
+        - timestamp: '2024-08-08T00:00:00'
+          duration: 86400
+          site-visits: 25
+        - timestamp: '2024-08-09T00:00:00'
+          duration: 86400
+          site-visits: 31
+        - timestamp: '2024-08-10T00:00:00'
+          duration: 86400
+          site-visits: 18
+        - timestamp: '2024-08-11T00:00:00'
+          duration: 86400
+          site-visits: 13
+        - timestamp: '2024-08-12T00:00:00'
+          duration: 86400
+          site-visits: 13
+        - timestamp: '2024-08-13T00:00:00'
+          duration: 86400
+          site-visits: 4
+        - timestamp: '2024-08-14T00:00:00'
+          duration: 86400
+          site-visits: 3
+        - timestamp: '2024-08-15T00:00:00'
+          duration: 86400
+          site-visits: 16
+        - timestamp: '2024-08-16T00:00:00'
+          duration: 86400
+          site-visits: 18
+        - timestamp: '2024-08-17T00:00:00'
+          duration: 86400
+          site-visits: 21
+        - timestamp: '2024-08-18T00:00:00'
+          duration: 86400
+          site-visits: 0
       outputs:
-        - timestamp: 2024-08-13T00:00
-          duration: 2419200
+        - timestamp: '2024-07-22T00:00:00'
+          duration: 86400
+          site-visits: 12
           end-user-energy-coefficient: 0.08
           static-site-size-in-mb: 1.4
           kwh-per-gb-network: 0.001
           grid-intensity: 765.49
-          visits-per-month: 325
           static-site-size-in-gb: 0.0000014
-          energy: 0.000036400000000000004
-          carbon: 0.027863836000000003
+          energy: 0.000001344
+          carbon: 0.00102881856
           sci: 0.00008573488000000001
+        - timestamp: '2024-07-23T00:00:00'
+          duration: 86400
+          site-visits: 5
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 5.6e-7
+          carbon: 0.0004286744
+          sci: 0.00008573488
+        - timestamp: '2024-07-24T00:00:00'
+          duration: 86400
+          site-visits: 3
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 3.36e-7
+          carbon: 0.00025720464
+          sci: 0.00008573488000000001
+        - timestamp: '2024-07-25T00:00:00'
+          duration: 86400
+          site-visits: 17
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 0.000001904
+          carbon: 0.00145749296
+          sci: 0.00008573488
+        - timestamp: '2024-07-26T00:00:00'
+          duration: 86400
+          site-visits: 10
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 0.00000112
+          carbon: 0.0008573488
+          sci: 0.00008573488
+        - timestamp: '2024-07-27T00:00:00'
+          duration: 86400
+          site-visits: 18
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 0.000002016
+          carbon: 0.00154322784
+          sci: 0.00008573488
+        - timestamp: '2024-07-28T00:00:00'
+          duration: 86400
+          site-visits: 16
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 0.000001792
+          carbon: 0.00137175808
+          sci: 0.00008573488
+        - timestamp: '2024-07-29T00:00:00'
+          duration: 86400
+          site-visits: 11
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 0.0000012319999999999998
+          carbon: 0.0009430836799999998
+          sci: 0.00008573487999999998
+        - timestamp: '2024-07-30T00:00:00'
+          duration: 86400
+          site-visits: 1
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 1.12e-7
+          carbon: 0.00008573488
+          sci: 0.00008573488
+        - timestamp: '2024-07-31T00:00:00'
+          duration: 86400
+          site-visits: 4
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 4.48e-7
+          carbon: 0.00034293952
+          sci: 0.00008573488
+        - timestamp: '2024-08-01T00:00:00'
+          duration: 86400
+          site-visits: 21
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 0.000002352
+          carbon: 0.00180043248
+          sci: 0.00008573488
+        - timestamp: '2024-08-02T00:00:00'
+          duration: 86400
+          site-visits: 30
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 0.00000336
+          carbon: 0.0025720464
+          sci: 0.00008573488
+        - timestamp: '2024-08-03T00:00:00'
+          duration: 86400
+          site-visits: 36
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 0.000004032
+          carbon: 0.00308645568
+          sci: 0.00008573488
+        - timestamp: '2024-08-04T00:00:00'
+          duration: 86400
+          site-visits: 17
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 0.000001904
+          carbon: 0.00145749296
+          sci: 0.00008573488
+        - timestamp: '2024-08-05T00:00:00'
+          duration: 86400
+          site-visits: 17
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 0.000001904
+          carbon: 0.00145749296
+          sci: 0.00008573488
+        - timestamp: '2024-08-06T00:00:00'
+          duration: 86400
+          site-visits: 2
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 2.24e-7
+          carbon: 0.00017146976
+          sci: 0.00008573488
+        - timestamp: '2024-08-07T00:00:00'
+          duration: 86400
+          site-visits: 4
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 4.48e-7
+          carbon: 0.00034293952
+          sci: 0.00008573488
+        - timestamp: '2024-08-08T00:00:00'
+          duration: 86400
+          site-visits: 25
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 0.0000028
+          carbon: 0.0021433719999999997
+          sci: 0.00008573487999999998
+        - timestamp: '2024-08-09T00:00:00'
+          duration: 86400
+          site-visits: 31
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 0.000003472
+          carbon: 0.00265778128
+          sci: 0.00008573488
+        - timestamp: '2024-08-10T00:00:00'
+          duration: 86400
+          site-visits: 18
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 0.000002016
+          carbon: 0.00154322784
+          sci: 0.00008573488
+        - timestamp: '2024-08-11T00:00:00'
+          duration: 86400
+          site-visits: 13
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 0.000001456
+          carbon: 0.0011145534399999999
+          sci: 0.00008573488
+        - timestamp: '2024-08-12T00:00:00'
+          duration: 86400
+          site-visits: 13
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 0.000001456
+          carbon: 0.0011145534399999999
+          sci: 0.00008573488
+        - timestamp: '2024-08-13T00:00:00'
+          duration: 86400
+          site-visits: 4
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 4.48e-7
+          carbon: 0.00034293952
+          sci: 0.00008573488
+        - timestamp: '2024-08-14T00:00:00'
+          duration: 86400
+          site-visits: 3
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 3.36e-7
+          carbon: 0.00025720464
+          sci: 0.00008573488000000001
+        - timestamp: '2024-08-15T00:00:00'
+          duration: 86400
+          site-visits: 16
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 0.000001792
+          carbon: 0.00137175808
+          sci: 0.00008573488
+        - timestamp: '2024-08-16T00:00:00'
+          duration: 86400
+          site-visits: 18
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 0.000002016
+          carbon: 0.00154322784
+          sci: 0.00008573488
+        - timestamp: '2024-08-17T00:00:00'
+          duration: 86400
+          site-visits: 21
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 0.000002352
+          carbon: 0.00180043248
+          sci: 0.00008573488
+        - timestamp: '2024-08-18T00:00:00'
+          duration: 86400
+          site-visits: 0
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 1.4
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          static-site-size-in-gb: 0.0000014
+          energy: 0
+          carbon: 0
+          sci: 0
       aggregated:
-        carbon: 0.027863836000000003
-        sci: 0.00008573488000000001
+        carbon: 0.03309366368
+        sci: 0.00008267292000000001
     gh-pages-builds:
       pipeline:
         compute:
@@ -428,23 +2198,104 @@ tree:
         static-site-size-in-mb: 0.809473
         kwh-per-gb-network: 0.001
         grid-intensity: 765.49
-        visits-per-month: 325
         build-duration: 5
         build-memory-gb: 0.34
         builds-per-month: 3
         thermal-design-power: 205
         cpu-utilization-during-build: 100
       inputs:
-        - timestamp: 2024-08-13T00:00
-          duration: 2419200
+        - timestamp: '2024-07-22T00:00:00'
+          duration: 86400
+          site-visits: 12
+        - timestamp: '2024-07-23T00:00:00'
+          duration: 86400
+          site-visits: 5
+        - timestamp: '2024-07-24T00:00:00'
+          duration: 86400
+          site-visits: 3
+        - timestamp: '2024-07-25T00:00:00'
+          duration: 86400
+          site-visits: 17
+        - timestamp: '2024-07-26T00:00:00'
+          duration: 86400
+          site-visits: 10
+        - timestamp: '2024-07-27T00:00:00'
+          duration: 86400
+          site-visits: 18
+        - timestamp: '2024-07-28T00:00:00'
+          duration: 86400
+          site-visits: 16
+        - timestamp: '2024-07-29T00:00:00'
+          duration: 86400
+          site-visits: 11
+        - timestamp: '2024-07-30T00:00:00'
+          duration: 86400
+          site-visits: 1
+        - timestamp: '2024-07-31T00:00:00'
+          duration: 86400
+          site-visits: 4
+        - timestamp: '2024-08-01T00:00:00'
+          duration: 86400
+          site-visits: 21
+        - timestamp: '2024-08-02T00:00:00'
+          duration: 86400
+          site-visits: 30
+        - timestamp: '2024-08-03T00:00:00'
+          duration: 86400
+          site-visits: 36
+        - timestamp: '2024-08-04T00:00:00'
+          duration: 86400
+          site-visits: 17
+        - timestamp: '2024-08-05T00:00:00'
+          duration: 86400
+          site-visits: 17
+        - timestamp: '2024-08-06T00:00:00'
+          duration: 86400
+          site-visits: 2
+        - timestamp: '2024-08-07T00:00:00'
+          duration: 86400
+          site-visits: 4
+        - timestamp: '2024-08-08T00:00:00'
+          duration: 86400
+          site-visits: 25
+        - timestamp: '2024-08-09T00:00:00'
+          duration: 86400
+          site-visits: 31
+        - timestamp: '2024-08-10T00:00:00'
+          duration: 86400
+          site-visits: 18
+        - timestamp: '2024-08-11T00:00:00'
+          duration: 86400
+          site-visits: 13
+        - timestamp: '2024-08-12T00:00:00'
+          duration: 86400
+          site-visits: 13
+        - timestamp: '2024-08-13T00:00:00'
+          duration: 86400
+          site-visits: 4
+        - timestamp: '2024-08-14T00:00:00'
+          duration: 86400
+          site-visits: 3
+        - timestamp: '2024-08-15T00:00:00'
+          duration: 86400
+          site-visits: 16
+        - timestamp: '2024-08-16T00:00:00'
+          duration: 86400
+          site-visits: 18
+        - timestamp: '2024-08-17T00:00:00'
+          duration: 86400
+          site-visits: 21
+        - timestamp: '2024-08-18T00:00:00'
+          duration: 86400
+          site-visits: 0
       outputs:
-        - timestamp: 2024-08-13T00:00
-          duration: 2419200
+        - timestamp: '2024-07-22T00:00:00'
+          duration: 86400
+          site-visits: 12
           end-user-energy-coefficient: 0.08
           static-site-size-in-mb: 0.809473
           kwh-per-gb-network: 0.001
           grid-intensity: 765.49
-          visits-per-month: 325
           build-duration: 5
           build-memory-gb: 0.34
           builds-per-month: 3
@@ -459,72 +2310,1532 @@ tree:
           build-energy-kwh-per-build: 0.0003015233327666667
           energy: 0.0009045699983000001
           carbon: 0.692439287998667
-          sci: 0.0021305824246112834
+          sci: 0.05770327399988892
+        - timestamp: '2024-07-23T00:00:00'
+          duration: 86400
+          site-visits: 5
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.13848785759973342
+        - timestamp: '2024-07-24T00:00:00'
+          duration: 86400
+          site-visits: 3
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.23081309599955568
+        - timestamp: '2024-07-25T00:00:00'
+          duration: 86400
+          site-visits: 17
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.040731722823451
+        - timestamp: '2024-07-26T00:00:00'
+          duration: 86400
+          site-visits: 10
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.06924392879986671
+        - timestamp: '2024-07-27T00:00:00'
+          duration: 86400
+          site-visits: 18
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.03846884933325928
+        - timestamp: '2024-07-28T00:00:00'
+          duration: 86400
+          site-visits: 16
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.04327745549991669
+        - timestamp: '2024-07-29T00:00:00'
+          duration: 86400
+          site-visits: 11
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.06294902618169701
+        - timestamp: '2024-07-30T00:00:00'
+          duration: 86400
+          site-visits: 1
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.692439287998667
+        - timestamp: '2024-07-31T00:00:00'
+          duration: 86400
+          site-visits: 4
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.17310982199966676
+        - timestamp: '2024-08-01T00:00:00'
+          duration: 86400
+          site-visits: 21
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.032973299428507956
+        - timestamp: '2024-08-02T00:00:00'
+          duration: 86400
+          site-visits: 30
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.02308130959995557
+        - timestamp: '2024-08-03T00:00:00'
+          duration: 86400
+          site-visits: 36
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.01923442466662964
+        - timestamp: '2024-08-04T00:00:00'
+          duration: 86400
+          site-visits: 17
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.040731722823451
+        - timestamp: '2024-08-05T00:00:00'
+          duration: 86400
+          site-visits: 17
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.040731722823451
+        - timestamp: '2024-08-06T00:00:00'
+          duration: 86400
+          site-visits: 2
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.3462196439993335
+        - timestamp: '2024-08-07T00:00:00'
+          duration: 86400
+          site-visits: 4
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.17310982199966676
+        - timestamp: '2024-08-08T00:00:00'
+          duration: 86400
+          site-visits: 25
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.027697571519946684
+        - timestamp: '2024-08-09T00:00:00'
+          duration: 86400
+          site-visits: 31
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.022336751225763455
+        - timestamp: '2024-08-10T00:00:00'
+          duration: 86400
+          site-visits: 18
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.03846884933325928
+        - timestamp: '2024-08-11T00:00:00'
+          duration: 86400
+          site-visits: 13
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.05326456061528208
+        - timestamp: '2024-08-12T00:00:00'
+          duration: 86400
+          site-visits: 13
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.05326456061528208
+        - timestamp: '2024-08-13T00:00:00'
+          duration: 86400
+          site-visits: 4
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.17310982199966676
+        - timestamp: '2024-08-14T00:00:00'
+          duration: 86400
+          site-visits: 3
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.23081309599955568
+        - timestamp: '2024-08-15T00:00:00'
+          duration: 86400
+          site-visits: 16
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.04327745549991669
+        - timestamp: '2024-08-16T00:00:00'
+          duration: 86400
+          site-visits: 18
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.03846884933325928
+        - timestamp: '2024-08-17T00:00:00'
+          duration: 86400
+          site-visits: 21
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.032973299428507956
+        - timestamp: '2024-08-18T00:00:00'
+          duration: 86400
+          site-visits: 0
+          end-user-energy-coefficient: 0.08
+          static-site-size-in-mb: 0.809473
+          kwh-per-gb-network: 0.001
+          grid-intensity: 765.49
+          build-duration: 5
+          build-memory-gb: 0.34
+          builds-per-month: 3
+          thermal-design-power: 205
+          cpu-utilization-during-build: 100
+          cpu-factor: 1.02
+          cpu-wattage: 209.1
+          cpu-wattage-times-duration: 1045.5
+          build-energy-cpu-kwh: 0.0002904166666666667
+          memory-coefficient: 0.000032666665
+          build-energy-memory-kwh: 0.000011106666100000002
+          build-energy-kwh-per-build: 0.0003015233327666667
+          energy: 0.0009045699983000001
+          carbon: 0.692439287998667
+          sci: 0.692439287998667
       aggregated:
-        carbon: 0.692439287998667
-        sci: 0.0021305824246112834
+        carbon: 19.388300063962678
+        sci: 0.1296221560409216
     embodied-carbon-for-web-server:
       pipeline:
         compute:
           - sci
-      defaults:
-        visits-per-month: 325
+      defaults: null
       inputs:
-        - timestamp: 2024-08-13T00:00
-          duration: 2419200
-          carbon: 0.125
+        - timestamp: '2024-07-22T00:00:00'
+          duration: 86400
+          site-visits: 12
+          carbon: 2.576
+        - timestamp: '2024-07-23T00:00:00'
+          duration: 86400
+          site-visits: 5
+          carbon: 2.576
+        - timestamp: '2024-07-24T00:00:00'
+          duration: 86400
+          site-visits: 3
+          carbon: 2.576
+        - timestamp: '2024-07-25T00:00:00'
+          duration: 86400
+          site-visits: 17
+          carbon: 2.576
+        - timestamp: '2024-07-26T00:00:00'
+          duration: 86400
+          site-visits: 10
+          carbon: 2.576
+        - timestamp: '2024-07-27T00:00:00'
+          duration: 86400
+          site-visits: 18
+          carbon: 2.576
+        - timestamp: '2024-07-28T00:00:00'
+          duration: 86400
+          site-visits: 16
+          carbon: 2.576
+        - timestamp: '2024-07-29T00:00:00'
+          duration: 86400
+          site-visits: 11
+          carbon: 2.576
+        - timestamp: '2024-07-30T00:00:00'
+          duration: 86400
+          site-visits: 1
+          carbon: 2.576
+        - timestamp: '2024-07-31T00:00:00'
+          duration: 86400
+          site-visits: 4
+          carbon: 2.576
+        - timestamp: '2024-08-01T00:00:00'
+          duration: 86400
+          site-visits: 21
+          carbon: 2.576
+        - timestamp: '2024-08-02T00:00:00'
+          duration: 86400
+          site-visits: 30
+          carbon: 2.576
+        - timestamp: '2024-08-03T00:00:00'
+          duration: 86400
+          site-visits: 36
+          carbon: 2.576
+        - timestamp: '2024-08-04T00:00:00'
+          duration: 86400
+          site-visits: 17
+          carbon: 2.576
+        - timestamp: '2024-08-05T00:00:00'
+          duration: 86400
+          site-visits: 17
+          carbon: 2.576
+        - timestamp: '2024-08-06T00:00:00'
+          duration: 86400
+          site-visits: 2
+          carbon: 2.576
+        - timestamp: '2024-08-07T00:00:00'
+          duration: 86400
+          site-visits: 4
+          carbon: 2.576
+        - timestamp: '2024-08-08T00:00:00'
+          duration: 86400
+          site-visits: 25
+          carbon: 2.576
+        - timestamp: '2024-08-09T00:00:00'
+          duration: 86400
+          site-visits: 31
+          carbon: 2.576
+        - timestamp: '2024-08-10T00:00:00'
+          duration: 86400
+          site-visits: 18
+          carbon: 2.576
+        - timestamp: '2024-08-11T00:00:00'
+          duration: 86400
+          site-visits: 13
+          carbon: 2.576
+        - timestamp: '2024-08-12T00:00:00'
+          duration: 86400
+          site-visits: 13
+          carbon: 2.576
+        - timestamp: '2024-08-13T00:00:00'
+          duration: 86400
+          site-visits: 4
+          carbon: 2.576
+        - timestamp: '2024-08-14T00:00:00'
+          duration: 86400
+          site-visits: 3
+          carbon: 2.576
+        - timestamp: '2024-08-15T00:00:00'
+          duration: 86400
+          site-visits: 16
+          carbon: 2.576
+        - timestamp: '2024-08-16T00:00:00'
+          duration: 86400
+          site-visits: 18
+          carbon: 2.576
+        - timestamp: '2024-08-17T00:00:00'
+          duration: 86400
+          site-visits: 21
+          carbon: 2.576
+        - timestamp: '2024-08-18T00:00:00'
+          duration: 86400
+          site-visits: 0
+          carbon: 2.576
       outputs:
-        - timestamp: 2024-08-13T00:00
-          duration: 2419200
-          carbon: 0.125
-          visits-per-month: 325
-          sci: 0.0003846153846153846
+        - timestamp: '2024-07-22T00:00:00'
+          duration: 86400
+          site-visits: 12
+          carbon: 2.576
+          sci: 0.21466666666666667
+        - timestamp: '2024-07-23T00:00:00'
+          duration: 86400
+          site-visits: 5
+          carbon: 2.576
+          sci: 0.5152
+        - timestamp: '2024-07-24T00:00:00'
+          duration: 86400
+          site-visits: 3
+          carbon: 2.576
+          sci: 0.8586666666666667
+        - timestamp: '2024-07-25T00:00:00'
+          duration: 86400
+          site-visits: 17
+          carbon: 2.576
+          sci: 0.15152941176470588
+        - timestamp: '2024-07-26T00:00:00'
+          duration: 86400
+          site-visits: 10
+          carbon: 2.576
+          sci: 0.2576
+        - timestamp: '2024-07-27T00:00:00'
+          duration: 86400
+          site-visits: 18
+          carbon: 2.576
+          sci: 0.1431111111111111
+        - timestamp: '2024-07-28T00:00:00'
+          duration: 86400
+          site-visits: 16
+          carbon: 2.576
+          sci: 0.161
+        - timestamp: '2024-07-29T00:00:00'
+          duration: 86400
+          site-visits: 11
+          carbon: 2.576
+          sci: 0.23418181818181819
+        - timestamp: '2024-07-30T00:00:00'
+          duration: 86400
+          site-visits: 1
+          carbon: 2.576
+          sci: 2.576
+        - timestamp: '2024-07-31T00:00:00'
+          duration: 86400
+          site-visits: 4
+          carbon: 2.576
+          sci: 0.644
+        - timestamp: '2024-08-01T00:00:00'
+          duration: 86400
+          site-visits: 21
+          carbon: 2.576
+          sci: 0.12266666666666667
+        - timestamp: '2024-08-02T00:00:00'
+          duration: 86400
+          site-visits: 30
+          carbon: 2.576
+          sci: 0.08586666666666667
+        - timestamp: '2024-08-03T00:00:00'
+          duration: 86400
+          site-visits: 36
+          carbon: 2.576
+          sci: 0.07155555555555555
+        - timestamp: '2024-08-04T00:00:00'
+          duration: 86400
+          site-visits: 17
+          carbon: 2.576
+          sci: 0.15152941176470588
+        - timestamp: '2024-08-05T00:00:00'
+          duration: 86400
+          site-visits: 17
+          carbon: 2.576
+          sci: 0.15152941176470588
+        - timestamp: '2024-08-06T00:00:00'
+          duration: 86400
+          site-visits: 2
+          carbon: 2.576
+          sci: 1.288
+        - timestamp: '2024-08-07T00:00:00'
+          duration: 86400
+          site-visits: 4
+          carbon: 2.576
+          sci: 0.644
+        - timestamp: '2024-08-08T00:00:00'
+          duration: 86400
+          site-visits: 25
+          carbon: 2.576
+          sci: 0.10304
+        - timestamp: '2024-08-09T00:00:00'
+          duration: 86400
+          site-visits: 31
+          carbon: 2.576
+          sci: 0.08309677419354838
+        - timestamp: '2024-08-10T00:00:00'
+          duration: 86400
+          site-visits: 18
+          carbon: 2.576
+          sci: 0.1431111111111111
+        - timestamp: '2024-08-11T00:00:00'
+          duration: 86400
+          site-visits: 13
+          carbon: 2.576
+          sci: 0.19815384615384615
+        - timestamp: '2024-08-12T00:00:00'
+          duration: 86400
+          site-visits: 13
+          carbon: 2.576
+          sci: 0.19815384615384615
+        - timestamp: '2024-08-13T00:00:00'
+          duration: 86400
+          site-visits: 4
+          carbon: 2.576
+          sci: 0.644
+        - timestamp: '2024-08-14T00:00:00'
+          duration: 86400
+          site-visits: 3
+          carbon: 2.576
+          sci: 0.8586666666666667
+        - timestamp: '2024-08-15T00:00:00'
+          duration: 86400
+          site-visits: 16
+          carbon: 2.576
+          sci: 0.161
+        - timestamp: '2024-08-16T00:00:00'
+          duration: 86400
+          site-visits: 18
+          carbon: 2.576
+          sci: 0.1431111111111111
+        - timestamp: '2024-08-17T00:00:00'
+          duration: 86400
+          site-visits: 21
+          carbon: 2.576
+          sci: 0.12266666666666667
+        - timestamp: '2024-08-18T00:00:00'
+          duration: 86400
+          site-visits: 0
+          carbon: 2.576
+          sci: 2.576
       aggregated:
-        carbon: 0.125
-        sci: 0.0003846153846153846
+        carbon: 72.12799999999999
+        sci: 0.4822179788880738
     embodied-carbon-for-github-server:
       pipeline:
         compute:
           - sci
-      defaults:
-        visits-per-month: 325
+      defaults: null
       inputs:
-        - timestamp: 2024-08-13T00:00
-          duration: 2419200
-          carbon: 0.0071
+        - timestamp: '2024-07-22T00:00:00'
+          duration: 86400
+          site-visits: 12
+          carbon: 0.000496
+        - timestamp: '2024-07-23T00:00:00'
+          duration: 86400
+          site-visits: 5
+          carbon: 0.000496
+        - timestamp: '2024-07-24T00:00:00'
+          duration: 86400
+          site-visits: 3
+          carbon: 0.000496
+        - timestamp: '2024-07-25T00:00:00'
+          duration: 86400
+          site-visits: 17
+          carbon: 0.000496
+        - timestamp: '2024-07-26T00:00:00'
+          duration: 86400
+          site-visits: 10
+          carbon: 0.000496
+        - timestamp: '2024-07-27T00:00:00'
+          duration: 86400
+          site-visits: 18
+          carbon: 0.000496
+        - timestamp: '2024-07-28T00:00:00'
+          duration: 86400
+          site-visits: 16
+          carbon: 0.000496
+        - timestamp: '2024-07-29T00:00:00'
+          duration: 86400
+          site-visits: 11
+          carbon: 0.000496
+        - timestamp: '2024-07-30T00:00:00'
+          duration: 86400
+          site-visits: 1
+          carbon: 0.000496
+        - timestamp: '2024-07-31T00:00:00'
+          duration: 86400
+          site-visits: 4
+          carbon: 0.000496
+        - timestamp: '2024-08-01T00:00:00'
+          duration: 86400
+          site-visits: 21
+          carbon: 0.000496
+        - timestamp: '2024-08-02T00:00:00'
+          duration: 86400
+          site-visits: 30
+          carbon: 0.000496
+        - timestamp: '2024-08-03T00:00:00'
+          duration: 86400
+          site-visits: 36
+          carbon: 0.000496
+        - timestamp: '2024-08-04T00:00:00'
+          duration: 86400
+          site-visits: 17
+          carbon: 0.000496
+        - timestamp: '2024-08-05T00:00:00'
+          duration: 86400
+          site-visits: 17
+          carbon: 0.000496
+        - timestamp: '2024-08-06T00:00:00'
+          duration: 86400
+          site-visits: 2
+          carbon: 0.000496
+        - timestamp: '2024-08-07T00:00:00'
+          duration: 86400
+          site-visits: 4
+          carbon: 0.000496
+        - timestamp: '2024-08-08T00:00:00'
+          duration: 86400
+          site-visits: 25
+          carbon: 0.000496
+        - timestamp: '2024-08-09T00:00:00'
+          duration: 86400
+          site-visits: 31
+          carbon: 0.000496
+        - timestamp: '2024-08-10T00:00:00'
+          duration: 86400
+          site-visits: 18
+          carbon: 0.000496
+        - timestamp: '2024-08-11T00:00:00'
+          duration: 86400
+          site-visits: 13
+          carbon: 0.000496
+        - timestamp: '2024-08-12T00:00:00'
+          duration: 86400
+          site-visits: 13
+          carbon: 0.000496
+        - timestamp: '2024-08-13T00:00:00'
+          duration: 86400
+          site-visits: 4
+          carbon: 0.000496
+        - timestamp: '2024-08-14T00:00:00'
+          duration: 86400
+          site-visits: 3
+          carbon: 0.000496
+        - timestamp: '2024-08-15T00:00:00'
+          duration: 86400
+          site-visits: 16
+          carbon: 0.000496
+        - timestamp: '2024-08-16T00:00:00'
+          duration: 86400
+          site-visits: 18
+          carbon: 0.000496
+        - timestamp: '2024-08-17T00:00:00'
+          duration: 86400
+          site-visits: 21
+          carbon: 0.000496
+        - timestamp: '2024-08-18T00:00:00'
+          duration: 86400
+          site-visits: 0
+          carbon: 0.000496
       outputs:
-        - timestamp: 2024-08-13T00:00
-          duration: 2419200
-          carbon: 0.0071
-          visits-per-month: 325
-          sci: 0.000021846153846153848
+        - timestamp: '2024-07-22T00:00:00'
+          duration: 86400
+          site-visits: 12
+          carbon: 0.000496
+          sci: 0.00004133333333333333
+        - timestamp: '2024-07-23T00:00:00'
+          duration: 86400
+          site-visits: 5
+          carbon: 0.000496
+          sci: 0.0000992
+        - timestamp: '2024-07-24T00:00:00'
+          duration: 86400
+          site-visits: 3
+          carbon: 0.000496
+          sci: 0.00016533333333333333
+        - timestamp: '2024-07-25T00:00:00'
+          duration: 86400
+          site-visits: 17
+          carbon: 0.000496
+          sci: 0.000029176470588235297
+        - timestamp: '2024-07-26T00:00:00'
+          duration: 86400
+          site-visits: 10
+          carbon: 0.000496
+          sci: 0.0000496
+        - timestamp: '2024-07-27T00:00:00'
+          duration: 86400
+          site-visits: 18
+          carbon: 0.000496
+          sci: 0.000027555555555555555
+        - timestamp: '2024-07-28T00:00:00'
+          duration: 86400
+          site-visits: 16
+          carbon: 0.000496
+          sci: 0.000031
+        - timestamp: '2024-07-29T00:00:00'
+          duration: 86400
+          site-visits: 11
+          carbon: 0.000496
+          sci: 0.000045090909090909095
+        - timestamp: '2024-07-30T00:00:00'
+          duration: 86400
+          site-visits: 1
+          carbon: 0.000496
+          sci: 0.000496
+        - timestamp: '2024-07-31T00:00:00'
+          duration: 86400
+          site-visits: 4
+          carbon: 0.000496
+          sci: 0.000124
+        - timestamp: '2024-08-01T00:00:00'
+          duration: 86400
+          site-visits: 21
+          carbon: 0.000496
+          sci: 0.00002361904761904762
+        - timestamp: '2024-08-02T00:00:00'
+          duration: 86400
+          site-visits: 30
+          carbon: 0.000496
+          sci: 0.000016533333333333333
+        - timestamp: '2024-08-03T00:00:00'
+          duration: 86400
+          site-visits: 36
+          carbon: 0.000496
+          sci: 0.000013777777777777778
+        - timestamp: '2024-08-04T00:00:00'
+          duration: 86400
+          site-visits: 17
+          carbon: 0.000496
+          sci: 0.000029176470588235297
+        - timestamp: '2024-08-05T00:00:00'
+          duration: 86400
+          site-visits: 17
+          carbon: 0.000496
+          sci: 0.000029176470588235297
+        - timestamp: '2024-08-06T00:00:00'
+          duration: 86400
+          site-visits: 2
+          carbon: 0.000496
+          sci: 0.000248
+        - timestamp: '2024-08-07T00:00:00'
+          duration: 86400
+          site-visits: 4
+          carbon: 0.000496
+          sci: 0.000124
+        - timestamp: '2024-08-08T00:00:00'
+          duration: 86400
+          site-visits: 25
+          carbon: 0.000496
+          sci: 0.00001984
+        - timestamp: '2024-08-09T00:00:00'
+          duration: 86400
+          site-visits: 31
+          carbon: 0.000496
+          sci: 0.000016
+        - timestamp: '2024-08-10T00:00:00'
+          duration: 86400
+          site-visits: 18
+          carbon: 0.000496
+          sci: 0.000027555555555555555
+        - timestamp: '2024-08-11T00:00:00'
+          duration: 86400
+          site-visits: 13
+          carbon: 0.000496
+          sci: 0.000038153846153846153
+        - timestamp: '2024-08-12T00:00:00'
+          duration: 86400
+          site-visits: 13
+          carbon: 0.000496
+          sci: 0.000038153846153846153
+        - timestamp: '2024-08-13T00:00:00'
+          duration: 86400
+          site-visits: 4
+          carbon: 0.000496
+          sci: 0.000124
+        - timestamp: '2024-08-14T00:00:00'
+          duration: 86400
+          site-visits: 3
+          carbon: 0.000496
+          sci: 0.00016533333333333333
+        - timestamp: '2024-08-15T00:00:00'
+          duration: 86400
+          site-visits: 16
+          carbon: 0.000496
+          sci: 0.000031
+        - timestamp: '2024-08-16T00:00:00'
+          duration: 86400
+          site-visits: 18
+          carbon: 0.000496
+          sci: 0.000027555555555555555
+        - timestamp: '2024-08-17T00:00:00'
+          duration: 86400
+          site-visits: 21
+          carbon: 0.000496
+          sci: 0.00002361904761904762
+        - timestamp: '2024-08-18T00:00:00'
+          duration: 86400
+          site-visits: 0
+          carbon: 0.000496
+          sci: 0.000496
       aggregated:
-        carbon: 0.0071
-        sci: 0.000021846153846153848
+        carbon: 0.013888
+        sci: 0.0000928494245063993
     embodied-carbon-for-end-user-devices:
       pipeline:
         compute:
+          - total-embodied-carbon
           - sci
-      defaults:
-        visits-per-month: 325
+      defaults: null
       inputs:
-        - timestamp: 2024-08-13T00:00
-          duration: 2419200
-          carbon: 11.34
+        - timestamp: '2024-07-22T00:00:00'
+          duration: 86400
+          site-visits: 12
+          carbon-per-device: 0.03488
+        - timestamp: '2024-07-23T00:00:00'
+          duration: 86400
+          site-visits: 5
+          carbon-per-device: 0.03488
+        - timestamp: '2024-07-24T00:00:00'
+          duration: 86400
+          site-visits: 3
+          carbon-per-device: 0.03488
+        - timestamp: '2024-07-25T00:00:00'
+          duration: 86400
+          site-visits: 17
+          carbon-per-device: 0.03488
+        - timestamp: '2024-07-26T00:00:00'
+          duration: 86400
+          site-visits: 10
+          carbon-per-device: 0.03488
+        - timestamp: '2024-07-27T00:00:00'
+          duration: 86400
+          site-visits: 18
+          carbon-per-device: 0.03488
+        - timestamp: '2024-07-28T00:00:00'
+          duration: 86400
+          site-visits: 16
+          carbon-per-device: 0.03488
+        - timestamp: '2024-07-29T00:00:00'
+          duration: 86400
+          site-visits: 11
+          carbon-per-device: 0.03488
+        - timestamp: '2024-07-30T00:00:00'
+          duration: 86400
+          site-visits: 1
+          carbon-per-device: 0.03488
+        - timestamp: '2024-07-31T00:00:00'
+          duration: 86400
+          site-visits: 4
+          carbon-per-device: 0.03488
+        - timestamp: '2024-08-01T00:00:00'
+          duration: 86400
+          site-visits: 21
+          carbon-per-device: 0.03488
+        - timestamp: '2024-08-02T00:00:00'
+          duration: 86400
+          site-visits: 30
+          carbon-per-device: 0.03488
+        - timestamp: '2024-08-03T00:00:00'
+          duration: 86400
+          site-visits: 36
+          carbon-per-device: 0.03488
+        - timestamp: '2024-08-04T00:00:00'
+          duration: 86400
+          site-visits: 17
+          carbon-per-device: 0.03488
+        - timestamp: '2024-08-05T00:00:00'
+          duration: 86400
+          site-visits: 17
+          carbon-per-device: 0.03488
+        - timestamp: '2024-08-06T00:00:00'
+          duration: 86400
+          site-visits: 2
+          carbon-per-device: 0.03488
+        - timestamp: '2024-08-07T00:00:00'
+          duration: 86400
+          site-visits: 4
+          carbon-per-device: 0.03488
+        - timestamp: '2024-08-08T00:00:00'
+          duration: 86400
+          site-visits: 25
+          carbon-per-device: 0.03488
+        - timestamp: '2024-08-09T00:00:00'
+          duration: 86400
+          site-visits: 31
+          carbon-per-device: 0.03488
+        - timestamp: '2024-08-10T00:00:00'
+          duration: 86400
+          site-visits: 18
+          carbon-per-device: 0.03488
+        - timestamp: '2024-08-11T00:00:00'
+          duration: 86400
+          site-visits: 13
+          carbon-per-device: 0.03488
+        - timestamp: '2024-08-12T00:00:00'
+          duration: 86400
+          site-visits: 13
+          carbon-per-device: 0.03488
+        - timestamp: '2024-08-13T00:00:00'
+          duration: 86400
+          site-visits: 4
+          carbon-per-device: 0.03488
+        - timestamp: '2024-08-14T00:00:00'
+          duration: 86400
+          site-visits: 3
+          carbon-per-device: 0.03488
+        - timestamp: '2024-08-15T00:00:00'
+          duration: 86400
+          site-visits: 16
+          carbon-per-device: 0.03488
+        - timestamp: '2024-08-16T00:00:00'
+          duration: 86400
+          site-visits: 18
+          carbon-per-device: 0.03488
+        - timestamp: '2024-08-17T00:00:00'
+          duration: 86400
+          site-visits: 21
+          carbon-per-device: 0.03488
+        - timestamp: '2024-08-18T00:00:00'
+          duration: 86400
+          site-visits: 0
+          carbon-per-device: 0.03488
       outputs:
-        - timestamp: 2024-08-13T00:00
-          duration: 2419200
-          carbon: 11.34
-          visits-per-month: 325
-          sci: 0.034892307692307695
+        - timestamp: '2024-07-22T00:00:00'
+          duration: 86400
+          site-visits: 12
+          carbon-per-device: 0.03488
+          carbon: 0.41856000000000004
+          sci: 0.03488
+        - timestamp: '2024-07-23T00:00:00'
+          duration: 86400
+          site-visits: 5
+          carbon-per-device: 0.03488
+          carbon: 0.1744
+          sci: 0.03488
+        - timestamp: '2024-07-24T00:00:00'
+          duration: 86400
+          site-visits: 3
+          carbon-per-device: 0.03488
+          carbon: 0.10464000000000001
+          sci: 0.03488
+        - timestamp: '2024-07-25T00:00:00'
+          duration: 86400
+          site-visits: 17
+          carbon-per-device: 0.03488
+          carbon: 0.59296
+          sci: 0.03488
+        - timestamp: '2024-07-26T00:00:00'
+          duration: 86400
+          site-visits: 10
+          carbon-per-device: 0.03488
+          carbon: 0.3488
+          sci: 0.03488
+        - timestamp: '2024-07-27T00:00:00'
+          duration: 86400
+          site-visits: 18
+          carbon-per-device: 0.03488
+          carbon: 0.6278400000000001
+          sci: 0.03488
+        - timestamp: '2024-07-28T00:00:00'
+          duration: 86400
+          site-visits: 16
+          carbon-per-device: 0.03488
+          carbon: 0.55808
+          sci: 0.03488
+        - timestamp: '2024-07-29T00:00:00'
+          duration: 86400
+          site-visits: 11
+          carbon-per-device: 0.03488
+          carbon: 0.38368
+          sci: 0.03488
+        - timestamp: '2024-07-30T00:00:00'
+          duration: 86400
+          site-visits: 1
+          carbon-per-device: 0.03488
+          carbon: 0.03488
+          sci: 0.03488
+        - timestamp: '2024-07-31T00:00:00'
+          duration: 86400
+          site-visits: 4
+          carbon-per-device: 0.03488
+          carbon: 0.13952
+          sci: 0.03488
+        - timestamp: '2024-08-01T00:00:00'
+          duration: 86400
+          site-visits: 21
+          carbon-per-device: 0.03488
+          carbon: 0.73248
+          sci: 0.03488
+        - timestamp: '2024-08-02T00:00:00'
+          duration: 86400
+          site-visits: 30
+          carbon-per-device: 0.03488
+          carbon: 1.0464
+          sci: 0.03488
+        - timestamp: '2024-08-03T00:00:00'
+          duration: 86400
+          site-visits: 36
+          carbon-per-device: 0.03488
+          carbon: 1.2556800000000001
+          sci: 0.03488
+        - timestamp: '2024-08-04T00:00:00'
+          duration: 86400
+          site-visits: 17
+          carbon-per-device: 0.03488
+          carbon: 0.59296
+          sci: 0.03488
+        - timestamp: '2024-08-05T00:00:00'
+          duration: 86400
+          site-visits: 17
+          carbon-per-device: 0.03488
+          carbon: 0.59296
+          sci: 0.03488
+        - timestamp: '2024-08-06T00:00:00'
+          duration: 86400
+          site-visits: 2
+          carbon-per-device: 0.03488
+          carbon: 0.06976
+          sci: 0.03488
+        - timestamp: '2024-08-07T00:00:00'
+          duration: 86400
+          site-visits: 4
+          carbon-per-device: 0.03488
+          carbon: 0.13952
+          sci: 0.03488
+        - timestamp: '2024-08-08T00:00:00'
+          duration: 86400
+          site-visits: 25
+          carbon-per-device: 0.03488
+          carbon: 0.872
+          sci: 0.03488
+        - timestamp: '2024-08-09T00:00:00'
+          duration: 86400
+          site-visits: 31
+          carbon-per-device: 0.03488
+          carbon: 1.08128
+          sci: 0.03488
+        - timestamp: '2024-08-10T00:00:00'
+          duration: 86400
+          site-visits: 18
+          carbon-per-device: 0.03488
+          carbon: 0.6278400000000001
+          sci: 0.03488
+        - timestamp: '2024-08-11T00:00:00'
+          duration: 86400
+          site-visits: 13
+          carbon-per-device: 0.03488
+          carbon: 0.45344
+          sci: 0.03488
+        - timestamp: '2024-08-12T00:00:00'
+          duration: 86400
+          site-visits: 13
+          carbon-per-device: 0.03488
+          carbon: 0.45344
+          sci: 0.03488
+        - timestamp: '2024-08-13T00:00:00'
+          duration: 86400
+          site-visits: 4
+          carbon-per-device: 0.03488
+          carbon: 0.13952
+          sci: 0.03488
+        - timestamp: '2024-08-14T00:00:00'
+          duration: 86400
+          site-visits: 3
+          carbon-per-device: 0.03488
+          carbon: 0.10464000000000001
+          sci: 0.03488
+        - timestamp: '2024-08-15T00:00:00'
+          duration: 86400
+          site-visits: 16
+          carbon-per-device: 0.03488
+          carbon: 0.55808
+          sci: 0.03488
+        - timestamp: '2024-08-16T00:00:00'
+          duration: 86400
+          site-visits: 18
+          carbon-per-device: 0.03488
+          carbon: 0.6278400000000001
+          sci: 0.03488
+        - timestamp: '2024-08-17T00:00:00'
+          duration: 86400
+          site-visits: 21
+          carbon-per-device: 0.03488
+          carbon: 0.73248
+          sci: 0.03488
+        - timestamp: '2024-08-18T00:00:00'
+          duration: 86400
+          site-visits: 0
+          carbon-per-device: 0.03488
+          carbon: 0
+          sci: 0
       aggregated:
-        carbon: 11.34
-        sci: 0.034892307692307695
+        carbon: 13.463680000000002
+        sci: 0.03363428571428573
   outputs:
-    - carbon: 12.20459970801305
-      sci: 0.03755261448619401
-      timestamp: 2024-08-13T00:00
-      duration: 2419200
+    - carbon: 3.6889617071844594
+      sci: 0.03842668444983812
+      timestamp: '2024-07-22T00:00:00'
+      duration: 86400
+    - carbon: 3.444194061222459
+      sci: 0.08610485153056148
+      timestamp: '2024-07-23T00:00:00'
+      duration: 86400
+    - carbon: 3.374260448090459
+      sci: 0.14059418533710247
+      timestamp: '2024-07-24T00:00:00'
+      duration: 86400
+    - carbon: 3.8637957400144596
+      sci: 0.028410262794223963
+      timestamp: '2024-07-25T00:00:00'
+      duration: 86400
+    - carbon: 3.6190280940524593
+      sci: 0.045237851175655736
+      timestamp: '2024-07-26T00:00:00'
+      duration: 86400
+    - carbon: 3.898762546580459
+      sci: 0.027074739906808743
+      timestamp: '2024-07-27T00:00:00'
+      duration: 86400
+    - carbon: 3.828828933448459
+      sci: 0.029912726042566087
+      timestamp: '2024-07-28T00:00:00'
+      duration: 86400
+    - carbon: 3.6539949006184593
+      sci: 0.04152266932520976
+      timestamp: '2024-07-29T00:00:00'
+      duration: 86400
+    - carbon: 3.304326834958459
+      sci: 0.41304085436980736
+      timestamp: '2024-07-30T00:00:00'
+      duration: 86400
+    - carbon: 3.409227254656459
+      sci: 0.10653835170801434
+      timestamp: '2024-07-31T00:00:00'
+      duration: 86400
+    - carbon: 4.003662966278459
+      sci: 0.023831327180228925
+      timestamp: '2024-08-01T00:00:00'
+      duration: 86400
+    - carbon: 4.318364225372459
+      sci: 0.01799318427238525
+      timestamp: '2024-08-02T00:00:00'
+      duration: 86400
+    - carbon: 4.5281650647684595
+      sci: 0.015722795363779372
+      timestamp: '2024-08-03T00:00:00'
+      duration: 86400
+    - carbon: 3.8637957400144596
+      sci: 0.028410262794223963
+      timestamp: '2024-08-04T00:00:00'
+      duration: 86400
+    - carbon: 3.8637957400144596
+      sci: 0.028410262794223963
+      timestamp: '2024-08-05T00:00:00'
+      duration: 86400
+    - carbon: 3.3392936415244594
+      sci: 0.2087058525952787
+      timestamp: '2024-08-06T00:00:00'
+      duration: 86400
+    - carbon: 3.409227254656459
+      sci: 0.10653835170801434
+      timestamp: '2024-08-07T00:00:00'
+      duration: 86400
+    - carbon: 4.1435301925424595
+      sci: 0.020717650962712296
+      timestamp: '2024-08-08T00:00:00'
+      duration: 86400
+    - carbon: 4.35333103193846
+      sci: 0.017553754161042174
+      timestamp: '2024-08-09T00:00:00'
+      duration: 86400
+    - carbon: 3.898762546580459
+      sci: 0.027074739906808743
+      timestamp: '2024-08-10T00:00:00'
+      duration: 86400
+    - carbon: 3.7239285137504594
+      sci: 0.035807004939908266
+      timestamp: '2024-08-11T00:00:00'
+      duration: 86400
+    - carbon: 3.7239285137504594
+      sci: 0.035807004939908266
+      timestamp: '2024-08-12T00:00:00'
+      duration: 86400
+    - carbon: 3.409227254656459
+      sci: 0.10653835170801434
+      timestamp: '2024-08-13T00:00:00'
+      duration: 86400
+    - carbon: 3.374260448090459
+      sci: 0.14059418533710247
+      timestamp: '2024-08-14T00:00:00'
+      duration: 86400
+    - carbon: 3.828828933448459
+      sci: 0.029912726042566087
+      timestamp: '2024-08-15T00:00:00'
+      duration: 86400
+    - carbon: 3.898762546580459
+      sci: 0.027074739906808743
+      timestamp: '2024-08-16T00:00:00'
+      duration: 86400
+    - carbon: 4.003662966278459
+      sci: 0.023831327180228925
+      timestamp: '2024-08-17T00:00:00'
+      duration: 86400
+    - carbon: 3.2693600283924593
+      sci: 0.4086700035490574
+      timestamp: '2024-08-18T00:00:00'
+      duration: 86400
   aggregated:
-    carbon: 12.20459970801305
-    sci: 0.03755261448619401
+    carbon: 105.03926812946484
+    sci: 0.08071631078507428 # ignore me! my real value is more like 0.64 gCO2e/visit

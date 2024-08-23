@@ -24,20 +24,10 @@ initialize:
       path: if-github-plugin
       global-config:
         repo: Green-Software-Foundation/if
-    copy-param-if-repo-size:
-      path: builtin
-      method: Copy
-      global-config:
-        keep-existing: false
-        from: size
-        to: "repo-size-if"
-    copy-param-if-clones:
-      path: builtin
-      method: Copy
-      global-config:
-        keep-existing: false
-        from: clones
-        to: repo-clones-if
+      mapping: # rename outputs
+        'size': 'repo-size-if'
+        'clones': 'repo-clones-if'
+
     storage-in-mb-to-tb-if:
       method: Coefficient
       path: builtin
@@ -73,20 +63,9 @@ initialize:
       path: if-github-plugin
       global-config:
         repo: Green-Software-Foundation/if-data
-    copy-param-if-data-repo-size:
-      path: builtin
-      method: Copy
-      global-config:
-        keep-existing: false
-        from: size
-        to: repo-size-if-data
-    copy-param-if-data-clones:
-      path: builtin
-      method: Copy
-      global-config:
-        keep-existing: false
-        from: clones
-        to: repo-clones-if-data
+      mapping: # rename outputs
+        'size': 'repo-size-if-data'
+        'clones': 'repo-clones-if-data'
     storage-in-mb-to-tb-if-data:
       method: Coefficient
       path: builtin
@@ -122,20 +101,9 @@ initialize:
       path: if-github-plugin
       global-config:
         repo: Green-Software-Foundation/if-docs
-    copy-param-if-docs-repo-size:
-      path: builtin
-      method: Copy
-      global-config:
-        keep-existing: false
-        from: size
-        to: repo-size-if-docs
-    copy-param-if-docs-clones:
-      path: builtin
-      method: Copy
-      global-config:
-        keep-existing: false
-        from: clones
-        to: repo-clones-if-docs
+      mapping: # rename outputs
+        'size': 'repo-size-if-docs'
+        'clones': 'repo-clones-if-docs'
     storage-in-mb-to-tb-if-docs:
       method: Coefficient
       path: builtin
@@ -216,13 +184,9 @@ initialize:
         workflow: 66389738
         start-date: 2024-07-14T08:30
         end-date: 2024-08-14T10:30
-    copy-param-energy-ci-cd-if:
-      path: builtin
-      method: Copy
-      global-config:
-        keep-existing: false
-        from: energy
-        to: ci-cd-energy-kwh
+      mapping: # rename outputs
+        'energy': 'ci-cd-energy-kwh'
+
 
     ## NPM Storage
     ##############
@@ -389,22 +353,16 @@ tree:
         compute:
           - duration-in-hours
           - storage-and-traffic-from-github-if
-          - copy-param-if-repo-size
-          - copy-param-if-clones
           - storage-in-mb-to-tb-if
           - storage-energy-in-watts-if
           - storage-energy-in-wh-if
           - storage-energy-to-kwh-if
           - storage-and-traffic-from-github-if-data
-          - copy-param-if-data-repo-size
-          - copy-param-if-data-clones
           - storage-in-mb-to-tb-if-data
           - storage-energy-in-watts-if-data
           - storage-energy-in-wh-if-data
           - storage-energy-to-kwh-if-data
           - storage-and-traffic-from-github-if-docs
-          - copy-param-if-docs-repo-size
-          - copy-param-if-docs-clones
           - storage-in-mb-to-tb-if-docs
           - storage-energy-in-watts-if-docs
           - storage-energy-in-wh-if-docs
@@ -415,7 +373,6 @@ tree:
           - total-data-downloaded-from-if-data-repo
           - sum-repo-download-components
           - eco-ci-github-actions-if
-          - copy-param-energy-ci-cd-if
           - repo-downloads-to-energy
           - storage-in-gb-to-tb-npm
           - storage-energy-in-watts-npm

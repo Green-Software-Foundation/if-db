@@ -229,17 +229,23 @@ initialize:
       method: Sci
       config:
         functional-unit: site-visits
+      parameter-metadata:
+        outputs:
+          sci:
+            unit: gCO2 / visit
+            description: software carbon intensity
+            aggregation-method: avg
 execution:
   command: >-
     /home/joe/.npm/_npx/1bf7c3c15bf47d04/node_modules/.bin/ts-node
     /home/joe/Code/if/src/if-run/index.ts -m manifests/examples/gsf-website.yml
-    -o manifests/examples/gsf-website-output.yml
+    -o manifests/examples/outputs/gsf-website-output.yml
   environment:
     if-version: 0.6.0
     os: linux
     os-version: 5.15.0-117-generic
     node-version: 21.4.0
-    date-time: 2024-08-23T09:23:53.709Z (UTC)
+    date-time: 2024-08-23T14:02:18.986Z (UTC)
     dependencies:
       - '@babel/core@7.22.10'
       - '@babel/preset-typescript@7.23.3'
@@ -800,7 +806,7 @@ tree:
           sci: 0.000008125770184258064
       aggregated:
         carbon: 0.007053168519935997
-        sci: 0.00006430202160497841
+        sci: 0.0000022965007716063717
     storing-static-site-data-on-netlify:
       pipeline:
         compute:
@@ -1354,7 +1360,7 @@ tree:
           sci: 0.0000032237452111698584
       aggregated:
         carbon: 0.0027982108432954363
-        sci: 0.000025510607550675775
+        sci: 9.110931268098492e-7
     networking-energy-to-serve-static-site-over-the-wire:
       pipeline:
         compute:
@@ -1821,7 +1827,7 @@ tree:
           sci: 6.1964348677e-7
       aggregated:
         carbon: 0.00343468384716611
-        sci: 0.000017350017629560004
+        sci: 6.196434867700001e-7
     end-user-operational-carbon:
       pipeline:
         compute:
@@ -2259,7 +2265,7 @@ tree:
           sci: 0.0000495714789416
       aggregated:
         carbon: 0.2747747077732889
-        sci: 0.0013880014103647995
+        sci: 0.00004957147894159998
     netlify-builds:
       pipeline:
         compute:
@@ -2987,7 +2993,7 @@ tree:
           sci: 0.05290959862193299
       aggregated:
         carbon: 45.92553160383786
-        sci: 0.4186918995431708
+        sci: 0.014953282126541815
     embodied-carbon-for-web-server:
       pipeline:
         compute:
@@ -3249,7 +3255,7 @@ tree:
           sci: 0.00008709677419354839
       aggregated:
         carbon: 0.07559999999999999
-        sci: 0.0006892268091420107
+        sci: 0.00002461524318364324
     embodied-carbon-for-github-server:
       pipeline:
         compute:
@@ -3259,259 +3265,259 @@ tree:
         - timestamp: '2024-07-22T00:00:00'
           duration: 86400
           site-visits: 228
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-07-23T00:00:00'
           duration: 86400
           site-visits: 216
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-07-24T00:00:00'
           duration: 86400
           site-visits: 203
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-07-25T00:00:00'
           duration: 86400
           site-visits: 203
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-07-26T00:00:00'
           duration: 86400
           site-visits: 172
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-07-27T00:00:00'
           duration: 86400
           site-visits: 38
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-07-28T00:00:00'
           duration: 86400
           site-visits: 63
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-07-29T00:00:00'
           duration: 86400
           site-visits: 621
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-07-30T00:00:00'
           duration: 86400
           site-visits: 181
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-07-31T00:00:00'
           duration: 86400
           site-visits: 213
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-08-01T00:00:00'
           duration: 86400
           site-visits: 167
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-08-02T00:00:00'
           duration: 86400
           site-visits: 428
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-08-03T00:00:00'
           duration: 86400
           site-visits: 58
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-08-04T00:00:00'
           duration: 86400
           site-visits: 66
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-08-05T00:00:00'
           duration: 86400
           site-visits: 301
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-08-06T00:00:00'
           duration: 86400
           site-visits: 193
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-08-07T00:00:00'
           duration: 86400
           site-visits: 220
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-08-08T00:00:00'
           duration: 86400
           site-visits: 215
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-08-09T00:00:00'
           duration: 86400
           site-visits: 516
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-08-10T00:00:00'
           duration: 86400
           site-visits: 42
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-08-11T00:00:00'
           duration: 86400
           site-visits: 76
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-08-12T00:00:00'
           duration: 86400
           site-visits: 226
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-08-13T00:00:00'
           duration: 86400
           site-visits: 180
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-08-14T00:00:00'
           duration: 86400
           site-visits: 232
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-08-15T00:00:00'
           duration: 86400
           site-visits: 175
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-08-16T00:00:00'
           duration: 86400
           site-visits: 235
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-08-17T00:00:00'
           duration: 86400
           site-visits: 44
-          carbon: 0.0007
+          carbon: 0.000392
         - timestamp: '2024-08-18T00:00:00'
           duration: 86400
           site-visits: 31
-          carbon: 0.0007
+          carbon: 0.000392
       outputs:
         - timestamp: '2024-07-22T00:00:00'
           duration: 86400
           site-visits: 228
-          carbon: 0.0007
-          sci: 0.000003070175438596491
+          carbon: 0.000392
+          sci: 0.000001719298245614035
         - timestamp: '2024-07-23T00:00:00'
           duration: 86400
           site-visits: 216
-          carbon: 0.0007
-          sci: 0.0000032407407407407406
+          carbon: 0.000392
+          sci: 0.0000018148148148148147
         - timestamp: '2024-07-24T00:00:00'
           duration: 86400
           site-visits: 203
-          carbon: 0.0007
-          sci: 0.0000034482758620689654
+          carbon: 0.000392
+          sci: 0.0000019310344827586207
         - timestamp: '2024-07-25T00:00:00'
           duration: 86400
           site-visits: 203
-          carbon: 0.0007
-          sci: 0.0000034482758620689654
+          carbon: 0.000392
+          sci: 0.0000019310344827586207
         - timestamp: '2024-07-26T00:00:00'
           duration: 86400
           site-visits: 172
-          carbon: 0.0007
-          sci: 0.000004069767441860465
+          carbon: 0.000392
+          sci: 0.0000022790697674418603
         - timestamp: '2024-07-27T00:00:00'
           duration: 86400
           site-visits: 38
-          carbon: 0.0007
-          sci: 0.000018421052631578947
+          carbon: 0.000392
+          sci: 0.000010315789473684211
         - timestamp: '2024-07-28T00:00:00'
           duration: 86400
           site-visits: 63
-          carbon: 0.0007
-          sci: 0.000011111111111111112
+          carbon: 0.000392
+          sci: 0.000006222222222222222
         - timestamp: '2024-07-29T00:00:00'
           duration: 86400
           site-visits: 621
-          carbon: 0.0007
-          sci: 0.0000011272141706924316
+          carbon: 0.000392
+          sci: 6.312399355877617e-7
         - timestamp: '2024-07-30T00:00:00'
           duration: 86400
           site-visits: 181
-          carbon: 0.0007
-          sci: 0.000003867403314917127
+          carbon: 0.000392
+          sci: 0.000002165745856353591
         - timestamp: '2024-07-31T00:00:00'
           duration: 86400
           site-visits: 213
-          carbon: 0.0007
-          sci: 0.0000032863849765258217
+          carbon: 0.000392
+          sci: 0.00000184037558685446
         - timestamp: '2024-08-01T00:00:00'
           duration: 86400
           site-visits: 167
-          carbon: 0.0007
-          sci: 0.000004191616766467066
+          carbon: 0.000392
+          sci: 0.0000023473053892215566
         - timestamp: '2024-08-02T00:00:00'
           duration: 86400
           site-visits: 428
-          carbon: 0.0007
-          sci: 0.0000016355140186915887
+          carbon: 0.000392
+          sci: 9.158878504672897e-7
         - timestamp: '2024-08-03T00:00:00'
           duration: 86400
           site-visits: 58
-          carbon: 0.0007
-          sci: 0.000012068965517241379
+          carbon: 0.000392
+          sci: 0.000006758620689655172
         - timestamp: '2024-08-04T00:00:00'
           duration: 86400
           site-visits: 66
-          carbon: 0.0007
-          sci: 0.000010606060606060606
+          carbon: 0.000392
+          sci: 0.000005939393939393939
         - timestamp: '2024-08-05T00:00:00'
           duration: 86400
           site-visits: 301
-          carbon: 0.0007
-          sci: 0.000002325581395348837
+          carbon: 0.000392
+          sci: 0.0000013023255813953488
         - timestamp: '2024-08-06T00:00:00'
           duration: 86400
           site-visits: 193
-          carbon: 0.0007
-          sci: 0.000003626943005181347
+          carbon: 0.000392
+          sci: 0.0000020310880829015544
         - timestamp: '2024-08-07T00:00:00'
           duration: 86400
           site-visits: 220
-          carbon: 0.0007
-          sci: 0.0000031818181818181817
+          carbon: 0.000392
+          sci: 0.0000017818181818181818
         - timestamp: '2024-08-08T00:00:00'
           duration: 86400
           site-visits: 215
-          carbon: 0.0007
-          sci: 0.000003255813953488372
+          carbon: 0.000392
+          sci: 0.0000018232558139534884
         - timestamp: '2024-08-09T00:00:00'
           duration: 86400
           site-visits: 516
-          carbon: 0.0007
-          sci: 0.0000013565891472868216
+          carbon: 0.000392
+          sci: 7.596899224806201e-7
         - timestamp: '2024-08-10T00:00:00'
           duration: 86400
           site-visits: 42
-          carbon: 0.0007
-          sci: 0.000016666666666666667
+          carbon: 0.000392
+          sci: 0.000009333333333333333
         - timestamp: '2024-08-11T00:00:00'
           duration: 86400
           site-visits: 76
-          carbon: 0.0007
-          sci: 0.000009210526315789474
+          carbon: 0.000392
+          sci: 0.0000051578947368421055
         - timestamp: '2024-08-12T00:00:00'
           duration: 86400
           site-visits: 226
-          carbon: 0.0007
-          sci: 0.0000030973451327433627
+          carbon: 0.000392
+          sci: 0.000001734513274336283
         - timestamp: '2024-08-13T00:00:00'
           duration: 86400
           site-visits: 180
-          carbon: 0.0007
-          sci: 0.000003888888888888889
+          carbon: 0.000392
+          sci: 0.0000021777777777777777
         - timestamp: '2024-08-14T00:00:00'
           duration: 86400
           site-visits: 232
-          carbon: 0.0007
-          sci: 0.0000030172413793103448
+          carbon: 0.000392
+          sci: 0.000001689655172413793
         - timestamp: '2024-08-15T00:00:00'
           duration: 86400
           site-visits: 175
-          carbon: 0.0007
-          sci: 0.000004
+          carbon: 0.000392
+          sci: 0.0000022399999999999997
         - timestamp: '2024-08-16T00:00:00'
           duration: 86400
           site-visits: 235
-          carbon: 0.0007
-          sci: 0.000002978723404255319
+          carbon: 0.000392
+          sci: 0.0000016680851063829787
         - timestamp: '2024-08-17T00:00:00'
           duration: 86400
           site-visits: 44
-          carbon: 0.0007
-          sci: 0.00001590909090909091
+          carbon: 0.000392
+          sci: 0.00000890909090909091
         - timestamp: '2024-08-18T00:00:00'
           duration: 86400
           site-visits: 31
-          carbon: 0.0007
-          sci: 0.00002258064516129032
+          carbon: 0.000392
+          sci: 0.00001264516129032258
       aggregated:
-        carbon: 0.01959999999999999
-        sci: 0.00017868843199978052
+        carbon: 0.010976
+        sci: 0.0000035737686399956113
     embodied-carbon-for-end-user-devices:
       pipeline:
         compute:
@@ -3522,400 +3528,400 @@ tree:
         - timestamp: '2024-07-22T00:00:00'
           duration: 86400
           site-visits: 228
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-07-23T00:00:00'
           duration: 86400
           site-visits: 216
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-07-24T00:00:00'
           duration: 86400
           site-visits: 203
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-07-25T00:00:00'
           duration: 86400
           site-visits: 203
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-07-26T00:00:00'
           duration: 86400
           site-visits: 172
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-07-27T00:00:00'
           duration: 86400
           site-visits: 38
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-07-28T00:00:00'
           duration: 86400
           site-visits: 63
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-07-29T00:00:00'
           duration: 86400
           site-visits: 621
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-07-30T00:00:00'
           duration: 86400
           site-visits: 181
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-07-31T00:00:00'
           duration: 86400
           site-visits: 213
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-08-01T00:00:00'
           duration: 86400
           site-visits: 167
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-08-02T00:00:00'
           duration: 86400
           site-visits: 428
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-08-03T00:00:00'
           duration: 86400
           site-visits: 58
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-08-04T00:00:00'
           duration: 86400
           site-visits: 66
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-08-05T00:00:00'
           duration: 86400
           site-visits: 301
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-08-06T00:00:00'
           duration: 86400
           site-visits: 193
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-08-07T00:00:00'
           duration: 86400
           site-visits: 220
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-08-08T00:00:00'
           duration: 86400
           site-visits: 215
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-08-09T00:00:00'
           duration: 86400
           site-visits: 516
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-08-10T00:00:00'
           duration: 86400
           site-visits: 42
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-08-11T00:00:00'
           duration: 86400
           site-visits: 76
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-08-12T00:00:00'
           duration: 86400
           site-visits: 226
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-08-13T00:00:00'
           duration: 86400
           site-visits: 180
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-08-14T00:00:00'
           duration: 86400
           site-visits: 232
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-08-15T00:00:00'
           duration: 86400
           site-visits: 175
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-08-16T00:00:00'
           duration: 86400
           site-visits: 235
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-08-17T00:00:00'
           duration: 86400
           site-visits: 44
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
         - timestamp: '2024-08-18T00:00:00'
           duration: 86400
           site-visits: 31
-          carbon-per-device: 0.03488
+          carbon-per-device: 0.0392
       outputs:
         - timestamp: '2024-07-22T00:00:00'
           duration: 86400
           site-visits: 228
-          carbon-per-device: 0.03488
-          carbon: 7.952640000000001
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 8.9376
+          sci: 0.0392
         - timestamp: '2024-07-23T00:00:00'
           duration: 86400
           site-visits: 216
-          carbon-per-device: 0.03488
-          carbon: 7.53408
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 8.4672
+          sci: 0.0392
         - timestamp: '2024-07-24T00:00:00'
           duration: 86400
           site-visits: 203
-          carbon-per-device: 0.03488
-          carbon: 7.08064
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 7.957599999999999
+          sci: 0.0392
         - timestamp: '2024-07-25T00:00:00'
           duration: 86400
           site-visits: 203
-          carbon-per-device: 0.03488
-          carbon: 7.08064
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 7.957599999999999
+          sci: 0.0392
         - timestamp: '2024-07-26T00:00:00'
           duration: 86400
           site-visits: 172
-          carbon-per-device: 0.03488
-          carbon: 5.99936
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 6.7424
+          sci: 0.0392
         - timestamp: '2024-07-27T00:00:00'
           duration: 86400
           site-visits: 38
-          carbon-per-device: 0.03488
-          carbon: 1.32544
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 1.4896
+          sci: 0.0392
         - timestamp: '2024-07-28T00:00:00'
           duration: 86400
           site-visits: 63
-          carbon-per-device: 0.03488
-          carbon: 2.1974400000000003
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 2.4696
+          sci: 0.0392
         - timestamp: '2024-07-29T00:00:00'
           duration: 86400
           site-visits: 621
-          carbon-per-device: 0.03488
-          carbon: 21.66048
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 24.3432
+          sci: 0.0392
         - timestamp: '2024-07-30T00:00:00'
           duration: 86400
           site-visits: 181
-          carbon-per-device: 0.03488
-          carbon: 6.313280000000001
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 7.0952
+          sci: 0.0392
         - timestamp: '2024-07-31T00:00:00'
           duration: 86400
           site-visits: 213
-          carbon-per-device: 0.03488
-          carbon: 7.4294400000000005
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 8.3496
+          sci: 0.039200000000000006
         - timestamp: '2024-08-01T00:00:00'
           duration: 86400
           site-visits: 167
-          carbon-per-device: 0.03488
-          carbon: 5.82496
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 6.5464
+          sci: 0.0392
         - timestamp: '2024-08-02T00:00:00'
           duration: 86400
           site-visits: 428
-          carbon-per-device: 0.03488
-          carbon: 14.92864
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 16.7776
+          sci: 0.0392
         - timestamp: '2024-08-03T00:00:00'
           duration: 86400
           site-visits: 58
-          carbon-per-device: 0.03488
-          carbon: 2.02304
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 2.2736
+          sci: 0.0392
         - timestamp: '2024-08-04T00:00:00'
           duration: 86400
           site-visits: 66
-          carbon-per-device: 0.03488
-          carbon: 2.30208
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 2.5871999999999997
+          sci: 0.0392
         - timestamp: '2024-08-05T00:00:00'
           duration: 86400
           site-visits: 301
-          carbon-per-device: 0.03488
-          carbon: 10.49888
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 11.799199999999999
+          sci: 0.0392
         - timestamp: '2024-08-06T00:00:00'
           duration: 86400
           site-visits: 193
-          carbon-per-device: 0.03488
-          carbon: 6.73184
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 7.5656
+          sci: 0.0392
         - timestamp: '2024-08-07T00:00:00'
           duration: 86400
           site-visits: 220
-          carbon-per-device: 0.03488
-          carbon: 7.6736
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 8.624
+          sci: 0.039200000000000006
         - timestamp: '2024-08-08T00:00:00'
           duration: 86400
           site-visits: 215
-          carbon-per-device: 0.03488
-          carbon: 7.4992
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 8.427999999999999
+          sci: 0.0392
         - timestamp: '2024-08-09T00:00:00'
           duration: 86400
           site-visits: 516
-          carbon-per-device: 0.03488
-          carbon: 17.99808
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 20.2272
+          sci: 0.0392
         - timestamp: '2024-08-10T00:00:00'
           duration: 86400
           site-visits: 42
-          carbon-per-device: 0.03488
-          carbon: 1.46496
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 1.6463999999999999
+          sci: 0.0392
         - timestamp: '2024-08-11T00:00:00'
           duration: 86400
           site-visits: 76
-          carbon-per-device: 0.03488
-          carbon: 2.65088
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 2.9792
+          sci: 0.0392
         - timestamp: '2024-08-12T00:00:00'
           duration: 86400
           site-visits: 226
-          carbon-per-device: 0.03488
-          carbon: 7.88288
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 8.8592
+          sci: 0.0392
         - timestamp: '2024-08-13T00:00:00'
           duration: 86400
           site-visits: 180
-          carbon-per-device: 0.03488
-          carbon: 6.2784
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 7.056
+          sci: 0.0392
         - timestamp: '2024-08-14T00:00:00'
           duration: 86400
           site-visits: 232
-          carbon-per-device: 0.03488
-          carbon: 8.09216
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 9.0944
+          sci: 0.0392
         - timestamp: '2024-08-15T00:00:00'
           duration: 86400
           site-visits: 175
-          carbon-per-device: 0.03488
-          carbon: 6.104
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 6.859999999999999
+          sci: 0.0392
         - timestamp: '2024-08-16T00:00:00'
           duration: 86400
           site-visits: 235
-          carbon-per-device: 0.03488
-          carbon: 8.1968
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 9.212
+          sci: 0.0392
         - timestamp: '2024-08-17T00:00:00'
           duration: 86400
           site-visits: 44
-          carbon-per-device: 0.03488
-          carbon: 1.53472
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 1.7247999999999999
+          sci: 0.0392
         - timestamp: '2024-08-18T00:00:00'
           duration: 86400
           site-visits: 31
-          carbon-per-device: 0.03488
-          carbon: 1.08128
-          sci: 0.03488
+          carbon-per-device: 0.0392
+          carbon: 1.2152
+          sci: 0.0392
       aggregated:
-        carbon: 193.33984
-        sci: 0.9766400000000004
+        carbon: 217.2856
+        sci: 0.0392
   outputs:
-    - carbon: 9.60803296817085
-      sci: 0.042140495474433555
+    - carbon: 10.592684968170849
+      sci: 0.005807393074655071
       timestamp: '2024-07-22T00:00:00'
       duration: 86400
-    - carbon: 9.18887067470171
-      sci: 0.04254106793843384
+    - carbon: 10.12168267470171
+      sci: 0.005857455251563489
       timestamp: '2024-07-23T00:00:00'
       duration: 86400
-    - carbon: 8.73477819011014
-      sci: 0.043028463990690345
+    - carbon: 9.61143019011014
+      sci: 0.005918368343663879
       timestamp: '2024-07-24T00:00:00'
       duration: 86400
-    - carbon: 8.73477819011014
-      sci: 0.043028463990690345
+    - carbon: 9.61143019011014
+      sci: 0.005918368343663879
       timestamp: '2024-07-25T00:00:00'
       duration: 86400
-    - carbon: 7.651942265314861
-      sci: 0.04448803642624919
+    - carbon: 8.39467426531486
+      sci: 0.006100780716071846
       timestamp: '2024-07-26T00:00:00'
       duration: 86400
-    - carbon: 2.971296654909459
-      sci: 0.07819201723445944
+    - carbon: 3.135148654909459
+      sci: 0.010312988996412694
       timestamp: '2024-07-27T00:00:00'
       duration: 86400
-    - carbon: 3.844551432970168
-      sci: 0.061024625920161404
+    - carbon: 4.116403432970168
+      sci: 0.008167467128909065
       timestamp: '2024-07-28T00:00:00'
       duration: 86400
-    - carbon: 23.335598079285198
-      sci: 0.037577452623647666
+    - carbon: 26.018010079285197
+      sci: 0.00523711958117657
       timestamp: '2024-07-29T00:00:00'
       duration: 86400
-    - carbon: 7.966313985416717
-      sci: 0.044012784449816114
+    - carbon: 8.747925985416716
+      sci: 0.006041385349044693
       timestamp: '2024-07-30T00:00:00'
       duration: 86400
-    - carbon: 9.084080101334424
-      sci: 0.04264826338654659
+    - carbon: 10.003932101334424
+      sci: 0.005870852172144616
       timestamp: '2024-07-31T00:00:00'
       duration: 86400
-    - carbon: 7.477291309702719
-      sci: 0.04477419945929772
+    - carbon: 8.198423309702719
+      sci: 0.006136544393490059
       timestamp: '2024-08-01T00:00:00'
       duration: 86400
-    - carbon: 16.59407119265652
-      sci: 0.03877119437536571
+    - carbon: 18.442723192656523
+      sci: 0.005386309343649686
       timestamp: '2024-08-02T00:00:00'
       duration: 86400
-    - carbon: 3.669900477358026
-      sci: 0.06327414616134529
+    - carbon: 3.9201524773580267
+      sci: 0.008448604477064713
       timestamp: '2024-08-03T00:00:00'
       duration: 86400
-    - carbon: 3.9493420063374534
-      sci: 0.05983851524753718
+    - carbon: 4.234154006337453
+      sci: 0.008019231072608813
       timestamp: '2024-08-04T00:00:00'
       duration: 86400
-    - carbon: 12.15793692010812
-      sci: 0.04039181701032598
+    - carbon: 13.45794892010812
+      sci: 0.0055888492193140035
       timestamp: '2024-08-05T00:00:00'
       duration: 86400
-    - carbon: 8.385476278885857
-      sci: 0.04344806362117024
+    - carbon: 9.218928278885857
+      sci: 0.005970808470780995
       timestamp: '2024-08-06T00:00:00'
       duration: 86400
-    - carbon: 9.328591439191422
-      sci: 0.04240268835996101
+    - carbon: 10.278683439191422
+      sci: 0.005840161044995127
       timestamp: '2024-08-07T00:00:00'
       duration: 86400
-    - carbon: 9.15394048357928
-      sci: 0.042576467365485024
+    - carbon: 10.082432483579279
+      sci: 0.005861879350918186
       timestamp: '2024-08-08T00:00:00'
       duration: 86400
-    - carbon: 19.66792801143022
-      sci: 0.038116139557035314
+    - carbon: 21.896740011430218
+      sci: 0.0053044428322263125
       timestamp: '2024-08-09T00:00:00'
       duration: 86400
-    - carbon: 3.1110174193991726
-      sci: 0.07407184331902791
+    - carbon: 3.2921494193991725
+      sci: 0.009798063748211822
       timestamp: '2024-08-10T00:00:00'
       duration: 86400
-    - carbon: 4.298643917561737
-      sci: 0.056561104178443906
+    - carbon: 4.626655917561737
+      sci: 0.00760963144335812
       timestamp: '2024-08-11T00:00:00'
       duration: 86400
-    - carbon: 9.538172585925993
-      sci: 0.04220430347754864
+    - carbon: 10.514184585925992
+      sci: 0.005815367580711279
       timestamp: '2024-08-12T00:00:00'
       duration: 86400
-    - carbon: 7.9313837942942875
-      sci: 0.04406324330163493
+    - carbon: 8.708675794294287
+      sci: 0.006047691523815477
       timestamp: '2024-08-13T00:00:00'
       duration: 86400
-    - carbon: 9.747753732660563
-      sci: 0.0420161798821576
+    - carbon: 10.749685732660563
+      sci: 0.005791856536993838
       timestamp: '2024-08-14T00:00:00'
       duration: 86400
-    - carbon: 7.7567328386821455
-      sci: 0.04432418764961226
+    - carbon: 8.512424838682145
+      sci: 0.006080303456201533
       timestamp: '2024-08-15T00:00:00'
       duration: 86400
-    - carbon: 9.852544306027848
-      sci: 0.041925720451182334
+    - carbon: 10.867436306027848
+      sci: 0.005780551226610557
       timestamp: '2024-08-16T00:00:00'
       duration: 86400
-    - carbon: 3.180877801644029
-      sci: 0.07229267731009158
+    - carbon: 3.370649801644029
+      sci: 0.009575709663761447
       timestamp: '2024-08-17T00:00:00'
       duration: 86400
-    - carbon: 2.7267853170524603
-      sci: 0.08796081667911164
+    - carbon: 2.8603973170524606
+      sci: 0.011533860149405082
       timestamp: '2024-08-18T00:00:00'
       duration: 86400
   aggregated:
-    carbon: 239.6486323748215
-    sci: 1.3976949788414628
+    carbon: 263.58576837482155
+    sci: 0.00677935873183653 # ignore me! my real value is more like 1.397 gCO2e/visit
