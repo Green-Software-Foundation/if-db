@@ -126,15 +126,15 @@ To scale by this, we divide 1 day (our timestep resolution) in seconds by 4 year
 
 `86400 / 145152000 = 0.000595`
 
-Our website uses only 0.8 MB of server storage space for the static site, which is 0.00014% of the total (1GB).
+Our website uses only 0.8 MB of server storage space for the static site, which is 0.000008% of the total (1GB).
 We do not scale further by CPU or RAM usage because we cannot get good estimates for this.
 
-`1000000 * 0.000595 * 0.0000008 = 0.000476 gCO2eq` for the origin server
+`1000000 * 0.000595 * 0.0008 = 0.476 gCO2eq` for the origin server
 
 So we end up with 0.000476 g for the origin server, and 0.0000476g per CDN node (10% of origin).
-There are 46 CDN servers, so `0.0000476 * 46 = 0.0022 g CO2e` for the whole CDN network.
+There are 46 CDN servers, so `0.0476 * 46 = 2.1 g CO2e` for the whole CDN network.
 
-The embodied carbon of the static site servers is therefore `0.000476 + 0.0022 = 0.0027 gCO2eq `
+The embodied carbon of the static site servers is therefore `0.476 + 2.1 = 2.576 gCO2eq `  for each day.
 
 
 #### Github server
@@ -173,11 +173,11 @@ So this calculation yielded an estimated embodied carbon value of 18754431 gCO2e
 
 Now we can scale this according to the portion of that storage we actually use.
 
-The `greensoftware.foundation` repo has a storage size of 0.000090896 GB. The storage ratio is therefore `0.000090896/30000 = 3.0298666666666667e-09`.
+The `greensoftware.foundation` repo has a storage size of 0.00090896 GB. The storage ratio is therefore `0.00090896/30000 = 3.0298666666666667e-08`.
 
 Now we can scale the total embodied carbon for the Github server by that ratio to get the embodied carbon we are accountable for:
 
-`18754431*3.0298666666666667e-09 = 0.056 gCO2eq`
+`18754431*3.0298666666666667e-08 = 0.56 gCO2eq`
 
 
 now let's scale that for the duration of each timestep:
@@ -191,6 +191,8 @@ lifespan of the server = 4 years
 4 years is `116121600` seconds
 
 the time ratio is therefore `86400/116121600 = 0.0007 gCO2e / day`
+
+so our daily ration of embodied carbon is `0.56 * 0.0007 = 3.92e-04 gCO2e`
 
 so we use this value in each 1 day timestep in our manifest
 
@@ -212,23 +214,24 @@ We can scale the device lifespan by 40s to get embodied emissions for our applic
 ```
 lifespan of 4 years = 116121600 s
 40s out of 4 years = 3.4446649029982366e-07
-54000 g Co2 * 3.4446649029982366e-07 = 0.018 g per mobile user
-149000 * 3.4446649029982366e-07 = 0.05g per macbook user
+54000 g Co2 * 3.4446649029982366e-07 = 0.018 g per mobile user for a 40s visit
+149000 * 3.4446649029982366e-07 = 0.05g per macbook user for a 40 s visit
 ```
 
 Now, take weighted average (assuming users are 90/10 mobile vs laptop): 
 
 ```
 ((4*0.05)+0.018) / 5
-== 0.0436 g embodied per user
+== 0.0436 g embodied per user 
 ```
 
 We multiply this by the new-user ratio (0.8) and add this to each timestep.
 
 ```
-0.0436 * 0.8 = 0.03488
+0.0436 * 0.9 = 0.0392
 ```
-However, we do not want this value to be divided by our number of users yet, because these are already per-user values, so we will have to multiply by number of users to get total embodied carbon so that the division by n-users during the SCI calculation gets us back to per user, rather than `per user/n_users`.
+
+However, we do not want this value to be divided by our number of users yet, because these are already per-user values, so we will have to multiply by number of users in a separate step to get total embodied carbon of all new users so that the division by n-users during the SCI calculation gets us back to per user, rather than `per user/n_users`.
 
 
 
@@ -241,9 +244,42 @@ We use the global average carbon intensity, because Google Analytics shows our u
 
 ## Calculate SCI
 
-The total carbon is then scaled by the number of visit in the most recent month, to give our final value in gCO2eq/visit.
+We currently have a problem with our SCI calculation - we effectively have to do it manually either by summing the average SCI values across each component, or by dividing the aggregated total carbon value by the number of timesteps per component. The reason is that we have to choose one aggregation method for the SCI parameter that applies to both time aggregation and component aggregation.
+
+Let's explore a bit deeper:
+
+The SCI value is a rate.
+
+If we have a functional unit of e.g. visits, and we have values for that per timestep, then we can gather an SCI score per timestep by doing `carbon/visits`. This is what our SCI plugin does in each timestep, in each component.
+
+However, now let’s say we want to do this over three components.
+
+We have per-timestep SCI in units of gCO2e/visit in each of three components to aggregate up to a single value.
+
+We *don’t* want to sum across time, because what we end up with is not SCI - we’ll end up with an inflated rate that doesn’t represent the actual rate at any point during our times series, but instead a spuriously high one.
+
+E.g. if you did 60 mph for an hour, you would cover 60 miles and your average speed would be 60 mph and your max speed would also be 60 mph, but if we added up the speed of your car measured every minute for an hour long journey, we’d end up saying you went 3600 mph. We're effectively doing this with SCI.
+So instead, we actually want to set the aggregation method to `avg`, or we want to add a normalization step where we do generate a time-totalled SCI by setting the aggregation method to `sum`  but then we divide by number of time-steps retroactively (which ends up being the exact same thing).
+
+No problem, then, for calculating the average SCI per component, but now we want to aggregate across components. Now we really *DO* want to sum the SCI values together to yield one overarching value for the whole tree, but oh dear we already set our aggregation method to `avg`. So we can only get a spuriously LOW estimate in the top level aggregation because we are forced to average where we want to sum.
+
+So, because we have a single aggregation method that covers both time and component aggregation, and we can’t do operations over values after they are aggregated - we can’t calculate SCI in a multi-component manifest. We can only ever massively overestimate or massively underestimate.
+
+What we really want to achieve, is:
+
+- to generate a total carbon value that’s aggregated across all the timesteps and all the tree components and THEN divide by the functional unit (meaning an operation has to be done on the aggregated values)
+
+OR (better)
+
+- enable averaging for time aggregation and summing for component aggregation, and vice-versa.
 
 
+We'll address this as an urgent priority in next week's development tasks, but for now we can just manually sum the averaged SCI values across the tree components,
+
+```
+0.976+0.0001786+0.000689+0.41869+0.001388+0.0000495+0.00001735+0.0000255+0.0000643
+== 1.39710225 gCO2e/visit
+```
 
 ## Assumptions
 
@@ -255,9 +291,8 @@ The total carbon is then scaled by the number of visit in the most recent month,
 - We've been quite harsh in the embodied carbon calculations - assigning 100% of the device emissions to the application for the duration that the device is being used to access our site - in reality that device is probably doing many other things at the same time and could justifiably be scaled down further.
 
 
-
 ## Insights
 
-We compare reasonably well to other websites. The global average web page produces about 0.8 g of C per visit. Our SCI score for the GSF website is 1.2 g C/visit, but we have erred on the side of overestimating values that we couldn't directly measure and been very comprehensive in the factors we included. The embodied carbon for end user devices is by far the main contributor to the overall SCI score by a very large margin - the SCI score excluding the end user device embodied carbon is ~0.4 g/visit.
+We compare reasonably well to other websites. The global average web page produces about 0.8 g of C per visit. Our SCI score for the GSF website is 1.39 g CO2e/visit, but we have erred on the side of overestimating values that we couldn't directly measure and been very comprehensive in the factors we included. The embodied carbon for end user devices is by far the main contributor to the overall SCI score by a very large margin - the SCI score excluding the end user device embodied carbon is ~0.4 gCO2e/visit.
 
 For comparison, using the SWD model via CO2js forn the GSf site yielded an estimate of 0.447 g per visit, about one third of what we estimate using the SCI via IF.

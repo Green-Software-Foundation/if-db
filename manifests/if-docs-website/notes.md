@@ -127,19 +127,20 @@ Let's also use the same specs for the CDN PoP servers, of which there are 46.
 
 We scale the server's total embodied emissions (1M g CO2eq) by the portion of the server's lifespan we are accountable for. We put the whole lifespan of the server at 5 years, and our accountable period as 1 month.
 
-To scale by this, we divide 1 month in seconds by 4 years in seconds:  
+To scale by this, we divide 1 day in seconds by 4 years in seconds:  
 
-`2419200 / 145152000 = 0.016`
+`86400 / 145152000 = 0.000595`
 
-Our website uses only 1.4MB of server storage space for the static site, which is 0.00014% of the total (1GB).
+Our website uses only 1.4MB of server storage space for the static site, which is 0.0014 * the total (1GB).
 We do not scale further by CPU or RAM usage because we cannot get good estimates for this.
 
-`1000000 * 0.016 * 0.0000014 = 0.0224 gCO2eq` for the origin server
+`1000000 * 0.000595 * 0.0014 = 0.833 gCO2eq` for the origin server
 
-So we end up with 0.0224 g for the origin server, and 0.00224g per CDN node (10% of origin).
-There are 46 CDN servers, so `0.00224 * 46 = 0.103 g CO2e` for the whole CDN network.
+So we end up with 0.83 g for the origin server, and 0.083g per CDN node (10% of origin).
+There are 46 CDN servers, so `0.0833 * 46 = 3.83 g CO2e` for the whole CDN network.
 
-The embodied carbon of the static site servers is therefore `0.0224 + 0.103 = 0.125 gCO2eq `
+The embodied carbon of the static site servers is therefore `0.833 + 3.83 = 4.663 gCO2eq `
+
 
 
 #### Github server
@@ -174,15 +175,37 @@ sum components:
 = 18754.431 kg C
 ```
 
-So this calculation yielded an estimated embodied carbon value of 18754431 gCO2eq for 30TB of storage.
+So this calculation yielded an estimated embodied carbon value of 18754431 gCO2eq (i.e. ~18 T) for 30TB of storage.
 
 Now we can scale this according to the portion of that storage we actually use.
 
-The `if-docs` repo has a storage size of 0.000011354 GB. The storage ratio is therefore `0.000011354/30000 = 3.784666666666667e-10`.
+The `if-docs` repo has a storage size of 0.0011354 GB. The storage ratio is therefore `0.0011354/30000 = 3.784666666666667e-8`.
 
 Now we can scale the total embodied carbon for the Github server by that ratio to get the embodied carbon we are accountable for:
 
-`18754431*3.784666666666667e-10 = 0.0071 gCO2eq`
+`18754431*3.784666666666667e-8 = 0.71 gCO2eq`
+
+
+Now let's scale that for the duration of each timestep:
+
+We have daily timesteps, so let's make it
+
+1 day = `86400` seconds
+
+lifespan of the server = 4 years
+
+4 years is `116121600` seconds
+
+the time ratio is therefore `86400/116121600 = 0.0007`
+
+so our daily ration of embodied carbon is
+
+```
+0.71 * 0.0007 = 0.000496 gCo2e
+```
+
+
+so we use this value in each 1 day timestep in our manifest
 
 
 
@@ -194,16 +217,16 @@ We'll assume mobile visitors are all using an I-phone 13 Pro. We'll assume lapto
 
 Apple report 64kg carbon footprint per iphone 13 pro, of which 10kg is due to usage, leaving 54kg embodied emissions. https://8billiontrees.com/carbon-offsets-credits/carbon-footprint-of-iphone/
 
-A Macbook Pro 13" M1 (2020, 256GB SSD)has 149.85kg embodied emiussions (https://github.com/rarecoil/laptop-co2e).
+A Macbook Pro 13" M1 (2020, 256GB SSD)has 149.85kg embodied emissions (https://github.com/rarecoil/laptop-co2e).
 
 According to Google Analytics, our visitors spend 40 seconds on average browsing our site.
 We can scale the device lifespan by 40s to get embodied emissions for our application.
 
 ```
 lifespan of 4 years = 116121600 s
-40s mins out of 4 years = 3.4446649029982366e-07
-54000 g Co2 * 3.4446649029982366e-07 = 0.018 g per mobile user
-149000 * 3.4446649029982366e-07 = 0.05g per macbook user
+40s out of 4 years = 3.4446649029982366e-07
+54000 g Co2 * 3.4446649029982366e-07 = 0.018 g per mobile user for a 40s visit
+149000 * 3.4446649029982366e-07 = 0.05g per macbook user foirma 40 second visit
 ```
 
 Now, take weighted average (assuming users are 90/10 mobile vs laptop): 
@@ -213,12 +236,14 @@ Now, take weighted average (assuming users are 90/10 mobile vs laptop):
 == 0.0436 g embodied per user
 ```
 
-Finally, we can multiply the average embodied emissions per user by the number of unique users.
+We multiply this by the new-user ratio (0.8) and add this to each timestep.
 
 ```
-0.0436 g * n-visits * unique-visitor-ratio = 0.0436*(325*0.8)
-== 11.34 g carbon 
+0.0436 * 0.8 = 0.03488
 ```
+
+However, we will have to multiply by number of users to get total embodied carbon so that the division by n-users during the SCI calculation gets us back to a value of C per visit, rather than `per-visit/per-visit`.
+
 
 
 ## Calculate total carbon
@@ -230,9 +255,42 @@ We use the global average carbon intensity, because Google Analytics shows our u
 
 ## Calculate SCI
 
-The total carbon is then scaled by the number of visit in the most recent month, to give our final value in gCO2eq/visit.
+We currently have a problem with our SCI calculation - we effectively have to do it manually either by summing the average SCI values across each component, or by dividing the aggregated total carbon value by the number of timesteps per component. The reason is that we have to choose one aggregation method for the SCI parameter that applies to both time aggregation and component aggregation.
+
+Let's explore a bit deeper:
+
+The SCI value is a rate.
+
+If we have a functional unit of e.g. visits, and we have values for that per timestep, then we can gather an SCI score per timestep by doing `carbon/visits`. This is what our SCI plugin does in each timestep, in each component.
+
+However, now let’s say we want to do this over three components.
+
+We have per-timestep SCI in units of gCO2e/visit in each of three components to aggregate up to a single value.
+
+We *don’t* want to sum across time, because what we end up with is not SCI - we’ll end up with an inflated rate that doesn’t represent the actual rate at any point during our times series, but instead a spuriously high one.
+
+E.g. if you did 60 mph for an hour, you would cover 60 miles and your average speed would be 60 mph and your max speed would also be 60 mph, but if we added up the speed of your car measured every minute for an hour long journey, we’d end up saying you went 3600 mph. We're effectively doing this with SCI.
+So instead, we actually want to set the aggregation method to `avg`, or we want to add a normalization step where we do generate a time-totalled SCI by setting the aggregation method to `sum`  but then we divide by number of time-steps retroactively (which ends up being the exact same thing).
+
+No problem, then, for calculating the average SCI per component, but now we want to aggregate across components. Now we really *DO* want to sum the SCI values together to yield one overarching value for the whole tree, but oh dear we already set our aggregation method to `avg`. So we can only get a spuriously LOW estimate in the top level aggregation because we are forced to average where we want to sum.
+
+So, because we have a single aggregation method that covers both time and component aggregation, and we can’t do operations over values after they are aggregated - we can’t calculate SCI in a multi-component manifest. We can only ever massively overestimate or massively underestimate.
+
+What we really want to achieve, is:
+
+- to generate a total carbon value that’s aggregated across all the timesteps and all the tree components and THEN divide by the functional unit (meaning an operation has to be done on the aggregated values)
+
+OR (better)
+
+- enable averaging for time aggregation and summing for component aggregation, and vice-versa.
 
 
+We'll address this as an urgent priority in next week's development tasks, but for now we can just manually sum the averaged SCI values across the tree components,
+
+```
+0.0336 + 0.00009284 + 0.4822 + 0.12962 + 0.00008267 + 0.000001033 + 0.000032355 + 0.000047154
+== 0.645676052 gCO2e/visit
+```
 
 ## Assumptions
 
