@@ -122,19 +122,19 @@ Let's also use the same specs for the CDN PoP servers, of which there are 46.
 
 We scale the server's total embodied emissions (1M g CO2eq) by the portion of the server's lifespan we are accountable for. We put the whole lifespan of the server at 5 years, and our accountable period as 1 month.
 
-To scale by this, we divide 1 month in seconds by 4 years in seconds:  
+To scale by this, we divide 1 day (our timestep resolution) in seconds by 4 years in seconds:  
 
-`2419200 / 145152000 = 0.016`
+`86400 / 145152000 = 0.000595`
 
 Our website uses only 0.8 MB of server storage space for the static site, which is 0.00014% of the total (1GB).
 We do not scale further by CPU or RAM usage because we cannot get good estimates for this.
 
-`1000000 * 0.016 * 0.0000008 = 0.0128 gCO2eq` for the origin server
+`1000000 * 0.000595 * 0.0000008 = 0.000476 gCO2eq` for the origin server
 
-So we end up with 0.0128 g for the origin server, and 0.00128g per CDN node (10% of origin).
-There are 46 CDN servers, so `0.00128 * 46 = 0.058 g CO2e` for the whole CDN network.
+So we end up with 0.000476 g for the origin server, and 0.0000476g per CDN node (10% of origin).
+There are 46 CDN servers, so `0.0000476 * 46 = 0.0022 g CO2e` for the whole CDN network.
 
-The embodied carbon of the static site servers is therefore `0.00128 + 0.058 = 0.059 gCO2eq `
+The embodied carbon of the static site servers is therefore `0.000476 + 0.0022 = 0.0027 gCO2eq `
 
 
 #### Github server
@@ -180,6 +180,21 @@ Now we can scale the total embodied carbon for the Github server by that ratio t
 `18754431*3.0298666666666667e-09 = 0.056 gCO2eq`
 
 
+now let's scale that for the duration of each timestep:
+
+We have daily timesteps, so let's make it
+
+1 day = `86400` seconds
+
+lifespan of the server = 4 years
+
+4 years is `116121600` seconds
+
+the time ratio is therefore `86400/116121600 = 0.0007 gCO2e / day`
+
+so we use this value in each 1 day timestep in our manifest
+
+
 
 ## End user devices:
 
@@ -196,7 +211,7 @@ We can scale the device lifespan by 40s to get embodied emissions for our applic
 
 ```
 lifespan of 4 years = 116121600 s
-40s mins out of 4 years = 3.4446649029982366e-07
+40s out of 4 years = 3.4446649029982366e-07
 54000 g Co2 * 3.4446649029982366e-07 = 0.018 g per mobile user
 149000 * 3.4446649029982366e-07 = 0.05g per macbook user
 ```
@@ -208,12 +223,13 @@ Now, take weighted average (assuming users are 90/10 mobile vs laptop):
 == 0.0436 g embodied per user
 ```
 
-Finally, we can multiply the average embodied emissions per user by the number of unique users.
+We multiply this by the new-user ratio (0.8) and add this to each timestep.
 
 ```
-0.0436 g * n-visits * unique-visitor-ratio = 0.0436*(8000*0.9)
-== 313.9 g carbon 
+0.0436 * 0.8 = 0.03488
 ```
+However, we do not want this value to be divided by our number of users yet, because these are already per-user values, so we will have to multiply by number of users to get total embodied carbon so that the division by n-users during the SCI calculation gets us back to per user, rather than `per user/n_users`.
+
 
 
 ## Calculate total carbon
@@ -242,6 +258,6 @@ The total carbon is then scaled by the number of visit in the most recent month,
 
 ## Insights
 
-We compare reasonably well to other websites. The global average web page produces about 0.8 g of C per visit. Our SCI score for the GSF website is 0.97 g C/visit, but we have erred on the side of overestimating values that we couldn't directly measure and been very comprehensive in the factors we included. The embodied carbon for end user devices is the main contributor to the overall SCI score by a very large margin.
+We compare reasonably well to other websites. The global average web page produces about 0.8 g of C per visit. Our SCI score for the GSF website is 1.2 g C/visit, but we have erred on the side of overestimating values that we couldn't directly measure and been very comprehensive in the factors we included. The embodied carbon for end user devices is by far the main contributor to the overall SCI score by a very large margin - the SCI score excluding the end user device embodied carbon is ~0.4 g/visit.
 
-For comparison, using the SWD model via CO2js forn the GSf site yielded an estimate of 0.447 g oper visit, about half of what we estimate using the SCI via IF.
+For comparison, using the SWD model via CO2js forn the GSf site yielded an estimate of 0.447 g per visit, about one third of what we estimate using the SCI via IF.
