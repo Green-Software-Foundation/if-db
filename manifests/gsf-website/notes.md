@@ -120,6 +120,7 @@ This matches the definition of a "baseline" server according to the CCF embodied
 
 Let's also use the same specs for the CDN PoP servers, of which there are 46.
 
+
 We scale the server's total embodied emissions (1M g CO2eq) by the portion of the server's lifespan we are accountable for. We put the whole lifespan of the server at 5 years, and our accountable period as 1 month.
 
 To scale by this, we divide 1 day (our timestep resolution) in seconds by 4 years in seconds:  
@@ -208,28 +209,20 @@ Apple report 64kg carbon footprint per iphone 13 pro, of which 10kg is due to us
 
 A Macbook Pro 13" M1 (2020, 256GB SSD)has 149.85kg embodied emiussions (https://github.com/rarecoil/laptop-co2e).
 
+90% of our users are on mobile.
+
 According to Google Analytics, our visitors spend 40 seconds on average browsing our site.
-We can scale the device lifespan by 40s to get embodied emissions for our application.
+
+We can set the baseline-emissions to the weighted average of the laptop and mobile device (weighte dby share of users). Then scale by the proportion of the device lifespan we are responsible for.
 
 ```
 lifespan of 4 years = 116121600 s
 40s out of 4 years = 3.4446649029982366e-07
-54000 g Co2 * 3.4446649029982366e-07 = 0.018 g per mobile user for a 40s visit
-149000 * 3.4446649029982366e-07 = 0.05g per macbook user for a 40 s visit
+baseline-embodied = ((9 * 54000) + 149850) / 10 == 63585.0 g CO2e
+63585 * 3.4446649029982366e-07 = 0.0219g per user for a 40 s visit
 ```
 
-Now, take weighted average (assuming users are 90/10 mobile vs laptop): 
-
-```
-((4*0.05)+0.018) / 5
-== 0.0436 g embodied per user 
-```
-
-We multiply this by the new-user ratio (0.8) and add this to each timestep.
-
-```
-0.0436 * 0.9 = 0.0392
-```
+We can now add this valiue to each timestep.
 
 However, we do not want this value to be divided by our number of users yet, because these are already per-user values, so we will have to multiply by number of users in a separate step to get total embodied carbon of all new users so that the division by n-users during the SCI calculation gets us back to per user, rather than `per user/n_users`.
 
