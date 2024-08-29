@@ -12,11 +12,11 @@ Manifest files for real projects. Each subdirectory refers to a given project. E
 
 These are the manifests that we currently have available:
 
-| Name | Description| SCI | Manifest | Author(s)| N observations | Date Added (ddmmyyyy) |
-|--|--|--|--|--|--|
-| [GSF docs website](manifests/if-docs-website) | Manifest for the Green Software Foundation website | 0.007 g CO2e/visit | [manifest](manifests/if-docs-website/gsf-docs-website-sci.yml) | 29/08/2024
-| [IF docs website](manifests/if-docs-website) | Manifest for the Impact framework documentation website | 0.12 g CO2e/visit | [manifest](manifests/if-docs-website/if-docs-website-sci.yml) | 29/08/2024
-| [IF project] | Manifest for overall SCI for entire IF project | tbc | [manifest](manifests/if-project/if-project-sci.yml) |
+| Name                                          | Description                                             | SCI                | Manifest                                                       | Author(s)   | N observations | Date Added (ddmmyyyy) |
+| --------------------------------------------- | ------------------------------------------------------- | ------------------ | -------------------------------------------------------------- | ----------- | -------------- |
+| [GSF docs website](manifests/if-docs-website) | Manifest for the Green Software Foundation website      | 0.007 g CO2e/visit | [manifest](manifests/if-docs-website/gsf-docs-website-sci.yml) | @jmcook1186 | 29/08/2024     |
+| [IF docs website](manifests/if-docs-website)  | Manifest for the Impact framework documentation website | 0.12 g CO2e/visit  | [manifest](manifests/if-docs-website/if-docs-website-sci.yml)  | @jmcook1186 | 29/08/2024     |
+| [IF project]                                  | Manifest for overall SCI for entire IF project          | tbc                | [manifest](manifests/if-project/if-project-sci.yml)            | @jmcook1186 | 29/08/24       |
 
 
 
