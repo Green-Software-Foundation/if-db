@@ -229,17 +229,20 @@ initialize:
       method: SciEmbodied
       config:
         output-parameter: carbon
+
     embodied-carbon-web-server-origin:
       path: builtin
       method: SciEmbodied
       config:
         output-parameter: carbon
+
     embodied-carbon-web-server-cdn:
       path: builtin
       method: SciEmbodied
       config:
         output-parameter: carbon
         baseline-emissions: 4600000
+        
     embodied-carbon-devices:
       path: builtin
       method: SciEmbodied

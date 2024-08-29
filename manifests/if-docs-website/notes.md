@@ -229,7 +229,7 @@ lifespan of 4 years = 116121600 s
 149000 * 3.4446649029982366e-07 = 0.05g per macbook user foirma 40 second visit
 ```
 
-Now, take weighted average (assuming users are 90/10 mobile vs laptop): 
+Now, take weighted average (assuming users are 80/20 mobile vs laptop): 
 
 ```
 ((4*0.05)+0.018) / 5
