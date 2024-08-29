@@ -1,7 +1,8 @@
 # if-db
 
 Manifests, guides, case studies and docs for Impact Framework. 
-A place to "check-in" real manifests for projects.
+
+A place to "check-in" manifests for real projects.
 
 
 ## Manifests
@@ -20,7 +21,7 @@ These are the manifests that we currently have available:
 
 ## How to contribute
 
-Yopu can contribute by adding a new manifest for a project, or by making improvements to those already existing in the `manifests` folder.
+You can contribute by adding a new manifest for a project, or by making improvements to those already existing in the `manifests` folder.
 
 ### Add a new manifest
 
@@ -29,4 +30,4 @@ Add a manifest to a new subfolder in the `manifests` folder. Include the manifes
 
 ### Improve an existing manifest
 
-Choose a manifest from the `manifests` folder. Read the notes and check for any particular areas of uncertainty. Work on any components of the manifest that you think can be improved, and include the changes in a PR. make sure you also update the notes and give a detailed description of the changes and their rationale.
+Choose a manifest from the `manifests` folder. Read the notes and check for any particular areas of uncertainty. Work on any components of the manifest that you think can be improved, and include the changes in a PR. Make sure you also update the notes and give a detailed description of the changes and their rationale.
