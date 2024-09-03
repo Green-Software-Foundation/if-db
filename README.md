@@ -27,6 +27,8 @@ You can contribute by adding a new manifest for a project, or by making improvem
 
 Add a manifest to a new subfolder in the `manifests` folder. Include the manifest and a computed output file, along with a set of notes explaining how the calculations were done, what assumptions were made, and highlighting any particular areas of uncertainty.
 
+We recommend using our [pipeline-template](./pipeline-template.md) to structure your notes.
+
 
 ### Improve an existing manifest
 
