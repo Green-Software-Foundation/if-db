@@ -6,7 +6,7 @@ aggregation:
     - carbon
     - sci
   type: both
-  
+explainer: true  
 initialize:
   plugins:
 
@@ -33,6 +33,16 @@ initialize:
       mapping: # rename outputs
         'size': 'repo-size-if-docs'
         'clones': 'repo-clones-if-docs'
+      parameter-metadata:
+        outputs:
+          repo-clones-if-docs:
+            unit: number
+            description: the clones count of the if-docs repository in the specified time range. Renamed from default "clones" output param.
+            aggregation-method: sum
+          repo-size-if-docs:
+            unit: GB
+            description: the size of the if-docs repository. Renamed from default "size" output param.
+            aggregation-method: sum
 
     storage-in-gb-to-tb-if-docs:
       method: Coefficient
@@ -41,6 +51,17 @@ initialize:
         input-parameter: repo-size-if-docs # size comes from github api and represents repo size in gb
         coefficient: 0.001 # convert size to tb
         output-parameter: "storage-tb-if-docs"
+      parameter-metadata:
+        inputs:
+          repo-size-if-docs:
+            unit: GB
+            description: the size of the if-docs repository. Renamed from default "size" output param in "storage-and-traffic-from-github-if-docs".
+            aggregation-method: sum        
+        outputs:
+          storage-tb-if-docs:
+            unit: terabytes
+            description: Storage size of Github IF-docs repo in terabytes.
+            aggregation-method: none
 
     storage-energy-in-watts-if-docs:
       method: Multiply
@@ -897,7 +918,8 @@ tree:
               duration:	86400	
               site-visits: 31
 
-      network:
+    network:
+      children:
         networking-energy-to-serve-static-site-over-the-wire:
           pipeline:
             observe:
@@ -915,90 +937,90 @@ tree:
             grid-intensity: 765.49 # US average
             visits-per-month: 325 # from google analytics
           inputs:
-              - timestamp: '2024-07-22T00:00:00'
-                duration:	86400	
-                site-visits: 228
-              - timestamp: '2024-07-23T00:00:00'
-                duration:	86400	
-                site-visits: 216
-              - timestamp: '2024-07-24T00:00:00'
-                duration:	86400	
-                site-visits: 203
-              - timestamp: '2024-07-25T00:00:00'
-                duration:	86400	
-                site-visits: 203
-              - timestamp: '2024-07-26T00:00:00'
-                duration:	86400	
-                site-visits: 172
-              - timestamp: '2024-07-27T00:00:00'
-                duration:	86400	
-                site-visits: 38
-              - timestamp: '2024-07-28T00:00:00'
-                duration:	86400	
-                site-visits: 63
-              - timestamp: '2024-07-29T00:00:00'
-                duration:	86400	
-                site-visits: 621
-              - timestamp: '2024-07-30T00:00:00'
-                duration:	86400	
-                site-visits: 181
-              - timestamp: '2024-07-31T00:00:00'
-                duration:	86400	
-                site-visits: 213
-              - timestamp: '2024-08-01T00:00:00'
-                duration:	86400	
-                site-visits: 167
-              - timestamp: '2024-08-02T00:00:00'
-                duration:	86400	
-                site-visits: 428
-              - timestamp: '2024-08-03T00:00:00'
-                duration:	86400	
-                site-visits: 58
-              - timestamp: '2024-08-04T00:00:00'
-                duration:	86400	
-                site-visits: 66
-              - timestamp: '2024-08-05T00:00:00'
-                duration:	86400	
-                site-visits: 301
-              - timestamp: '2024-08-06T00:00:00'
-                duration:	86400	
-                site-visits: 193
-              - timestamp: '2024-08-07T00:00:00'
-                duration:	86400	
-                site-visits: 220
-              - timestamp: '2024-08-08T00:00:00'
-                duration:	86400	
-                site-visits: 215
-              - timestamp: '2024-08-09T00:00:00'
-                duration:	86400	
-                site-visits: 516
-              - timestamp: '2024-08-10T00:00:00'
-                duration:	86400	
-                site-visits: 42
-              - timestamp: '2024-08-11T00:00:00'
-                duration:	86400	
-                site-visits: 76
-              - timestamp: '2024-08-12T00:00:00'
-                duration:	86400	
-                site-visits: 226
-              - timestamp: '2024-08-13T00:00:00'
-                duration:	86400	
-                site-visits: 180
-              - timestamp: '2024-08-14T00:00:00'
-                duration:	86400	
-                site-visits: 232
-              - timestamp: '2024-08-15T00:00:00'
-                duration:	86400	
-                site-visits: 175
-              - timestamp: '2024-08-16T00:00:00'
-                duration:	86400	
-                site-visits: 235
-              - timestamp: '2024-08-17T00:00:00'
-                duration:	86400	
-                site-visits: 44
-              - timestamp: '2024-08-18T00:00:00'
-                duration:	86400	
-                site-visits: 31
+                - timestamp: '2024-07-22T00:00:00'
+                  duration:	86400	
+                  site-visits: 228
+                - timestamp: '2024-07-23T00:00:00'
+                  duration:	86400	
+                  site-visits: 216
+                - timestamp: '2024-07-24T00:00:00'
+                  duration:	86400	
+                  site-visits: 203
+                - timestamp: '2024-07-25T00:00:00'
+                  duration:	86400	
+                  site-visits: 203
+                - timestamp: '2024-07-26T00:00:00'
+                  duration:	86400	
+                  site-visits: 172
+                - timestamp: '2024-07-27T00:00:00'
+                  duration:	86400	
+                  site-visits: 38
+                - timestamp: '2024-07-28T00:00:00'
+                  duration:	86400	
+                  site-visits: 63
+                - timestamp: '2024-07-29T00:00:00'
+                  duration:	86400	
+                  site-visits: 621
+                - timestamp: '2024-07-30T00:00:00'
+                  duration:	86400	
+                  site-visits: 181
+                - timestamp: '2024-07-31T00:00:00'
+                  duration:	86400	
+                  site-visits: 213
+                - timestamp: '2024-08-01T00:00:00'
+                  duration:	86400	
+                  site-visits: 167
+                - timestamp: '2024-08-02T00:00:00'
+                  duration:	86400	
+                  site-visits: 428
+                - timestamp: '2024-08-03T00:00:00'
+                  duration:	86400	
+                  site-visits: 58
+                - timestamp: '2024-08-04T00:00:00'
+                  duration:	86400	
+                  site-visits: 66
+                - timestamp: '2024-08-05T00:00:00'
+                  duration:	86400	
+                  site-visits: 301
+                - timestamp: '2024-08-06T00:00:00'
+                  duration:	86400	
+                  site-visits: 193
+                - timestamp: '2024-08-07T00:00:00'
+                  duration:	86400	
+                  site-visits: 220
+                - timestamp: '2024-08-08T00:00:00'
+                  duration:	86400	
+                  site-visits: 215
+                - timestamp: '2024-08-09T00:00:00'
+                  duration:	86400	
+                  site-visits: 516
+                - timestamp: '2024-08-10T00:00:00'
+                  duration:	86400	
+                  site-visits: 42
+                - timestamp: '2024-08-11T00:00:00'
+                  duration:	86400	
+                  site-visits: 76
+                - timestamp: '2024-08-12T00:00:00'
+                  duration:	86400	
+                  site-visits: 226
+                - timestamp: '2024-08-13T00:00:00'
+                  duration:	86400	
+                  site-visits: 180
+                - timestamp: '2024-08-14T00:00:00'
+                  duration:	86400	
+                  site-visits: 232
+                - timestamp: '2024-08-15T00:00:00'
+                  duration:	86400	
+                  site-visits: 175
+                - timestamp: '2024-08-16T00:00:00'
+                  duration:	86400	
+                  site-visits: 235
+                - timestamp: '2024-08-17T00:00:00'
+                  duration:	86400	
+                  site-visits: 44
+                - timestamp: '2024-08-18T00:00:00'
+                  duration:	86400	
+                  site-visits: 31
 
     user:
       children:
