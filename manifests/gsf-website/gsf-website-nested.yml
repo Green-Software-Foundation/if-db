@@ -59,16 +59,34 @@ initialize:
             aggregation-method: sum        
         outputs:
           storage-tb-if-docs:
-            unit: terabytes
+            unit: TB
             description: Storage size of Github IF-docs repo in terabytes.
-            aggregation-method: none
+            aggregation-method: copy
+
+
 
     storage-energy-in-watts-if-docs:
       method: Multiply
       path: builtin
       config:
-        input-parameters: ["storage-tb-if-docs", "watts-per-tb"]
+        input-parameters: ["storage-tb-if-docs", "watt-hours-per-tb-hour"]
         output-parameter: "storage-watts-if-docs"
+      parameter-metadata:
+        inputs:
+          storage-tb-if-docs:
+            unit: TB
+            description: the size of the if-docs repository. Renamed from default "size" output param in "storage-and-traffic-from-github-if-docs".
+            aggregation-method: copy
+          watt-hours-per-tb-hour:
+            unit: Wh
+            description: Coefficient relating the storage size in TB to energy in Watts, taken from CCF.
+            aggregation-method: copy         
+        outputs:
+          storage-watts-if-docs:
+            unit: W
+            description: Watts consumed storing IF docs repository.
+            aggregation-method: sum
+
 
     storage-energy-in-wh-if-docs:
       method: Multiply
@@ -76,6 +94,21 @@ initialize:
       config:
         input-parameters: ["storage-watts-if-docs", "duration-in-hours"]
         output-parameter: "storage-wh-if-docs"
+      parameter-metadata:
+        inputs:
+          storage-watts-if-docs:
+            unit: W
+            description: Watts consumed storing IF docs repository.
+            aggregation-method: sum
+          duration-in-hours:
+            unit: hours
+            description: duration of the timestep converted from seconds to hours.
+            aggregation-method: sum         
+        outputs:
+          storage-wh-if-docs:
+            unit: Wh
+            description: Energy consumed storing IF docs repository in Watt hours.
+            aggregation-method: sum
 
     storage-energy-to-kwh-if-docs:
       path: "builtin"
@@ -84,14 +117,39 @@ initialize:
         input-parameter: storage-wh-if-docs
         coefficient: 0.001
         output-parameter: energy
-    
+      parameter-metadata:
+        inputs:
+          storage-wh-if-docs:
+            unit: Wh
+            description: Energy consumed storing IF docs repository in Watt hours.
+            aggregation-method: sum      
+        outputs:
+          energy:
+            unit: kWh
+            description: Energy consumed storing IF docs repository in kWh.
+            aggregation-method: sum    
+
     energy-to-carbon:
       method: Multiply
       path: "builtin"
       config:
         input-parameters: ["energy", "grid-intensity"]
         output-parameter: "carbon"
-
+      parameter-metadata:
+        inputs:
+          energy:
+            unit: kWh
+            description: Energy consumed in kWh.
+            aggregation-method: sum
+          grid-intensity:
+            unit: gCO2e/kWh
+            description: Mass of carbon dioxide equivalent emitted per kWh of energy consumed.
+            aggregation-method: sum    
+        outputs:
+          carbon:
+            unit: gCO2e
+            description: Mass of CO2e emitted.
+            aggregation-method: sum   
 
     
     # # storing static site on netlify
@@ -103,20 +161,62 @@ initialize:
         numerator: static-site-size-in-mb
         denominator: 1000000 # s to hr
         output: static-site-size-in-tb
+      parameter-metadata:
+        inputs:
+          static-site-size-in-mb:
+            unit: MB
+            description: Size of the static site, taken from Google PageSpeed API.
+            aggregation-method: sum
+        outputs:
+          static-site-size-in-tb:
+            unit: TB
+            description: Size of the static site, taken from Google PageSpeed API.
+            aggregation-method: sum   
       
-    storage-energy-static-site-in-watts:
+    storage-energy-static-site-in-watts-for-one-hour:
       method: Multiply
       path: builtin
       config:
-        input-parameters: ["static-site-size-in-tb", "watts-per-tb"]
-        output-parameter: "storage-watts-static-site-at-origin"
+        input-parameters: ["static-site-size-in-tb", "watt-hours-per-tb-hour"]
+        output-parameter: "storage-watt-hours-static-site-at-origin"
+      parameter-metadata:
+        inputs:
+          static-site-size-in-tb:
+            unit: TB
+            description: Size of the static site, taken from Google PageSpeed API.
+            aggregation-method: sum   
+          watt-hours-per-tb-hour:
+            unit: Wh
+            description: Energy required to store 1 TB of data for 1 hour on an SSD, taken from CCF.
+            aggregation-method: copy   
+        outputs:
+          storage-watt-hours-static-site-at-origin:
+            unit: Wh
+            description: Energy required to store the IF docs repo for one hour.
+            aggregation-method: sum   
 
-    storage-energy-in-wh-static-site:
+    storage-energy-in-wh-static-site-per-duration:
       method: Multiply
       path: builtin
       config:
-        input-parameters: ["storage-watts-static-site-at-origin", "duration-in-hours"]
+        input-parameters: ["storage-watt-hours-static-site-at-origin", "duration-in-hours"]
         output-parameter: "storage-wh-static-site-at-origin"
+      parameter-metadata:
+        inputs:
+          storage-watt-hours-static-site-at-origin:
+            unit: Wh
+            description: Energy required to store the IF docs repo for one hour.
+            aggregation-method: sum   
+          duration-in-hours:
+            unit: hours
+            description: duration of the timestep converted from seconds to hours.
+            aggregation-method: sum     
+        outputs:
+          storage-wh-static-site-at-origin:
+            unit: Wh
+            description: Energy required to store the IF docs repo in each timestep.
+            aggregation-method: sum   
+
 
     storage-energy-to-kwh-static-site:
       path: "builtin"
@@ -125,7 +225,17 @@ initialize:
         input-parameter: storage-wh-static-site-at-origin
         coefficient: 0.001
         output-parameter: storage-energy-kwh-static-site-at-origin
-
+      parameter-metadata:
+        inputs:
+          storage-wh-static-site-at-origin:
+            unit: Wh
+            description: Energy required to store the IF docs repo in each timestep.
+            aggregation-method: sum     
+        outputs:
+          storage-energy-kwh-static-site-at-origin:
+            unit: kWh
+            description: Energy required to store the IF docs repo in each timestep, in kWh.
+            aggregation-method: sum 
 
     # # CDN
     # ######
@@ -137,6 +247,17 @@ initialize:
         numerator: storage-energy-kwh-static-site-at-origin
         denominator: 10 # s to hr
         output: storage-energy-per-cdn-node
+      parameter-metadata:
+        inputs:
+          storage-energy-kwh-static-site-at-origin:
+            unit: kWh
+            description: Energy required to store the IF docs repo in each timestep, in kWh.
+            aggregation-method: sum    
+        outputs:
+          storage-energy-per-cdn-node:
+            unit: kWh
+            description: Energy required to store the static site at each CDN PoP, assuming it to be 10% of that at the origin.
+            aggregation-method: sum
 
     storage-energy-for-entire-cdn:
       method: Coefficient
@@ -145,6 +266,17 @@ initialize:
         input-parameter: storage-energy-per-cdn-node
         coefficient: 46 # there are 46 PoPs on Fastly, which we think GH uses for CDN
         output-parameter: storage-energy-whole-cdn
+      parameter-metadata:
+        inputs:
+          storage-energy-per-cdn-node:
+            unit: kWh
+            description: Energy required to store the static site at each CDN PoP, assuming it to be 10% of that at the origin.
+            aggregation-method: sum 
+        outputs:
+          storage-energy-whole-cdn:
+            unit: kWh
+            description: Energy required to store the static site across the entire CDN, assuming 46 PoPs.
+            aggregation-method: sum
 
     sum-serving-static-site-energy-components:
       method: Sum
@@ -152,6 +284,22 @@ initialize:
       config:
         input-parameters: ['storage-energy-whole-cdn','storage-energy-kwh-static-site-at-origin']
         output-parameter: 'energy'
+      parameter-metadata:
+        inputs:
+          storage-energy-whole-cdn:
+            unit: kWh
+            description: Energy required to store the static site across the entire CDN, assuming 46 PoPs.
+            aggregation-method: sum
+          storage-energy-kwh-static-site-at-origin:
+            unit: kWh
+            description: Energy required to store the IF docs repo in each timestep, in kWh.
+            aggregation-method: sum   
+        outputs:
+          energy:
+            unit: kWh
+            description: Energy required to serve site from origin and CDN, in kWh.
+            aggregation-method: sum
+
 
     # # Networking energy to serve static site to users
     # #################################################
@@ -163,6 +311,17 @@ initialize:
         input-parameter: static-site-size-in-mb # size comes from github api and represents repo size in gb
         coefficient: 0.000001 # convert size to tb
         output-parameter: "static-site-size-in-gb"
+      parameter-metadata:
+        inputs:
+          static-site-size-in-mb:
+            unit: MB
+            description: Size of static site as reported by Github API.
+            aggregation-method: sum
+        outputs:
+          static-site-size-in-gb:
+            unit: GB
+            description: Size of static site as reported by Github API, converted to GB.
+            aggregation-method: sum
 
     network-energy-serving-static-site-per-view:
       method: Multiply
@@ -170,6 +329,22 @@ initialize:
       config:
         input-parameters: ["static-site-size-in-gb", "kwh-per-gb-network"]
         output-parameter: "network-energy-kwh-serving-static-site-per-view"
+      parameter-metadata:
+        inputs:
+          static-site-size-in-gb:
+            unit: GB
+            description: Size of static site as reported by Github API, converted to GB.
+            aggregation-method: sum
+          kwh-per-gb-network:
+            unit: kWh/GB
+            description: Coefficient relating energy expendidture to 1GB of data transferred over network.
+            aggregation-method: copy
+        outputs:
+          network-energy-kwh-serving-static-site-per-view:
+            unit: kWh
+            description: Energy required to transfer static site data over the network, for each first-time visitor.
+            aggregation-method: sum
+
 
     network-energy-serving-static-site-total:
       method: Multiply
@@ -177,6 +352,22 @@ initialize:
       config:
         input-parameters: [network-energy-kwh-serving-static-site-per-view, 'site-visits']
         output-parameter: energy
+      parameter-metadata:
+        inputs:
+          network-energy-kwh-serving-static-site-per-view:
+            unit: kWh
+            description: Energy required to transfer static site data over the network, for each first-time visitor.
+            aggregation-method: sum
+          site-visits:
+            unit: visits
+            description: Number of times the site was visited in this timestep, from Google Analytics
+            aggregation-method: sum
+        outputs:
+          energy:
+            unit: kWh
+            description: Energy required to transfer static site data over the network, for all users in timestep.
+            aggregation-method: sum
+
 
     ## End user energy
     ##################
@@ -187,6 +378,25 @@ initialize:
       config:
         input-parameters: [site-visits, static-site-size-in-gb, end-user-energy-coefficient]
         output-parameter: energy
+      parameter-metadata:
+        inputs:
+          site-visits:
+            unit: visits
+            description: Number of times the site was visited in this timestep, from Google Analytics
+            aggregation-method: sum
+          static-site-size-in-gb:
+            unit: GB
+            description: Size of static site as reported by Github API, converted to GB.
+            aggregation-method: sum
+          end-user-energy-coefficient:
+            unit: kWh
+            description: Coefficient for end user energy expended viewing site in browser, from Sustainable Web Design model.
+            aggregation-method: copy          
+        outputs:
+          energy:
+            unit: kWh
+            description: Energy consumed by all users viewing the site in their browser, in timestep.
+            aggregation-method: sum
 
     ## Build energy: gh-pages
     #########################
@@ -199,6 +409,18 @@ initialize:
         y: [0.12, 0.32, 0.75, 1.02]
         input-parameter: 'cpu-utilization-during-build'
         output-parameter: 'cpu-factor'
+      parameter-metadata:
+        inputs:
+          cpu-utilization-during-build:
+            unit: percent
+            description: percentage total CPU utilization during build process
+            aggregation-method: avg   
+        outputs:
+          cpu-factor:
+            unit: dimensionless
+            description: A multiplier applied to the processor TDP to estimate power draw.
+            aggregation-method: copy
+
 
     build-stage-cpu-factor-to-wattage:
       method: Multiply
@@ -206,6 +428,22 @@ initialize:
       config:
         input-parameters: ["cpu-factor", "thermal-design-power"]
         output-parameter: "cpu-wattage"
+      parameter-metadata:
+        inputs:
+          cpu-factor:
+            unit: dimensionless
+            description: A multiplier applied to the processor TDP to estimate power draw.
+            aggregation-method: copy
+          thermal-design-power:
+            unit: W
+            description: Estimate of the maximum power draw by a processor.
+            aggregation-method: copy
+        outputs:
+          cpu-wattage:
+            unit: W
+            description: Power used by CPU during build process, estimated as the product of the cpu-factor and the TDP.
+            aggregation-method: sum
+
 
     build-stage-cpu-wattage-times-build-duration:
       method: Multiply
@@ -213,6 +451,22 @@ initialize:
       config:
         input-parameters: ["cpu-wattage", "build-duration"]
         output-parameter: "cpu-wattage-times-duration"
+      parameter-metadata:
+        inputs:
+          cpu-wattage:
+            unit: W
+            description: Power used by CPU during build process,estimated as the product of the cpu-factor and the TDP.
+            aggregation-method: sum
+          build-duration:
+            unit: s
+            description: Time taken for build process to complete.
+            aggregation-method: sum
+        outputs:
+          cpu-wattage-times-duration:
+            unit: Ws
+            description: Energy used by CPU during build process.
+            aggregation-method: sum
+
 
     build-stage-cpu-wattage-to-energy-kwh:
       method: Divide
@@ -221,6 +475,17 @@ initialize:
         numerator: cpu-wattage-times-duration
         denominator: 3600000
         output: build-energy-cpu-kwh
+      parameter-metadata:
+        inputs:
+          cpu-wattage-times-duration:
+            unit: Ws
+            description: Energy used by CPU during build process.
+            aggregation-method: sum
+        outputs:
+          build-energy-cpu-kwh:
+            unit: kWh
+            description: Energy used by CPU during build process, converted to kWh.
+            aggregation-method: sum
 
     memory-coefficient-correction: # memory coefficient in CCF is given /GB/hr - we want to convert to /GB/run-time-duration then x by run duration in s
       path: builtin
@@ -229,6 +494,18 @@ initialize:
         input-parameter: build-duration
         coefficient: 0.000006533333 # this is 0.000392/60 = KW/GB/H -> KW/GB/s
         output-parameter: memory-coefficient
+      parameter-metadata:
+        inputs:
+          build-duration:
+            unit: s
+            description: Time taken for build process to complete.
+            aggregation-method: sum
+        outputs:
+          memory-coefficient:
+            unit: kW/GB/s
+            description: Energy used per GB of memory, per second. Converted from CCF coefficient expressed in kW/GB/h kWh.
+            aggregation-method: sum
+
 
     memory-energy-per-build:
       path: builtin
@@ -236,6 +513,21 @@ initialize:
       config:
         input-parameters: [build-memory-gb, memory-coefficient]
         output-parameter: build-energy-memory-kwh
+      parameter-metadata:
+        inputs:
+          build-memory-gb:
+            unit: GB
+            description: Memory used during build process.
+            aggregation-method: sum
+          memory-coefficient:
+            unit: kW/GB/s
+            description: Energy used per GB of memory, per second. Converted from CCF coefficient expressed in kW/GB/h kWh.
+            aggregation-method: sum
+        outputs:
+          build-energy-memory-kwh:
+            unit: kWh
+            description: Energy consumed during build process due to memory usage.
+            aggregation-method: sum
 
     sum-build-energy-components:
       method: Sum
@@ -243,6 +535,21 @@ initialize:
       config:
         input-parameters: ['build-energy-cpu-kwh','build-energy-memory-kwh']
         output-parameter: 'build-energy-kwh-per-build'
+      parameter-metadata:
+        inputs:
+          build-energy-cpu-kwh:
+            unit: kWh
+            description: Energy used by CPU during build process, converted to kWh.
+            aggregation-method: sum
+          build-energy-memory-kwh:
+            unit: kWh
+            description: Energy consumed during build process due to memory usage.
+            aggregation-method: sum
+        outputs:
+          build-energy-kwh-per-build:
+            unit: kWh
+            description: Total Energy consumed during build process due to memory and CPU usage, per build.
+            aggregation-method: sum
 
     build-energy-total:
       path: builtin
@@ -250,7 +557,21 @@ initialize:
       config:
         input-parameters: [build-energy-kwh-per-build, builds-per-month]
         output-parameter: energy    
-
+      parameter-metadata:
+        inputs:
+          build-energy-kwh-per-build:
+            unit: kWh
+            description: Total Energy consumed during build process due to memory and CPU usage.
+            aggregation-method: sum
+          builds-per-month:
+            unit: builds
+            description: Number of builds that happened in the most recent month.
+            aggregation-method: copy
+        outputs:
+          energy:
+            unit: kWh
+            description: Total Energy consumed during build process due to memory and CPU usage, for all builds.
+            aggregation-method: sum
 
     ## Embodied Carbon
     ##################
@@ -261,19 +582,46 @@ initialize:
       config:
         input-parameters: [carbon-per-device, site-visits]
         output-parameter: carbon    
-    
+      parameter-metadata:
+        inputs:
+          carbon-per-device:
+            unit: gCO2e
+            description: Mass of embodied carbon per user device.
+            aggregation-method: sum
+          site-visits:
+            unit: visits
+            description: Number of times the site was visited in this timestep, from Google Analytics
+            aggregation-method: sum
+        outputs:
+          carbon:
+            unit: gCO2e
+            description: Mass of carbon emitted for all the end-user devices used to visit our site.
+            aggregation-method: sum
+
+
     embodied-carbon-github:
       path: builtin
       method: SciEmbodied
       config:
         output-parameter: carbon
-
+      parameter-metadata:
+        outputs:
+          carbon:
+            unit: gCO2e
+            description: Mass of carbon emitted in the production and disposal of Github server serving our source code.
+            aggregation-method: sum
 
     embodied-carbon-web-server-origin:
       path: builtin
       method: SciEmbodied
       config:
         output-parameter: carbon
+      parameter-metadata:
+        outputs:
+          carbon:
+            unit: gCO2e
+            description: Mass of carbon emitted in the production and disposal of the server serving our site.
+            aggregation-method: sum
 
     embodied-carbon-web-server-cdn:
       path: builtin
@@ -281,6 +629,12 @@ initialize:
       config:
         output-parameter: carbon
         baseline-emissions: 4600000 # 46 lots of the origin server
+      parameter-metadata:
+        outputs:
+          carbon:
+            unit: gCO2e
+            description: Mass of carbon emitted in the production and disposal of the servers comprising the CDN serving our site.
+            aggregation-method: sum
 
 
     embodied-carbon-devices:
@@ -290,7 +644,23 @@ initialize:
         baseline-emissions: 63585
         lifespan: 116121600
         output-parameter: carbon-per-device
+      parameter-metadata:
+        inputs:
+          baseline-emissions:
+            unit: gCO2e
+            description: Mass of carbon emitted in the production and disposal of a basic rack server with 1 CPU and 16GB RAM.
+            aggregation-method: sum
+          lifespan:
+            unit: s
+            description: Expected lifespan of server, in seconds.
+            aggregation-method: sum
+        outputs:
+          carbon-per-device:
+            unit: gCO2e
+            description: Mass of carbon emitted in the production and disposal of end-user devices.
+            aggregation-method: sum
 
+            
     ## SCI
     ######
 
@@ -324,7 +694,7 @@ tree:
               - energy-to-carbon
               - sci
           defaults:
-            watts-per-tb: 1.2 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
+            watt-hours-per-tb-hour: 1.2 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
             grid-intensity: 765.49 # US average
             visits-per-month: 325 # from google analytics
           inputs:
@@ -533,8 +903,8 @@ tree:
             compute:
               - duration-in-hours        
               - static-site-size-in-tb
-              - storage-energy-static-site-in-watts
-              - storage-energy-in-wh-static-site
+              - storage-energy-static-site-in-watts-for-one-hour
+              - storage-energy-in-wh-static-site-per-duration
               - storage-energy-to-kwh-static-site
               - storage-energy-per-cdn-node        
               - storage-energy-for-entire-cdn
@@ -543,7 +913,7 @@ tree:
               - sci
           defaults:
             static-site-size-in-mb: 0.809473 # from google pagespeed api
-            watts-per-tb: 1.2 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
+            watt-hours-per-tb-hour: 1.2 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
             grid-intensity: 765.49 # US average
           inputs:
             - timestamp: '2024-07-22T00:00:00'
@@ -933,7 +1303,7 @@ tree:
           defaults:
             static-site-size-in-mb: 0.809473 # from google pagespeed api
             kwh-per-gb-network: 0.001 # https://www.cloudcarbonfootprint.org/docs/methodology/#networking
-            watts-per-tb: 1.2 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
+            watt-hours-per-tb-hour: 1.2 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
             grid-intensity: 765.49 # US average
             visits-per-month: 325 # from google analytics
           inputs:
