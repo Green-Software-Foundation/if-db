@@ -25,65 +25,64 @@ initialize:
     ## Github storage for IF
     ########################
 
-    storage-and-traffic-from-github-if-docs:
+    storage-and-traffic-from-github-source-repo:
       method: Github
       path: if-github-plugin
       config:
-        repo: Green-Software-Foundation/if-docs
+        repo: "Green-Software-Foundation/if-docs"
       mapping: # rename outputs
-        'size': 'repo-size-if-docs'
-        'clones': 'repo-clones-if-docs'
+        'size': 'repo-size-source-repo'
+        'clones': 'repo-clones-source-repo'
       parameter-metadata:
         outputs:
-          repo-clones-if-docs:
+          repo-clones-source-repo:
             unit: number
-            description: the clones count of the if-docs repository in the specified time range. Renamed from default "clones" output param.
+            description: the clones count of the source-repo repository in the specified time range. Renamed from default "clones" output param.
             aggregation-method: 
               time: sum
               component: sum
-          repo-size-if-docs:
+          repo-size-source-repo:
             unit: GB
-            description: the size of the if-docs repository. Renamed from default "size" output param.
+            description: the size of the source-repo repository. Renamed from default "size" output param.
             aggregation-method:
               time: sum
               component: sum
 
-    storage-in-gb-to-tb-if-docs:
+    storage-in-gb-to-tb-source-repo:
       method: Coefficient
       path: builtin
       config:
-        input-parameter: repo-size-if-docs # size comes from github api and represents repo size in gb
+        input-parameter: repo-size-source-repo # size comes from github api and represents repo size in gb
         coefficient: 0.001 # convert size to tb
-        output-parameter: "storage-tb-if-docs"
+        output-parameter: "storage-tb-source-repo"
       parameter-metadata:
         inputs:
-          repo-size-if-docs:
+          repo-size-source-repo:
             unit: GB
-            description: the size of the if-docs repository. Renamed from default "size" output param in "storage-and-traffic-from-github-if-docs".
+            description: the size of the source-repo repository. Renamed from default "size" output param in "storage-and-traffic-from-github-source-repo".
             aggregation-method:
               time: sum
               component: sum       
         outputs:
-          storage-tb-if-docs:
+          storage-tb-source-repo:
             unit: TB
-            description: Storage size of Github IF-docs repo in terabytes.
+            description: Storage size of Github source-repo repo in terabytes.
             aggregation-method:
               time: copy
               component: copy  
 
 
-
-    storage-energy-in-watts-if-docs:
+    storage-energy-in-watts-source-repo:
       method: Multiply
       path: builtin
       config:
-        input-parameters: ["storage-tb-if-docs", "watt-hours-per-tb-hour"]
-        output-parameter: "storage-watts-if-docs"
+        input-parameters: ["storage-tb-source-repo", "watt-hours-per-tb-hour"]
+        output-parameter: "storage-watts-source-repo"
       parameter-metadata:
         inputs:
-          storage-tb-if-docs:
+          storage-tb-source-repo:
             unit: TB
-            description: the size of the if-docs repository. Renamed from default "size" output param in "storage-and-traffic-from-github-if-docs".
+            description: the size of the source-repo repository. Renamed from default "size" output param in "storage-and-traffic-from-github-source-repo".
             aggregation-method:
               time: copy
               component: copy  
@@ -94,7 +93,7 @@ initialize:
               time: copy
               component: copy           
         outputs:
-          storage-watts-if-docs:
+          storage-watts-source-repo:
             unit: W
             description: Watts consumed storing IF docs repository.
             aggregation-method:
@@ -102,15 +101,15 @@ initialize:
               component: sum  
 
 
-    storage-energy-in-wh-if-docs:
+    storage-energy-in-wh-source-repo:
       method: Multiply
       path: builtin
       config:
-        input-parameters: ["storage-watts-if-docs", "duration-in-hours"]
-        output-parameter: "storage-wh-if-docs"
+        input-parameters: ["storage-watts-source-repo", "duration-in-hours"]
+        output-parameter: "storage-wh-source-repo"
       parameter-metadata:
         inputs:
-          storage-watts-if-docs:
+          storage-watts-source-repo:
             unit: W
             description: Watts consumed storing IF docs repository.
             aggregation-method:
@@ -123,23 +122,23 @@ initialize:
               time: sum
               component: sum         
         outputs:
-          storage-wh-if-docs:
+          storage-wh-source-repo:
             unit: Wh
             description: Energy consumed storing IF docs repository in Watt hours.
             aggregation-method:
               time: sum
               component: sum  
 
-    storage-energy-to-kwh-if-docs:
+    storage-energy-to-kwh-source-repo:
       path: "builtin"
       method: Coefficient
       config:
-        input-parameter: storage-wh-if-docs
+        input-parameter: storage-wh-source-repo
         coefficient: 0.001
         output-parameter: energy
       parameter-metadata:
         inputs:
-          storage-wh-if-docs:
+          storage-wh-source-repo:
             unit: Wh
             description: Energy consumed storing IF docs repository in Watt hours.
             aggregation-method:
@@ -373,7 +372,7 @@ initialize:
       path: builtin
       config:
         input-parameter: static-site-size-in-mb # size comes from github api and represents repo size in gb
-        coefficient: 0.000001 # convert size to tb
+        coefficient: 0.001 # convert size to tb
         output-parameter: "static-site-size-in-gb"
       parameter-metadata:
         inputs:
@@ -740,6 +739,8 @@ initialize:
       method: SciEmbodied
       config:
         output-parameter: carbon
+        vCPUs: 160
+        memory: 1280
       parameter-metadata:
         outputs:
           carbon:
@@ -753,6 +754,8 @@ initialize:
       path: builtin
       method: SciEmbodied
       config:
+        baseline-emissions: 1000000
+        lifespan: 145152000
         output-parameter: carbon
       parameter-metadata:
         outputs:
@@ -769,6 +772,7 @@ initialize:
       config:
         output-parameter: carbon
         baseline-emissions: 4600000 # 46 lots of the origin server
+        lifespan: 145152000
       parameter-metadata:
         outputs:
           carbon:
@@ -792,14 +796,14 @@ initialize:
             unit: gCO2e
             description: Mass of carbon emitted in the production and disposal of a basic rack server with 1 CPU and 16GB RAM.
             aggregation-method:
-              time: sum
-              component: sum  
+              time: copy
+              component: copy  
           lifespan:
             unit: s
             description: Expected lifespan of server, in seconds.
             aggregation-method:
-              time: sum
-              component: sum  
+              time: copy
+              component: copy  
         outputs:
           carbon-per-device:
             unit: gCO2e
@@ -836,11 +840,11 @@ tree:
             regroup:
             compute:
               - duration-in-hours
-              - storage-and-traffic-from-github-if-docs
-              - storage-in-gb-to-tb-if-docs
-              - storage-energy-in-watts-if-docs
-              - storage-energy-in-wh-if-docs
-              - storage-energy-to-kwh-if-docs
+              - storage-and-traffic-from-github-source-repo
+              - storage-in-gb-to-tb-source-repo
+              - storage-energy-in-watts-source-repo
+              - storage-energy-in-wh-source-repo
+              - storage-energy-to-kwh-source-repo
               - energy-to-carbon
               - sci
           inputs:
@@ -849,169 +853,141 @@ tree:
               site-visits: 228
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-07-23T00:00:00'
               duration:	86400	
               site-visits: 216
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-07-24T00:00:00'
               duration:	86400	
               site-visits: 203
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-07-25T00:00:00'
               duration:	86400	
               site-visits: 203
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-07-26T00:00:00'
               duration:	86400	
               site-visits: 172
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-07-27T00:00:00'
               duration:	86400	
               site-visits: 38
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-07-28T00:00:00'
               duration:	86400	
               site-visits: 63
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325              
             - timestamp: '2024-07-29T00:00:00'
               duration:	86400	
               site-visits: 621
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-07-30T00:00:00'
               duration:	86400	
               site-visits: 181
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-07-31T00:00:00'
               duration:	86400	
               site-visits: 213
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-01T00:00:00'
               duration:	86400	
               site-visits: 167
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-02T00:00:00'
               duration:	86400	
               site-visits: 428
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-03T00:00:00'
               duration:	86400	
               site-visits: 58
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-04T00:00:00'
               duration:	86400	
               site-visits: 66
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-05T00:00:00'
               duration:	86400	
               site-visits: 301
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-06T00:00:00'
               duration:	86400	
               site-visits: 193
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-07T00:00:00'
               duration:	86400	
               site-visits: 220
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-08T00:00:00'
               duration:	86400	
               site-visits: 215
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-09T00:00:00'
               duration:	86400	
               site-visits: 516
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-10T00:00:00'
               duration:	86400	
               site-visits: 42
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-11T00:00:00'
               duration:	86400	
               site-visits: 76
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-12T00:00:00'
               duration:	86400	
               site-visits: 226
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-13T00:00:00'
               duration:	86400	
               site-visits: 180
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-14T00:00:00'
               duration:	86400	
               site-visits: 232
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-15T00:00:00'
               duration:	86400	
               site-visits: 175
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-16T00:00:00'
               duration:	86400	
               site-visits: 235
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-17T00:00:00'
               duration:	86400	
               site-visits: 44
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-18T00:00:00'
               duration:	86400	
               site-visits: 31
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
-              visits-per-month: 325
 
     server:
       children:
@@ -1994,7 +1970,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-07-23T00:00:00'
                   duration:	86400	
                   site-visits: 216
@@ -2002,7 +1977,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-07-24T00:00:00'
                   duration:	86400	
                   site-visits: 203
@@ -2010,7 +1984,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-07-25T00:00:00'
                   duration:	86400	
                   site-visits: 203
@@ -2018,7 +1991,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-07-26T00:00:00'
                   duration:	86400	
                   site-visits: 172
@@ -2026,7 +1998,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-07-27T00:00:00'
                   duration:	86400	
                   site-visits: 38
@@ -2034,7 +2005,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-07-28T00:00:00'
                   duration:	86400	
                   site-visits: 63
@@ -2042,7 +2012,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-07-29T00:00:00'
                   duration:	86400	
                   site-visits: 621
@@ -2050,7 +2019,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-07-30T00:00:00'
                   duration:	86400	
                   site-visits: 181
@@ -2058,7 +2026,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-07-31T00:00:00'
                   duration:	86400	
                   site-visits: 213
@@ -2066,7 +2033,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-08-01T00:00:00'
                   duration:	86400	
                   site-visits: 167
@@ -2074,7 +2040,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-08-02T00:00:00'
                   duration:	86400	
                   site-visits: 428
@@ -2082,7 +2047,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-08-03T00:00:00'
                   duration:	86400	
                   site-visits: 58
@@ -2090,7 +2054,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-08-04T00:00:00'
                   duration:	86400	
                   site-visits: 66
@@ -2098,7 +2061,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-08-05T00:00:00'
                   duration:	86400	
                   site-visits: 301
@@ -2106,7 +2068,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-08-06T00:00:00'
                   duration:	86400	
                   site-visits: 193
@@ -2114,7 +2075,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-08-07T00:00:00'
                   duration:	86400	
                   site-visits: 220
@@ -2122,7 +2082,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-08-08T00:00:00'
                   duration:	86400	
                   site-visits: 215
@@ -2130,7 +2089,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-08-09T00:00:00'
                   duration:	86400	
                   site-visits: 516
@@ -2138,7 +2096,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-08-10T00:00:00'
                   duration:	86400	
                   site-visits: 42
@@ -2146,7 +2103,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-08-11T00:00:00'
                   duration:	86400	
                   site-visits: 76
@@ -2154,7 +2110,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-08-12T00:00:00'
                   duration:	86400	
                   site-visits: 226
@@ -2162,7 +2117,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-08-13T00:00:00'
                   duration:	86400	
                   site-visits: 180
@@ -2170,7 +2124,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-08-14T00:00:00'
                   duration:	86400	
                   site-visits: 232
@@ -2178,7 +2131,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-08-15T00:00:00'
                   duration:	86400	
                   site-visits: 175
@@ -2186,7 +2138,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-08-16T00:00:00'
                   duration:	86400	
                   site-visits: 235
@@ -2194,7 +2145,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-08-17T00:00:00'
                   duration:	86400	
                   site-visits: 44
@@ -2202,7 +2152,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
                 - timestamp: '2024-08-18T00:00:00'
                   duration:	86400	
                   site-visits: 31
@@ -2210,7 +2159,6 @@ tree:
                   kwh-per-gb-network: 0.001
                   watt-hours-per-tb-hour: 1.2
                   grid-intensity: 765.49
-                  visits-per-month: 325
 
     user:
       children:
@@ -2232,7 +2180,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-07-23T00:00:00'
               duration:	86400	
               site-visits: 216
@@ -2240,7 +2187,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-07-24T00:00:00'
               duration:	86400	
               site-visits: 203
@@ -2248,7 +2194,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-07-25T00:00:00'
               duration:	86400	
               site-visits: 203
@@ -2256,7 +2201,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-07-26T00:00:00'
               duration:	86400	
               site-visits: 172
@@ -2264,7 +2208,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-07-27T00:00:00'
               duration:	86400	
               site-visits: 38
@@ -2272,7 +2215,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-07-28T00:00:00'
               duration:	86400	
               site-visits: 63
@@ -2280,7 +2222,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-07-29T00:00:00'
               duration:	86400	
               site-visits: 621
@@ -2288,7 +2229,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-07-30T00:00:00'
               duration:	86400	
               site-visits: 181
@@ -2296,7 +2236,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-07-31T00:00:00'
               duration:	86400	
               site-visits: 213
@@ -2304,7 +2243,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-01T00:00:00'
               duration:	86400	
               site-visits: 167
@@ -2312,7 +2250,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-02T00:00:00'
               duration:	86400	
               site-visits: 428
@@ -2320,7 +2257,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-03T00:00:00'
               duration:	86400	
               site-visits: 58
@@ -2328,7 +2264,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-04T00:00:00'
               duration:	86400	
               site-visits: 66
@@ -2336,7 +2271,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-05T00:00:00'
               duration:	86400	
               site-visits: 301
@@ -2344,7 +2278,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-06T00:00:00'
               duration:	86400	
               site-visits: 193
@@ -2352,7 +2285,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-07T00:00:00'
               duration:	86400	
               site-visits: 220
@@ -2360,7 +2292,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-08T00:00:00'
               duration:	86400	
               site-visits: 215
@@ -2368,7 +2299,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-09T00:00:00'
               duration:	86400	
               site-visits: 516
@@ -2376,7 +2306,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-10T00:00:00'
               duration:	86400	
               site-visits: 42
@@ -2384,7 +2313,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-11T00:00:00'
               duration:	86400	
               site-visits: 76
@@ -2392,7 +2320,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-12T00:00:00'
               duration:	86400	
               site-visits: 226
@@ -2400,7 +2327,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-13T00:00:00'
               duration:	86400	
               site-visits: 180
@@ -2408,7 +2334,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-14T00:00:00'
               duration:	86400	
               site-visits: 232
@@ -2416,7 +2341,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-15T00:00:00'
               duration:	86400	
               site-visits: 175
@@ -2424,7 +2348,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-16T00:00:00'
               duration:	86400	
               site-visits: 235
@@ -2432,7 +2355,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-17T00:00:00'
               duration:	86400	
               site-visits: 44
@@ -2440,7 +2362,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
             - timestamp: '2024-08-18T00:00:00'
               duration:	86400	
               site-visits: 31
@@ -2448,7 +2369,6 @@ tree:
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              visits-per-month: 325
 
         embodied-carbon-for-end-user-devices:
           pipeline:
@@ -2462,112 +2382,112 @@ tree:
             - timestamp: '2024-07-22T00:00:00'
               duration:	86400	
               site-visits: 228
-              time: 40
+              time: 120
             - timestamp: '2024-07-23T00:00:00'
               duration:	86400	
               site-visits: 216
-              time: 40
+              time: 120
             - timestamp: '2024-07-24T00:00:00'
               duration:	86400	
               site-visits: 203
-              time: 40
+              time: 120
             - timestamp: '2024-07-25T00:00:00'
               duration:	86400	
               site-visits: 203
-              time: 40
+              time: 120
             - timestamp: '2024-07-26T00:00:00'
               duration:	86400	
               site-visits: 172
-              time: 40
+              time: 120
             - timestamp: '2024-07-27T00:00:00'
               duration:	86400	
               site-visits: 38
-              time: 40
+              time: 120
             - timestamp: '2024-07-28T00:00:00'
               duration:	86400	
               site-visits: 63
-              time: 40
+              time: 120
             - timestamp: '2024-07-29T00:00:00'
               duration:	86400	
               site-visits: 621
-              time: 40
+              time: 120
             - timestamp: '2024-07-30T00:00:00'
               duration:	86400	
               site-visits: 181
-              time: 40
+              time: 120
             - timestamp: '2024-07-31T00:00:00'
               duration:	86400	
               site-visits: 213
-              time: 40
+              time: 120
             - timestamp: '2024-08-01T00:00:00'
               duration:	86400	
               site-visits: 167
-              time: 40
+              time: 120
             - timestamp: '2024-08-02T00:00:00'
               duration:	86400	
               site-visits: 428
-              time: 40
+              time: 120
             - timestamp: '2024-08-03T00:00:00'
               duration:	86400	
               site-visits: 58
-              time: 40
+              time: 120
             - timestamp: '2024-08-04T00:00:00'
               duration:	86400	
               site-visits: 66
-              time: 40
+              time: 120
             - timestamp: '2024-08-05T00:00:00'
               duration:	86400	
               site-visits: 301
-              time: 40
+              time: 120
             - timestamp: '2024-08-06T00:00:00'
               duration:	86400	
               site-visits: 193
-              time: 40
+              time: 120
             - timestamp: '2024-08-07T00:00:00'
               duration:	86400	
               site-visits: 220
-              time: 40
+              time: 120
             - timestamp: '2024-08-08T00:00:00'
               duration:	86400	
               site-visits: 215
-              time: 40
+              time: 120
             - timestamp: '2024-08-09T00:00:00'
               duration:	86400	
               site-visits: 516
-              time: 40
+              time: 120
             - timestamp: '2024-08-10T00:00:00'
               duration:	86400	
               site-visits: 42
-              time: 40
+              time: 120
             - timestamp: '2024-08-11T00:00:00'
               duration:	86400	
               site-visits: 76
-              time: 40
+              time: 120
             - timestamp: '2024-08-12T00:00:00'
               duration:	86400	
               site-visits: 226
-              time: 40
+              time: 120
             - timestamp: '2024-08-13T00:00:00'
               duration:	86400	
               site-visits: 180
-              time: 40
+              time: 120
             - timestamp: '2024-08-14T00:00:00'
               duration:	86400	
               site-visits: 232
-              time: 40
+              time: 120
             - timestamp: '2024-08-15T00:00:00'
               duration:	86400	
               site-visits: 175
-              time: 40
+              time: 120
             - timestamp: '2024-08-16T00:00:00'
               duration:	86400	
               site-visits: 235
-              time: 40
+              time: 120
             - timestamp: '2024-08-17T00:00:00'
               duration:	86400	
               site-visits: 44
-              time: 40
+              time: 120
             - timestamp: '2024-08-18T00:00:00'
               duration:	86400	
               site-visits: 31
-              time: 40
+              time: 120

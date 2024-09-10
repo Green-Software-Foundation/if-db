@@ -127,7 +127,7 @@ To scale by this, we divide 1 day (our timestep resolution) in seconds by 4 year
 
 `86400 / 145152000 = 0.000595`
 
-Our website uses only 0.8 MB of server storage space for the static site, which is 0.000008% of the total (1GB).
+Our website uses only 0.8 MB of server storage space for the static site, which is 0.0008% of the total (1GB).
 We do not scale further by CPU or RAM usage because we cannot get good estimates for this.
 
 `1000000 * 0.000595 * 0.0008 = 0.476 gCO2eq` for the origin server
@@ -198,6 +198,8 @@ so our daily ration of embodied carbon is `0.56 * 0.0007 = 3.92e-04 gCO2e`
 so we use this value in each 1 day timestep in our manifest
 
 
+For the SCI score, this value is divided by the number of site visits in each timestep.
+
 
 ## End user devices:
 
@@ -226,6 +228,7 @@ We can now add this valiue to each timestep.
 
 However, we do not want this value to be divided by our number of users yet, because these are already per-user values, so we will have to multiply by number of users in a separate step to get total embodied carbon of all new users so that the division by n-users during the SCI calculation gets us back to per user, rather than `per user/n_users`.
 
+For the SCI score, the total carbon value is divided by the number of site visits in each timestep.
 
 
 ## Calculate total carbon
@@ -237,42 +240,8 @@ We use the global average carbon intensity, because Google Analytics shows our u
 
 ## Calculate SCI
 
-We currently have a problem with our SCI calculation - we effectively have to do it manually either by summing the average SCI values across each component, or by dividing the aggregated total carbon value by the number of timesteps per component. The reason is that we have to choose one aggregation method for the SCI parameter that applies to both time aggregation and component aggregation.
+The SCI score is averaghed within components, and summed across them. The SCI score for the GSF website is around 0.11 gCO2e/visit. This is about 1/8th of the average website (0.8g/visit). The GSF website is responsible for about 0.7 kg CO2e emissions per month.
 
-Let's explore a bit deeper:
-
-The SCI value is a rate.
-
-If we have a functional unit of e.g. visits, and we have values for that per timestep, then we can gather an SCI score per timestep by doing `carbon/visits`. This is what our SCI plugin does in each timestep, in each component.
-
-However, now let’s say we want to do this over three components.
-
-We have per-timestep SCI in units of gCO2e/visit in each of three components to aggregate up to a single value.
-
-We *don’t* want to sum across time, because what we end up with is not SCI - we’ll end up with an inflated rate that doesn’t represent the actual rate at any point during our times series, but instead a spuriously high one.
-
-E.g. if you did 60 mph for an hour, you would cover 60 miles and your average speed would be 60 mph and your max speed would also be 60 mph, but if we added up the speed of your car measured every minute for an hour long journey, we’d end up saying you went 3600 mph. We're effectively doing this with SCI.
-So instead, we actually want to set the aggregation method to `avg`, or we want to add a normalization step where we do generate a time-totalled SCI by setting the aggregation method to `sum`  but then we divide by number of time-steps retroactively (which ends up being the exact same thing).
-
-No problem, then, for calculating the average SCI per component, but now we want to aggregate across components. Now we really *DO* want to sum the SCI values together to yield one overarching value for the whole tree, but oh dear we already set our aggregation method to `avg`. So we can only get a spuriously LOW estimate in the top level aggregation because we are forced to average where we want to sum.
-
-So, because we have a single aggregation method that covers both time and component aggregation, and we can’t do operations over values after they are aggregated - we can’t calculate SCI in a multi-component manifest. We can only ever massively overestimate or massively underestimate.
-
-What we really want to achieve, is:
-
-- to generate a total carbon value that’s aggregated across all the timesteps and all the tree components and THEN divide by the functional unit (meaning an operation has to be done on the aggregated values)
-
-OR (better)
-
-- enable averaging for time aggregation and summing for component aggregation, and vice-versa.
-
-
-We'll address this as an urgent priority in next week's development tasks, but for now we can just manually sum the averaged SCI values across the tree components,
-
-```
-0.976+0.0001786+0.000689+0.41869+0.001388+0.0000495+0.00001735+0.0000255+0.0000643
-== 1.39710225 gCO2e/visit
-```
 
 ## Assumptions
 
@@ -286,6 +255,8 @@ We'll address this as an urgent priority in next week's development tasks, but f
 
 ## Insights
 
-We compare reasonably well to other websites. The global average web page produces about 0.8 g of C per visit. Our SCI score for the GSF website is 1.39 g CO2e/visit, but we have erred on the side of overestimating values that we couldn't directly measure and been very comprehensive in the factors we included. The embodied carbon for end user devices is by far the main contributor to the overall SCI score by a very large margin - the SCI score excluding the end user device embodied carbon is ~0.4 gCO2e/visit.
+We compare well to other websites, probably because we took the explicit decision to serve a minimal static website in order to be carbon minimal. The global average web page produces about 0.8 g of C per visit, according to https://www.websitecarbon.com/. 
 
-For comparison, using the SWD model via CO2js forn the GSf site yielded an estimate of 0.447 g per visit, about one third of what we estimate using the SCI via IF.
+Our SCI score for the GSF website is 0.11 g CO2e/visit. The embodied carbon for end user devices is by far the main contributor to the overall SCI score by a very large margin - the SCI score excluding the end user device embodied carbon is ~0.4 gCO2e/visit.
+
+For comparison, using the SWD model via CO2js forn the GSF site yielded an estimate of 0.447 g per visit, about four times what we estimated using the SCI via IF.
