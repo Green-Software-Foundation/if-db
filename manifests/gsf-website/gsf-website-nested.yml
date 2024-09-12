@@ -685,8 +685,8 @@ initialize:
             unit: builds
             description: Number of builds that happened in the given timestep.
             aggregation-method:
-              time: copy
-              component: copy  
+              time: sum
+              component: sum  
         outputs:
           energy:
             unit: kWh
