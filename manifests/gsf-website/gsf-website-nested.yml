@@ -71,7 +71,6 @@ initialize:
               time: copy
               component: copy  
 
-
     storage-energy-in-watts-source-repo:
       method: Multiply
       path: builtin
@@ -99,7 +98,6 @@ initialize:
             aggregation-method:
               time: sum
               component: sum  
-
 
     storage-energy-in-wh-source-repo:
       method: Multiply
@@ -183,6 +181,7 @@ initialize:
     
     # # storing static site on netlify
     # ################################
+
     static-site-size-in-tb:
       method: Divide
       path: "builtin"
@@ -261,7 +260,6 @@ initialize:
             aggregation-method:
               time: sum
               component: sum     
-
 
     storage-energy-to-kwh-static-site:
       path: "builtin"
@@ -418,7 +416,6 @@ initialize:
               time: sum
               component: sum  
 
-
     network-energy-serving-static-site-total:
       method: Multiply
       path: builtin
@@ -485,7 +482,7 @@ initialize:
               time: sum
               component: sum  
 
-    ## Build energy: gh-pages
+    ## Build energy: netlify
     #########################
     interpolate-power-curve:
       method: Interpolation
@@ -511,7 +508,6 @@ initialize:
             aggregation-method:
               time: copy
               component: copy  
-
 
     build-stage-cpu-factor-to-wattage:
       method: Multiply
@@ -541,7 +537,6 @@ initialize:
               time: sum
               component: sum  
 
-
     build-stage-cpu-wattage-times-build-duration:
       method: Multiply
       path: builtin
@@ -569,7 +564,6 @@ initialize:
             aggregation-method:
               time: sum
               component: sum  
-
 
     build-stage-cpu-wattage-to-energy-kwh:
       method: Divide
@@ -616,7 +610,6 @@ initialize:
             aggregation-method:
               time: sum
               component: sum  
-
 
     memory-energy-per-build:
       path: builtin
@@ -678,7 +671,7 @@ initialize:
       path: builtin
       method: Multiply
       config:
-        input-parameters: [build-energy-kwh-per-build, builds-per-month]
+        input-parameters: [build-energy-kwh-per-build, builds]
         output-parameter: energy    
       parameter-metadata:
         inputs:
@@ -688,9 +681,9 @@ initialize:
             aggregation-method:
               time: sum
               component: sum  
-          builds-per-month:
+          builds:
             unit: builds
-            description: Number of builds that happened in the most recent month.
+            description: Number of builds that happened in the given timestep.
             aggregation-method:
               time: copy
               component: copy  
@@ -732,7 +725,6 @@ initialize:
             aggregation-method:
               time: sum
               component: sum  
-
 
     embodied-carbon-github:
       path: builtin
@@ -782,7 +774,6 @@ initialize:
               time: sum
               component: sum  
 
-
     embodied-carbon-devices:
       path: builtin
       method: SciEmbodied
@@ -812,7 +803,6 @@ initialize:
               time: sum
               component: sum  
 
-            
     ## SCI
     ######
 
@@ -848,144 +838,159 @@ tree:
               - energy-to-carbon
               - sci
           inputs:
-            - timestamp: '2024-07-22T00:00:00'
-              duration:	86400	
-              site-visits: 228
-              watt-hours-per-tb-hour: 1.2
-              grid-intensity: 765.49
-            - timestamp: '2024-07-23T00:00:00'
-              duration:	86400	
-              site-visits: 216
-              watt-hours-per-tb-hour: 1.2
-              grid-intensity: 765.49
-            - timestamp: '2024-07-24T00:00:00'
-              duration:	86400	
-              site-visits: 203
-              watt-hours-per-tb-hour: 1.2
-              grid-intensity: 765.49
-            - timestamp: '2024-07-25T00:00:00'
-              duration:	86400	
-              site-visits: 203
-              watt-hours-per-tb-hour: 1.2
-              grid-intensity: 765.49
-            - timestamp: '2024-07-26T00:00:00'
-              duration:	86400	
-              site-visits: 172
-              watt-hours-per-tb-hour: 1.2
-              grid-intensity: 765.49
-            - timestamp: '2024-07-27T00:00:00'
-              duration:	86400	
-              site-visits: 38
-              watt-hours-per-tb-hour: 1.2
-              grid-intensity: 765.49
-            - timestamp: '2024-07-28T00:00:00'
-              duration:	86400	
-              site-visits: 63
-              watt-hours-per-tb-hour: 1.2
-              grid-intensity: 765.49
-            - timestamp: '2024-07-29T00:00:00'
-              duration:	86400	
-              site-visits: 621
-              watt-hours-per-tb-hour: 1.2
-              grid-intensity: 765.49
-            - timestamp: '2024-07-30T00:00:00'
-              duration:	86400	
-              site-visits: 181
-              watt-hours-per-tb-hour: 1.2
-              grid-intensity: 765.49
-            - timestamp: '2024-07-31T00:00:00'
-              duration:	86400	
-              site-visits: 213
-              watt-hours-per-tb-hour: 1.2
-              grid-intensity: 765.49
             - timestamp: '2024-08-01T00:00:00'
               duration:	86400	
-              site-visits: 167
+              site-visits: 445
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-02T00:00:00'
               duration:	86400	
-              site-visits: 428
+              site-visits: 922
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-03T00:00:00'
               duration:	86400	
-              site-visits: 58
+              site-visits: 132
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-04T00:00:00'
               duration:	86400	
-              site-visits: 66
+              site-visits: 162
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-05T00:00:00'
               duration:	86400	
-              site-visits: 301
+              site-visits: 2097
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-06T00:00:00'
               duration:	86400	
-              site-visits: 193
+              site-visits: 579
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-07T00:00:00'
               duration:	86400	
-              site-visits: 220
+              site-visits: 681
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-08T00:00:00'
               duration:	86400	
-              site-visits: 215
+              site-visits: 557
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-09T00:00:00'
               duration:	86400	
-              site-visits: 516
+              site-visits: 1168
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-10T00:00:00'
               duration:	86400	
-              site-visits: 42
+              site-visits: 166
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-11T00:00:00'
               duration:	86400	
-              site-visits: 76
+              site-visits: 190
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-12T00:00:00'
               duration:	86400	
-              site-visits: 226
+              site-visits: 1201
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-13T00:00:00'
               duration:	86400	
-              site-visits: 180
+              site-visits: 465
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-14T00:00:00'
               duration:	86400	
-              site-visits: 232
+              site-visits: 575
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-15T00:00:00'
               duration:	86400	
-              site-visits: 175
+              site-visits: 477
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-16T00:00:00'
               duration:	86400	
-              site-visits: 235
+              site-visits: 765
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-17T00:00:00'
               duration:	86400	
-              site-visits: 44
+              site-visits: 142
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-18T00:00:00'
               duration:	86400	
-              site-visits: 31
+              site-visits: 183
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-19T00:00:00'
+              duration:	86400	
+              site-visits: 1821
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-20T00:00:00'
+              duration:	86400	
+              site-visits: 815
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-21T00:00:00'
+              duration:	86400	
+              site-visits: 632
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-22T00:00:00'
+              duration:	86400	
+              site-visits: 622
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-23T00:00:00'
+              duration:	86400	
+              site-visits: 787
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-24T00:00:00'
+              duration:	86400	
+              site-visits: 93
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-25T00:00:00'
+              duration:	86400	
+              site-visits: 132
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-26T00:00:00'
+              duration:	86400	
+              site-visits: 1088
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-27T00:00:00'
+              duration:	86400	
+              site-visits: 425
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-28T00:00:00'
+              duration:	86400	
+              site-visits: 602
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-29T00:00:00'
+              duration:	86400	
+              site-visits: 586
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-30T00:00:00'
+              duration:	86400	
+              site-visits: 824
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-31T00:00:00'
+              duration:	86400	
+              site-visits: 182
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
 
@@ -1007,343 +1012,379 @@ tree:
               - energy-to-carbon
               - sci
           inputs:
-            - timestamp: '2024-07-22T00:00:00'
-              duration:	86400	
-              site-visits: 228
-              end-user-energy-coefficient: 0.080
-              static-site-size-in-mb: 0.809473
-              kwh-per-gb-network: 0.001
-              grid-intensity: 765.49
-              build-duration: 7
-              build-memory-gb: 0.48
-              builds-per-month: 5
-              thermal-design-power: 205
-              cpu-utilization-during-build: 100
-            - timestamp: '2024-07-23T00:00:00'
-              duration:	86400	
-              site-visits: 216
-              end-user-energy-coefficient: 0.080
-              static-site-size-in-mb: 0.809473
-              kwh-per-gb-network: 0.001
-              grid-intensity: 765.49
-              build-duration: 7
-              build-memory-gb: 0.48
-              builds-per-month: 5
-              thermal-design-power: 205
-              cpu-utilization-during-build: 100
-            - timestamp: '2024-07-24T00:00:00'
-              duration:	86400	
-              site-visits: 203
-              end-user-energy-coefficient: 0.080
-              static-site-size-in-mb: 0.809473
-              kwh-per-gb-network: 0.001
-              grid-intensity: 765.49
-              build-duration: 7
-              build-memory-gb: 0.48
-              builds-per-month: 5
-              thermal-design-power: 205
-              cpu-utilization-during-build: 100
-            - timestamp: '2024-07-25T00:00:00'
-              duration:	86400	
-              site-visits: 203
-              end-user-energy-coefficient: 0.080
-              static-site-size-in-mb: 0.809473
-              kwh-per-gb-network: 0.001
-              grid-intensity: 765.49
-              build-duration: 7
-              build-memory-gb: 0.48
-              builds-per-month: 5
-              thermal-design-power: 205
-              cpu-utilization-during-build: 100
-            - timestamp: '2024-07-26T00:00:00'
-              duration:	86400	
-              site-visits: 172
-              end-user-energy-coefficient: 0.080
-              static-site-size-in-mb: 0.809473
-              kwh-per-gb-network: 0.001
-              grid-intensity: 765.49
-              build-duration: 7
-              build-memory-gb: 0.48
-              builds-per-month: 5
-              thermal-design-power: 205
-              cpu-utilization-during-build: 100
-            - timestamp: '2024-07-27T00:00:00'
-              duration:	86400	
-              site-visits: 38
-              end-user-energy-coefficient: 0.080
-              static-site-size-in-mb: 0.809473
-              kwh-per-gb-network: 0.001
-              grid-intensity: 765.49
-              build-duration: 7
-              build-memory-gb: 0.48
-              builds-per-month: 5
-              thermal-design-power: 205
-              cpu-utilization-during-build: 100
-            - timestamp: '2024-07-28T00:00:00'
-              duration:	86400	
-              site-visits: 63
-              end-user-energy-coefficient: 0.080
-              static-site-size-in-mb: 0.809473
-              kwh-per-gb-network: 0.001
-              grid-intensity: 765.49
-              build-duration: 7
-              build-memory-gb: 0.48
-              builds-per-month: 5
-              thermal-design-power: 205
-              cpu-utilization-during-build: 100
-            - timestamp: '2024-07-29T00:00:00'
-              duration:	86400	
-              site-visits: 621
-              end-user-energy-coefficient: 0.080
-              static-site-size-in-mb: 0.809473
-              kwh-per-gb-network: 0.001
-              grid-intensity: 765.49
-              build-duration: 7
-              build-memory-gb: 0.48
-              builds-per-month: 5
-              thermal-design-power: 205
-              cpu-utilization-during-build: 100
-            - timestamp: '2024-07-30T00:00:00'
-              duration:	86400	
-              site-visits: 181
-              end-user-energy-coefficient: 0.080
-              static-site-size-in-mb: 0.809473
-              kwh-per-gb-network: 0.001
-              grid-intensity: 765.49
-              build-duration: 7
-              build-memory-gb: 0.48
-              builds-per-month: 5
-              thermal-design-power: 205
-              cpu-utilization-during-build: 100
-            - timestamp: '2024-07-31T00:00:00'
-              duration:	86400	
-              site-visits: 213
-              end-user-energy-coefficient: 0.080
-              static-site-size-in-mb: 0.809473
-              kwh-per-gb-network: 0.001
-              grid-intensity: 765.49
-              build-duration: 7
-              build-memory-gb: 0.48
-              builds-per-month: 5
-              thermal-design-power: 205
-              cpu-utilization-during-build: 100
             - timestamp: '2024-08-01T00:00:00'
               duration:	86400	
-              site-visits: 167
+              site-visits: 445
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
               build-duration: 7
               build-memory-gb: 0.48
-              builds-per-month: 5
+              builds: 0
               thermal-design-power: 205
               cpu-utilization-during-build: 100
             - timestamp: '2024-08-02T00:00:00'
               duration:	86400	
-              site-visits: 428
+              site-visits: 922
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
               build-duration: 7
               build-memory-gb: 0.48
-              builds-per-month: 5
+              builds: 0
               thermal-design-power: 205
               cpu-utilization-during-build: 100
             - timestamp: '2024-08-03T00:00:00'
               duration:	86400	
-              site-visits: 58
+              site-visits: 132
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
               build-duration: 7
               build-memory-gb: 0.48
-              builds-per-month: 5
+              builds: 0
               thermal-design-power: 205
               cpu-utilization-during-build: 100
             - timestamp: '2024-08-04T00:00:00'
               duration:	86400	
-              site-visits: 66
+              site-visits: 162
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
               build-duration: 7
               build-memory-gb: 0.48
-              builds-per-month: 5
+              builds: 0
               thermal-design-power: 205
               cpu-utilization-during-build: 100
             - timestamp: '2024-08-05T00:00:00'
               duration:	86400	
-              site-visits: 301
+              site-visits: 2097
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
               build-duration: 7
               build-memory-gb: 0.48
-              builds-per-month: 5
+              builds: 0
               thermal-design-power: 205
               cpu-utilization-during-build: 100
             - timestamp: '2024-08-06T00:00:00'
               duration:	86400	
-              site-visits: 193
+              site-visits: 579
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
               build-duration: 7
               build-memory-gb: 0.48
-              builds-per-month: 5
+              builds: 0
               thermal-design-power: 205
               cpu-utilization-during-build: 100
             - timestamp: '2024-08-07T00:00:00'
               duration:	86400	
-              site-visits: 220
+              site-visits: 681
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
               build-duration: 7
               build-memory-gb: 0.48
-              builds-per-month: 5
+              builds: 0
               thermal-design-power: 205
               cpu-utilization-during-build: 100
             - timestamp: '2024-08-08T00:00:00'
               duration:	86400	
-              site-visits: 215
+              site-visits: 557
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
               build-duration: 7
               build-memory-gb: 0.48
-              builds-per-month: 5
+              builds: 0
               thermal-design-power: 205
               cpu-utilization-during-build: 100
             - timestamp: '2024-08-09T00:00:00'
               duration:	86400	
-              site-visits: 516
+              site-visits: 1168
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
               build-duration: 7
               build-memory-gb: 0.48
-              builds-per-month: 5
+              builds: 0
               thermal-design-power: 205
               cpu-utilization-during-build: 100
             - timestamp: '2024-08-10T00:00:00'
               duration:	86400	
-              site-visits: 42
+              site-visits: 166
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
               build-duration: 7
               build-memory-gb: 0.48
-              builds-per-month: 5
+              builds: 0
               thermal-design-power: 205
               cpu-utilization-during-build: 100
             - timestamp: '2024-08-11T00:00:00'
               duration:	86400	
-              site-visits: 76
+              site-visits: 190
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
               build-duration: 7
               build-memory-gb: 0.48
-              builds-per-month: 5
+              builds: 2
               thermal-design-power: 205
               cpu-utilization-during-build: 100
             - timestamp: '2024-08-12T00:00:00'
               duration:	86400	
-              site-visits: 226
+              site-visits: 1201
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
               build-duration: 7
               build-memory-gb: 0.48
-              builds-per-month: 5
+              builds: 0
               thermal-design-power: 205
               cpu-utilization-during-build: 100
             - timestamp: '2024-08-13T00:00:00'
               duration:	86400	
-              site-visits: 180
+              site-visits: 465
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
               build-duration: 7
               build-memory-gb: 0.48
-              builds-per-month: 5
+              builds: 0
               thermal-design-power: 205
               cpu-utilization-during-build: 100
             - timestamp: '2024-08-14T00:00:00'
               duration:	86400	
-              site-visits: 232
+              site-visits: 575
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
               build-duration: 7
               build-memory-gb: 0.48
-              builds-per-month: 5
+              builds: 5
               thermal-design-power: 205
               cpu-utilization-during-build: 100
             - timestamp: '2024-08-15T00:00:00'
               duration:	86400	
-              site-visits: 175
+              site-visits: 477
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
               build-duration: 7
               build-memory-gb: 0.48
-              builds-per-month: 5
+              builds: 0
               thermal-design-power: 205
               cpu-utilization-during-build: 100
             - timestamp: '2024-08-16T00:00:00'
               duration:	86400	
-              site-visits: 235
+              site-visits: 765
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
               build-duration: 7
               build-memory-gb: 0.48
-              builds-per-month: 5
+              builds: 0
               thermal-design-power: 205
               cpu-utilization-during-build: 100
             - timestamp: '2024-08-17T00:00:00'
               duration:	86400	
-              site-visits: 44
+              site-visits: 142
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
               build-duration: 7
               build-memory-gb: 0.48
-              builds-per-month: 5
+              builds: 0
               thermal-design-power: 205
               cpu-utilization-during-build: 100
             - timestamp: '2024-08-18T00:00:00'
               duration:	86400	
-              site-visits: 31
+              site-visits: 183
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
               build-duration: 7
               build-memory-gb: 0.48
-              builds-per-month: 5
+              builds: 1
               thermal-design-power: 205
               cpu-utilization-during-build: 100
-
+            - timestamp: '2024-08-19T00:00:00'
+              duration:	86400	
+              site-visits: 1821
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+              build-duration: 7
+              build-memory-gb: 0.48
+              builds: 0
+              thermal-design-power: 205
+              cpu-utilization-during-build: 100
+            - timestamp: '2024-08-20T00:00:00'
+              duration:	86400	
+              site-visits: 815
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+              build-duration: 7
+              build-memory-gb: 0.48
+              builds: 1
+              thermal-design-power: 205
+              cpu-utilization-during-build: 100
+            - timestamp: '2024-08-21T00:00:00'
+              duration:	86400	
+              site-visits: 632
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+              build-duration: 7
+              build-memory-gb: 0.48
+              builds: 0
+              thermal-design-power: 205
+              cpu-utilization-during-build: 100
+            - timestamp: '2024-08-22T00:00:00'
+              duration:	86400	
+              site-visits: 622
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+              build-duration: 7
+              build-memory-gb: 0.48
+              builds: 0
+              thermal-design-power: 205
+              cpu-utilization-during-build: 100
+            - timestamp: '2024-08-23T00:00:00'
+              duration:	86400	
+              site-visits: 787
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+              build-duration: 7
+              build-memory-gb: 0.48
+              builds: 8
+              thermal-design-power: 205
+              cpu-utilization-during-build: 100
+            - timestamp: '2024-08-24T00:00:00'
+              duration:	86400	
+              site-visits: 93
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+              build-duration: 7
+              build-memory-gb: 0.48
+              builds: 0
+              thermal-design-power: 205
+              cpu-utilization-during-build: 100
+            - timestamp: '2024-08-25T00:00:00'
+              duration:	86400	
+              site-visits: 132
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+              build-duration: 7
+              build-memory-gb: 0.48
+              builds: 0
+              thermal-design-power: 205
+              cpu-utilization-during-build: 100
+            - timestamp: '2024-08-26T00:00:00'
+              duration:	86400	
+              site-visits: 1088
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+              build-duration: 7
+              build-memory-gb: 0.48
+              builds: 0
+              thermal-design-power: 205
+              cpu-utilization-during-build: 100
+            - timestamp: '2024-08-27T00:00:00'
+              duration:	86400	
+              site-visits: 425
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+              build-duration: 7
+              build-memory-gb: 0.48
+              builds: 0
+              thermal-design-power: 205
+              cpu-utilization-during-build: 100
+            - timestamp: '2024-08-28T00:00:00'
+              duration:	86400	
+              site-visits: 602
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+              build-duration: 7
+              build-memory-gb: 0.48
+              builds: 2
+              thermal-design-power: 205
+              cpu-utilization-during-build: 100
+            - timestamp: '2024-08-29T00:00:00'
+              duration:	86400	
+              site-visits: 586
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+              build-duration: 7
+              build-memory-gb: 0.48
+              builds: 0
+              thermal-design-power: 205
+              cpu-utilization-during-build: 100
+            - timestamp: '2024-08-30T00:00:00'
+              duration:	86400	
+              site-visits: 824
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+              build-duration: 7
+              build-memory-gb: 0.48
+              builds: 0
+              thermal-design-power: 205
+              cpu-utilization-during-build: 100
+            - timestamp: '2024-08-31T00:00:00'
+              duration:	86400	
+              site-visits: 182
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+              build-duration: 7
+              build-memory-gb: 0.48
+              builds: 0
+              thermal-design-power: 205
+              cpu-utilization-during-build: 100
+              
         storing-static-site-data-at-origin-server:
           pipeline:
             observe:
@@ -1360,174 +1401,193 @@ tree:
               - energy-to-carbon
               - sci
           inputs:
-            - timestamp: '2024-07-22T00:00:00'
-              duration:	86400	
-              site-visits: 228
-              static-site-size-in-mb: 0.809473 
-              watt-hours-per-tb-hour: 1.2
-              grid-intensity: 765.49
-            - timestamp: '2024-07-23T00:00:00'
-              duration:	86400	
-              site-visits: 216
-              static-site-size-in-mb: 0.809473 
-              watt-hours-per-tb-hour: 1.2
-              grid-intensity: 765.49
-            - timestamp: '2024-07-24T00:00:00'
-              duration:	86400	
-              site-visits: 203
-              static-site-size-in-mb: 0.809473 
-              watt-hours-per-tb-hour: 1.2
-              grid-intensity: 765.49
-            - timestamp: '2024-07-25T00:00:00'
-              duration:	86400	
-              site-visits: 203
-              static-site-size-in-mb: 0.809473 
-              watt-hours-per-tb-hour: 1.2
-              grid-intensity: 765.49
-            - timestamp: '2024-07-26T00:00:00'
-              duration:	86400	
-              site-visits: 172
-              static-site-size-in-mb: 0.809473 
-              watt-hours-per-tb-hour: 1.2
-              grid-intensity: 765.49
-            - timestamp: '2024-07-27T00:00:00'
-              duration:	86400	
-              site-visits: 38
-              static-site-size-in-mb: 0.809473 
-              watt-hours-per-tb-hour: 1.2
-              grid-intensity: 765.49
-            - timestamp: '2024-07-28T00:00:00'
-              duration:	86400	
-              site-visits: 63
-              static-site-size-in-mb: 0.809473 
-              watt-hours-per-tb-hour: 1.2
-              grid-intensity: 765.49
-            - timestamp: '2024-07-29T00:00:00'
-              duration:	86400	
-              site-visits: 621
-              static-site-size-in-mb: 0.809473 
-              watt-hours-per-tb-hour: 1.2
-              grid-intensity: 765.49
-            - timestamp: '2024-07-30T00:00:00'
-              duration:	86400	
-              site-visits: 181
-              static-site-size-in-mb: 0.809473 
-              watt-hours-per-tb-hour: 1.2
-              grid-intensity: 765.49
-            - timestamp: '2024-07-31T00:00:00'
-              duration:	86400	
-              site-visits: 213
-              static-site-size-in-mb: 0.809473 
-              watt-hours-per-tb-hour: 1.2
-              grid-intensity: 765.49
             - timestamp: '2024-08-01T00:00:00'
               duration:	86400	
-              site-visits: 167
+              site-visits: 445
               static-site-size-in-mb: 0.809473 
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-02T00:00:00'
               duration:	86400	
-              site-visits: 428
+              site-visits: 922
               static-site-size-in-mb: 0.809473 
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-03T00:00:00'
               duration:	86400	
-              site-visits: 58
+              site-visits: 132
               static-site-size-in-mb: 0.809473 
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-04T00:00:00'
               duration:	86400	
-              site-visits: 66
+              site-visits: 162
               static-site-size-in-mb: 0.809473 
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-05T00:00:00'
               duration:	86400	
-              site-visits: 301
+              site-visits: 2097
               static-site-size-in-mb: 0.809473 
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-06T00:00:00'
               duration:	86400	
-              site-visits: 193
+              site-visits: 579
               static-site-size-in-mb: 0.809473 
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-07T00:00:00'
               duration:	86400	
-              site-visits: 220
+              site-visits: 681
               static-site-size-in-mb: 0.809473 
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-08T00:00:00'
               duration:	86400	
-              site-visits: 215
+              site-visits: 557
               static-site-size-in-mb: 0.809473 
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-09T00:00:00'
               duration:	86400	
-              site-visits: 516
+              site-visits: 1168
               static-site-size-in-mb: 0.809473 
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-10T00:00:00'
               duration:	86400	
-              site-visits: 42
+              site-visits: 166
               static-site-size-in-mb: 0.809473 
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-11T00:00:00'
               duration:	86400	
-              site-visits: 76
+              site-visits: 190
               static-site-size-in-mb: 0.809473 
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-12T00:00:00'
               duration:	86400	
-              site-visits: 226
+              site-visits: 1201
               static-site-size-in-mb: 0.809473 
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-13T00:00:00'
               duration:	86400	
-              site-visits: 180
+              site-visits: 465
               static-site-size-in-mb: 0.809473 
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-14T00:00:00'
               duration:	86400	
-              site-visits: 232
+              site-visits: 575
               static-site-size-in-mb: 0.809473 
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-15T00:00:00'
               duration:	86400	
-              site-visits: 175
+              site-visits: 477
               static-site-size-in-mb: 0.809473 
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-16T00:00:00'
               duration:	86400	
-              site-visits: 235
+              site-visits: 765
               static-site-size-in-mb: 0.809473 
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-17T00:00:00'
               duration:	86400	
-              site-visits: 44
+              site-visits: 142
               static-site-size-in-mb: 0.809473 
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
             - timestamp: '2024-08-18T00:00:00'
               duration:	86400	
-              site-visits: 31
+              site-visits: 183
               static-site-size-in-mb: 0.809473 
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
+            - timestamp: '2024-08-19T00:00:00'
+              duration:	86400	
+              site-visits: 1821
+              static-site-size-in-mb: 0.809473 
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-20T00:00:00'
+              duration:	86400	
+              site-visits: 815
+              static-site-size-in-mb: 0.809473 
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-21T00:00:00'
+              duration:	86400	
+              site-visits: 632
+              static-site-size-in-mb: 0.809473 
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-22T00:00:00'
+              duration:	86400	
+              site-visits: 622
+              static-site-size-in-mb: 0.809473 
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-23T00:00:00'
+              duration:	86400	
+              site-visits: 787
+              static-site-size-in-mb: 0.809473 
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-24T00:00:00'
+              duration:	86400	
+              site-visits: 93
+              static-site-size-in-mb: 0.809473 
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-25T00:00:00'
+              duration:	86400	
+              site-visits: 132
+              static-site-size-in-mb: 0.809473 
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-26T00:00:00'
+              duration:	86400	
+              site-visits: 1088
+              static-site-size-in-mb: 0.809473 
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-27T00:00:00'
+              duration:	86400	
+              site-visits: 425
+              static-site-size-in-mb: 0.809473 
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-28T00:00:00'
+              duration:	86400	
+              site-visits: 602
+              static-site-size-in-mb: 0.809473 
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-29T00:00:00'
+              duration:	86400	
+              site-visits: 586
+              static-site-size-in-mb: 0.809473 
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-30T00:00:00'
+              duration:	86400	
+              site-visits: 824
+              static-site-size-in-mb: 0.809473 
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-31T00:00:00'
+              duration:	86400	
+              site-visits: 182
+              static-site-size-in-mb: 0.809473 
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+
 
         embodied-carbon-for-web-server:
           pipeline:
@@ -1537,117 +1597,129 @@ tree:
               - embodied-carbon-web-server-origin
               - sci
           inputs:
-            - timestamp: '2024-07-22T00:00:00'
-              duration:	86400	
-              site-visits: 228
-              usage-ratio: 0.0008
-            - timestamp: '2024-07-23T00:00:00'
-              duration:	86400	
-              site-visits: 216
-              usage-ratio: 0.0008
-            - timestamp: '2024-07-24T00:00:00'
-              duration:	86400	
-              site-visits: 203
-              usage-ratio: 0.0008
-            - timestamp: '2024-07-25T00:00:00'
-              duration:	86400	
-              site-visits: 203
-              usage-ratio: 0.0008
-            - timestamp: '2024-07-26T00:00:00'
-              duration:	86400	
-              site-visits: 172
-              usage-ratio: 0.0008
-            - timestamp: '2024-07-27T00:00:00'
-              duration:	86400	
-              site-visits: 38
-              usage-ratio: 0.0008
-            - timestamp: '2024-07-28T00:00:00'
-              duration:	86400	
-              site-visits: 63
-              usage-ratio: 0.0008
-            - timestamp: '2024-07-29T00:00:00'
-              duration:	86400	
-              site-visits: 621
-              usage-ratio: 0.0008
-            - timestamp: '2024-07-30T00:00:00'
-              duration:	86400	
-              site-visits: 181
-              usage-ratio: 0.0008
-            - timestamp: '2024-07-31T00:00:00'
-              duration:	86400	
-              site-visits: 213
-              usage-ratio: 0.0008
             - timestamp: '2024-08-01T00:00:00'
               duration:	86400	
-              site-visits: 167
+              site-visits: 445
               usage-ratio: 0.0008
             - timestamp: '2024-08-02T00:00:00'
               duration:	86400	
-              site-visits: 428
+              site-visits: 922
               usage-ratio: 0.0008
             - timestamp: '2024-08-03T00:00:00'
               duration:	86400	
-              site-visits: 58
+              site-visits: 132
               usage-ratio: 0.0008
             - timestamp: '2024-08-04T00:00:00'
               duration:	86400	
-              site-visits: 66
+              site-visits: 162
               usage-ratio: 0.0008
             - timestamp: '2024-08-05T00:00:00'
               duration:	86400	
-              site-visits: 301
+              site-visits: 2097
               usage-ratio: 0.0008
             - timestamp: '2024-08-06T00:00:00'
               duration:	86400	
-              site-visits: 193
+              site-visits: 579
               usage-ratio: 0.0008
             - timestamp: '2024-08-07T00:00:00'
               duration:	86400	
-              site-visits: 220
+              site-visits: 681
               usage-ratio: 0.0008
             - timestamp: '2024-08-08T00:00:00'
               duration:	86400	
-              site-visits: 215
+              site-visits: 557
               usage-ratio: 0.0008
             - timestamp: '2024-08-09T00:00:00'
               duration:	86400	
-              site-visits: 516
+              site-visits: 1168
               usage-ratio: 0.0008
             - timestamp: '2024-08-10T00:00:00'
               duration:	86400	
-              site-visits: 42
+              site-visits: 166
               usage-ratio: 0.0008
             - timestamp: '2024-08-11T00:00:00'
               duration:	86400	
-              site-visits: 76
+              site-visits: 190
               usage-ratio: 0.0008
             - timestamp: '2024-08-12T00:00:00'
               duration:	86400	
-              site-visits: 226
+              site-visits: 1201
               usage-ratio: 0.0008
             - timestamp: '2024-08-13T00:00:00'
               duration:	86400	
-              site-visits: 180
+              site-visits: 465
               usage-ratio: 0.0008
             - timestamp: '2024-08-14T00:00:00'
               duration:	86400	
-              site-visits: 232
+              site-visits: 575
               usage-ratio: 0.0008
             - timestamp: '2024-08-15T00:00:00'
               duration:	86400	
-              site-visits: 175
+              site-visits: 477
               usage-ratio: 0.0008
             - timestamp: '2024-08-16T00:00:00'
               duration:	86400	
-              site-visits: 235
+              site-visits: 765
               usage-ratio: 0.0008
             - timestamp: '2024-08-17T00:00:00'
               duration:	86400	
-              site-visits: 44
+              site-visits: 142
               usage-ratio: 0.0008
             - timestamp: '2024-08-18T00:00:00'
               duration:	86400	
-              site-visits: 31
+              site-visits: 183
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-19T00:00:00'
+              duration:	86400	
+              site-visits: 1821
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-20T00:00:00'
+              duration:	86400	
+              site-visits: 815
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-21T00:00:00'
+              duration:	86400	
+              site-visits: 632
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-22T00:00:00'
+              duration:	86400	
+              site-visits: 622
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-23T00:00:00'
+              duration:	86400	
+              site-visits: 787
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-24T00:00:00'
+              duration:	86400	
+              site-visits: 93
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-25T00:00:00'
+              duration:	86400	
+              site-visits: 132
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-26T00:00:00'
+              duration:	86400	
+              site-visits: 1088
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-27T00:00:00'
+              duration:	86400	
+              site-visits: 425
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-28T00:00:00'
+              duration:	86400	
+              site-visits: 602
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-29T00:00:00'
+              duration:	86400	
+              site-visits: 586
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-30T00:00:00'
+              duration:	86400	
+              site-visits: 824
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-31T00:00:00'
+              duration:	86400	
+              site-visits: 182
               usage-ratio: 0.0008
 
         embodied-carbon-for-cdn:
@@ -1658,117 +1730,129 @@ tree:
               - embodied-carbon-web-server-cdn
               - sci
           inputs:
-            - timestamp: '2024-07-22T00:00:00'
-              duration:	86400	
-              site-visits: 228
-              usage-ratio: 0.0008
-            - timestamp: '2024-07-23T00:00:00'
-              duration:	86400	
-              site-visits: 216
-              usage-ratio: 0.0008
-            - timestamp: '2024-07-24T00:00:00'
-              duration:	86400	
-              site-visits: 203
-              usage-ratio: 0.0008
-            - timestamp: '2024-07-25T00:00:00'
-              duration:	86400	
-              site-visits: 203
-              usage-ratio: 0.0008
-            - timestamp: '2024-07-26T00:00:00'
-              duration:	86400	
-              site-visits: 172
-              usage-ratio: 0.0008
-            - timestamp: '2024-07-27T00:00:00'
-              duration:	86400	
-              site-visits: 38
-              usage-ratio: 0.0008
-            - timestamp: '2024-07-28T00:00:00'
-              duration:	86400	
-              site-visits: 63
-              usage-ratio: 0.0008
-            - timestamp: '2024-07-29T00:00:00'
-              duration:	86400	
-              site-visits: 621
-              usage-ratio: 0.0008
-            - timestamp: '2024-07-30T00:00:00'
-              duration:	86400	
-              site-visits: 181
-              usage-ratio: 0.0008
-            - timestamp: '2024-07-31T00:00:00'
-              duration:	86400	
-              site-visits: 213
-              usage-ratio: 0.0008
             - timestamp: '2024-08-01T00:00:00'
               duration:	86400	
-              site-visits: 167
+              site-visits: 445
               usage-ratio: 0.0008
             - timestamp: '2024-08-02T00:00:00'
               duration:	86400	
-              site-visits: 428
+              site-visits: 922
               usage-ratio: 0.0008
             - timestamp: '2024-08-03T00:00:00'
               duration:	86400	
-              site-visits: 58
+              site-visits: 132
               usage-ratio: 0.0008
             - timestamp: '2024-08-04T00:00:00'
               duration:	86400	
-              site-visits: 66
+              site-visits: 162
               usage-ratio: 0.0008
             - timestamp: '2024-08-05T00:00:00'
               duration:	86400	
-              site-visits: 301
+              site-visits: 2097
               usage-ratio: 0.0008
             - timestamp: '2024-08-06T00:00:00'
               duration:	86400	
-              site-visits: 193
+              site-visits: 579
               usage-ratio: 0.0008
             - timestamp: '2024-08-07T00:00:00'
               duration:	86400	
-              site-visits: 220
+              site-visits: 681
               usage-ratio: 0.0008
             - timestamp: '2024-08-08T00:00:00'
               duration:	86400	
-              site-visits: 215
+              site-visits: 557
               usage-ratio: 0.0008
             - timestamp: '2024-08-09T00:00:00'
               duration:	86400	
-              site-visits: 516
+              site-visits: 1168
               usage-ratio: 0.0008
             - timestamp: '2024-08-10T00:00:00'
               duration:	86400	
-              site-visits: 42
+              site-visits: 166
               usage-ratio: 0.0008
             - timestamp: '2024-08-11T00:00:00'
               duration:	86400	
-              site-visits: 76
+              site-visits: 190
               usage-ratio: 0.0008
             - timestamp: '2024-08-12T00:00:00'
               duration:	86400	
-              site-visits: 226
+              site-visits: 1201
               usage-ratio: 0.0008
             - timestamp: '2024-08-13T00:00:00'
               duration:	86400	
-              site-visits: 180
+              site-visits: 465
               usage-ratio: 0.0008
             - timestamp: '2024-08-14T00:00:00'
               duration:	86400	
-              site-visits: 232
+              site-visits: 575
               usage-ratio: 0.0008
             - timestamp: '2024-08-15T00:00:00'
               duration:	86400	
-              site-visits: 175
+              site-visits: 477
               usage-ratio: 0.0008
             - timestamp: '2024-08-16T00:00:00'
               duration:	86400	
-              site-visits: 235
+              site-visits: 765
               usage-ratio: 0.0008
             - timestamp: '2024-08-17T00:00:00'
               duration:	86400	
-              site-visits: 44
+              site-visits: 142
               usage-ratio: 0.0008
             - timestamp: '2024-08-18T00:00:00'
               duration:	86400	
-              site-visits: 31
+              site-visits: 183
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-19T00:00:00'
+              duration:	86400	
+              site-visits: 1821
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-20T00:00:00'
+              duration:	86400	
+              site-visits: 815
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-21T00:00:00'
+              duration:	86400	
+              site-visits: 632
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-22T00:00:00'
+              duration:	86400	
+              site-visits: 622
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-23T00:00:00'
+              duration:	86400	
+              site-visits: 787
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-24T00:00:00'
+              duration:	86400	
+              site-visits: 93
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-25T00:00:00'
+              duration:	86400	
+              site-visits: 132
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-26T00:00:00'
+              duration:	86400	
+              site-visits: 1088
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-27T00:00:00'
+              duration:	86400	
+              site-visits: 425
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-28T00:00:00'
+              duration:	86400	
+              site-visits: 602
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-29T00:00:00'
+              duration:	86400	
+              site-visits: 586
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-30T00:00:00'
+              duration:	86400	
+              site-visits: 824
+              usage-ratio: 0.0008
+            - timestamp: '2024-08-31T00:00:00'
+              duration:	86400	
+              site-visits: 182
               usage-ratio: 0.0008
 
 
@@ -1778,178 +1862,194 @@ tree:
             regroup:
             compute:
               - embodied-carbon-github
-              - sci
-           
+              - sci          
           inputs:
-            - timestamp: '2024-07-22T00:00:00'
-              duration:	86400	
-              site-visits: 228
-              usage-ratio: 3.0298666666666667e-08
-              vCPUs: 160
-              memory: 1280
-            - timestamp: '2024-07-23T00:00:00'
-              duration:	86400	
-              site-visits: 216
-              usage-ratio: 3.0298666666666667e-08
-              vCPUs: 160
-              memory: 1280
-            - timestamp: '2024-07-24T00:00:00'
-              duration:	86400	
-              site-visits: 203
-              usage-ratio: 3.0298666666666667e-08
-              vCPUs: 160
-              memory: 1280
-            - timestamp: '2024-07-25T00:00:00'
-              duration:	86400	
-              site-visits: 203
-              usage-ratio: 3.0298666666666667e-08
-              vCPUs: 160
-              memory: 1280
-            - timestamp: '2024-07-26T00:00:00'
-              duration:	86400	
-              site-visits: 172
-              usage-ratio: 3.0298666666666667e-08
-              vCPUs: 160
-              memory: 1280
-            - timestamp: '2024-07-27T00:00:00'
-              duration:	86400	
-              site-visits: 38
-              usage-ratio: 3.0298666666666667e-08
-              vCPUs: 160
-              memory: 1280
-            - timestamp: '2024-07-28T00:00:00'
-              duration:	86400	
-              site-visits: 63
-              usage-ratio: 3.0298666666666667e-08
-              vCPUs: 160
-              memory: 1280
-            - timestamp: '2024-07-29T00:00:00'
-              duration:	86400	
-              site-visits: 621
-              usage-ratio: 3.0298666666666667e-08
-              vCPUs: 160
-              memory: 1280
-            - timestamp: '2024-07-30T00:00:00'
-              duration:	86400	
-              site-visits: 181
-              usage-ratio: 3.0298666666666667e-08
-              vCPUs: 160
-              memory: 1280
-            - timestamp: '2024-07-31T00:00:00'
-              duration:	86400	
-              site-visits: 213
-              usage-ratio: 3.0298666666666667e-08
-              vCPUs: 160
-              memory: 1280
             - timestamp: '2024-08-01T00:00:00'
               duration:	86400	
-              site-visits: 167
+              site-visits: 445
               usage-ratio: 3.0298666666666667e-08
               vCPUs: 160
               memory: 1280
             - timestamp: '2024-08-02T00:00:00'
               duration:	86400	
-              site-visits: 428
+              site-visits: 922
               usage-ratio: 3.0298666666666667e-08
               vCPUs: 160
               memory: 1280
             - timestamp: '2024-08-03T00:00:00'
               duration:	86400	
-              site-visits: 58
+              site-visits: 132
               usage-ratio: 3.0298666666666667e-08
               vCPUs: 160
               memory: 1280
             - timestamp: '2024-08-04T00:00:00'
               duration:	86400	
-              site-visits: 66
+              site-visits: 162
               usage-ratio: 3.0298666666666667e-08
               vCPUs: 160
               memory: 1280
             - timestamp: '2024-08-05T00:00:00'
               duration:	86400	
-              site-visits: 301
+              site-visits: 2097
               usage-ratio: 3.0298666666666667e-08
               vCPUs: 160
               memory: 1280
             - timestamp: '2024-08-06T00:00:00'
               duration:	86400	
-              site-visits: 193
+              site-visits: 579
               usage-ratio: 3.0298666666666667e-08
               vCPUs: 160
               memory: 1280
             - timestamp: '2024-08-07T00:00:00'
               duration:	86400	
-              site-visits: 220
+              site-visits: 681
               usage-ratio: 3.0298666666666667e-08
               vCPUs: 160
               memory: 1280
             - timestamp: '2024-08-08T00:00:00'
               duration:	86400	
-              site-visits: 215
+              site-visits: 557
               usage-ratio: 3.0298666666666667e-08
               vCPUs: 160
               memory: 1280
             - timestamp: '2024-08-09T00:00:00'
               duration:	86400	
-              site-visits: 516
+              site-visits: 1168
               usage-ratio: 3.0298666666666667e-08
               vCPUs: 160
               memory: 1280
             - timestamp: '2024-08-10T00:00:00'
               duration:	86400	
-              site-visits: 42
+              site-visits: 166
               usage-ratio: 3.0298666666666667e-08
               vCPUs: 160
               memory: 1280
             - timestamp: '2024-08-11T00:00:00'
               duration:	86400	
-              site-visits: 76
+              site-visits: 190
               usage-ratio: 3.0298666666666667e-08
               vCPUs: 160
               memory: 1280
             - timestamp: '2024-08-12T00:00:00'
               duration:	86400	
-              site-visits: 226
+              site-visits: 1201
               usage-ratio: 3.0298666666666667e-08
               vCPUs: 160
               memory: 1280
             - timestamp: '2024-08-13T00:00:00'
               duration:	86400	
-              site-visits: 180
+              site-visits: 465
               usage-ratio: 3.0298666666666667e-08
               vCPUs: 160
               memory: 1280
             - timestamp: '2024-08-14T00:00:00'
               duration:	86400	
-              site-visits: 232
+              site-visits: 575
               usage-ratio: 3.0298666666666667e-08
               vCPUs: 160
               memory: 1280
             - timestamp: '2024-08-15T00:00:00'
               duration:	86400	
-              site-visits: 175
+              site-visits: 477
               usage-ratio: 3.0298666666666667e-08
               vCPUs: 160
               memory: 1280
             - timestamp: '2024-08-16T00:00:00'
               duration:	86400	
-              site-visits: 235
+              site-visits: 765
               usage-ratio: 3.0298666666666667e-08
               vCPUs: 160
               memory: 1280
             - timestamp: '2024-08-17T00:00:00'
               duration:	86400	
-              site-visits: 44
+              site-visits: 142
               usage-ratio: 3.0298666666666667e-08
               vCPUs: 160
               memory: 1280
             - timestamp: '2024-08-18T00:00:00'
               duration:	86400	
-              site-visits: 31
+              site-visits: 183
               usage-ratio: 3.0298666666666667e-08
               vCPUs: 160
               memory: 1280
-
+            - timestamp: '2024-08-19T00:00:00'
+              duration:	86400	
+              site-visits: 1821
+              usage-ratio: 3.0298666666666667e-08
+              vCPUs: 160
+              memory: 1280
+            - timestamp: '2024-08-20T00:00:00'
+              duration:	86400	
+              site-visits: 815
+              usage-ratio: 3.0298666666666667e-08
+              vCPUs: 160
+              memory: 1280
+            - timestamp: '2024-08-21T00:00:00'
+              duration:	86400	
+              site-visits: 632
+              usage-ratio: 3.0298666666666667e-08
+              vCPUs: 160
+              memory: 1280
+            - timestamp: '2024-08-22T00:00:00'
+              duration:	86400	
+              site-visits: 622
+              usage-ratio: 3.0298666666666667e-08
+              vCPUs: 160
+              memory: 1280
+            - timestamp: '2024-08-23T00:00:00'
+              duration:	86400	
+              site-visits: 787
+              usage-ratio: 3.0298666666666667e-08
+              vCPUs: 160
+              memory: 1280
+            - timestamp: '2024-08-24T00:00:00'
+              duration:	86400	
+              site-visits: 93
+              usage-ratio: 3.0298666666666667e-08
+              vCPUs: 160
+              memory: 1280
+            - timestamp: '2024-08-25T00:00:00'
+              duration:	86400	
+              site-visits: 132
+              usage-ratio: 3.0298666666666667e-08
+              vCPUs: 160
+              memory: 1280
+            - timestamp: '2024-08-26T00:00:00'
+              duration:	86400	
+              site-visits: 1088
+              usage-ratio: 3.0298666666666667e-08
+              vCPUs: 160
+              memory: 1280
+            - timestamp: '2024-08-27T00:00:00'
+              duration:	86400	
+              site-visits: 425
+              usage-ratio: 3.0298666666666667e-08
+              vCPUs: 160
+              memory: 1280
+            - timestamp: '2024-08-28T00:00:00'
+              duration:	86400	
+              site-visits: 602
+              usage-ratio: 3.0298666666666667e-08
+              vCPUs: 160
+              memory: 1280
+            - timestamp: '2024-08-29T00:00:00'
+              duration:	86400	
+              site-visits: 586
+              usage-ratio: 3.0298666666666667e-08
+              vCPUs: 160
+              memory: 1280
+            - timestamp: '2024-08-30T00:00:00'
+              duration:	86400	
+              site-visits: 824
+              usage-ratio: 3.0298666666666667e-08
+              vCPUs: 160
+              memory: 1280
+            - timestamp: '2024-08-31T00:00:00'
+              duration:	86400	
+              site-visits: 182
+              usage-ratio: 3.0298666666666667e-08
+              vCPUs: 160
+              memory: 1280
     network:
       children:
         networking-energy-to-serve-static-site-over-the-wire:
@@ -1963,202 +2063,225 @@ tree:
               - energy-to-carbon
               - sci
           inputs:
-                - timestamp: '2024-07-22T00:00:00'
-                  duration:	86400	
-                  site-visits: 228
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-07-23T00:00:00'
-                  duration:	86400	
-                  site-visits: 216
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-07-24T00:00:00'
-                  duration:	86400	
-                  site-visits: 203
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-07-25T00:00:00'
-                  duration:	86400	
-                  site-visits: 203
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-07-26T00:00:00'
-                  duration:	86400	
-                  site-visits: 172
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-07-27T00:00:00'
-                  duration:	86400	
-                  site-visits: 38
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-07-28T00:00:00'
-                  duration:	86400	
-                  site-visits: 63
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-07-29T00:00:00'
-                  duration:	86400	
-                  site-visits: 621
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-07-30T00:00:00'
-                  duration:	86400	
-                  site-visits: 181
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-07-31T00:00:00'
-                  duration:	86400	
-                  site-visits: 213
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-08-01T00:00:00'
-                  duration:	86400	
-                  site-visits: 167
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-08-02T00:00:00'
-                  duration:	86400	
-                  site-visits: 428
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-08-03T00:00:00'
-                  duration:	86400	
-                  site-visits: 58
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-08-04T00:00:00'
-                  duration:	86400	
-                  site-visits: 66
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-08-05T00:00:00'
-                  duration:	86400	
-                  site-visits: 301
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-08-06T00:00:00'
-                  duration:	86400	
-                  site-visits: 193
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-08-07T00:00:00'
-                  duration:	86400	
-                  site-visits: 220
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-08-08T00:00:00'
-                  duration:	86400	
-                  site-visits: 215
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-08-09T00:00:00'
-                  duration:	86400	
-                  site-visits: 516
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-08-10T00:00:00'
-                  duration:	86400	
-                  site-visits: 42
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-08-11T00:00:00'
-                  duration:	86400	
-                  site-visits: 76
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-08-12T00:00:00'
-                  duration:	86400	
-                  site-visits: 226
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-08-13T00:00:00'
-                  duration:	86400	
-                  site-visits: 180
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-08-14T00:00:00'
-                  duration:	86400	
-                  site-visits: 232
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-08-15T00:00:00'
-                  duration:	86400	
-                  site-visits: 175
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-08-16T00:00:00'
-                  duration:	86400	
-                  site-visits: 235
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-08-17T00:00:00'
-                  duration:	86400	
-                  site-visits: 44
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
-                - timestamp: '2024-08-18T00:00:00'
-                  duration:	86400	
-                  site-visits: 31
-                  static-site-size-in-mb: 0.809473
-                  kwh-per-gb-network: 0.001
-                  watt-hours-per-tb-hour: 1.2
-                  grid-intensity: 765.49
+            - timestamp: '2024-08-01T00:00:00'
+              duration:	86400	
+              site-visits: 445
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-02T00:00:00'
+              duration:	86400	
+              site-visits: 922
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-03T00:00:00'
+              duration:	86400	
+              site-visits: 132
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-04T00:00:00'
+              duration:	86400	
+              site-visits: 162
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-05T00:00:00'
+              duration:	86400	
+              site-visits: 2097
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-06T00:00:00'
+              duration:	86400	
+              site-visits: 579
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-07T00:00:00'
+              duration:	86400	
+              site-visits: 681
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-08T00:00:00'
+              duration:	86400	
+              site-visits: 557
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-09T00:00:00'
+              duration:	86400	
+              site-visits: 1168
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-10T00:00:00'
+              duration:	86400	
+              site-visits: 166
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-11T00:00:00'
+              duration:	86400	
+              site-visits: 190
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-12T00:00:00'
+              duration:	86400	
+              site-visits: 1201
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-13T00:00:00'
+              duration:	86400	
+              site-visits: 465
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-14T00:00:00'
+              duration:	86400	
+              site-visits: 575
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-15T00:00:00'
+              duration:	86400	
+              site-visits: 477
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-16T00:00:00'
+              duration:	86400	
+              site-visits: 765
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-17T00:00:00'
+              duration:	86400	
+              site-visits: 142
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-18T00:00:00'
+              duration:	86400	
+              site-visits: 183
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-19T00:00:00'
+              duration:	86400	
+              site-visits: 1821
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-20T00:00:00'
+              duration:	86400	
+              site-visits: 815
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-21T00:00:00'
+              duration:	86400	
+              site-visits: 632
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-22T00:00:00'
+              duration:	86400	
+              site-visits: 622
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-23T00:00:00'
+              duration:	86400	
+              site-visits: 787
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-24T00:00:00'
+              duration:	86400	
+              site-visits: 93
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-25T00:00:00'
+              duration:	86400	
+              site-visits: 132
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-26T00:00:00'
+              duration:	86400	
+              site-visits: 1088
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-27T00:00:00'
+              duration:	86400	
+              site-visits: 425
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-28T00:00:00'
+              duration:	86400	
+              site-visits: 602
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-29T00:00:00'
+              duration:	86400	
+              site-visits: 586
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-30T00:00:00'
+              duration:	86400	
+              site-visits: 824
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+            - timestamp: '2024-08-31T00:00:00'
+              duration:	86400	
+              site-visits: 182
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              watt-hours-per-tb-hour: 1.2
+              grid-intensity: 765.49
+
+
 
     user:
       children:
@@ -2171,200 +2294,220 @@ tree:
               - end-user-energy
               - energy-to-carbon
               - sci
-
           inputs:
-            - timestamp: '2024-07-22T00:00:00'
-              duration:	86400	
-              site-visits: 228
-              end-user-energy-coefficient: 0.080
-              static-site-size-in-mb: 0.809473
-              kwh-per-gb-network: 0.001
-              grid-intensity: 765.49
-            - timestamp: '2024-07-23T00:00:00'
-              duration:	86400	
-              site-visits: 216
-              end-user-energy-coefficient: 0.080
-              static-site-size-in-mb: 0.809473
-              kwh-per-gb-network: 0.001
-              grid-intensity: 765.49
-            - timestamp: '2024-07-24T00:00:00'
-              duration:	86400	
-              site-visits: 203
-              end-user-energy-coefficient: 0.080
-              static-site-size-in-mb: 0.809473
-              kwh-per-gb-network: 0.001
-              grid-intensity: 765.49
-            - timestamp: '2024-07-25T00:00:00'
-              duration:	86400	
-              site-visits: 203
-              end-user-energy-coefficient: 0.080
-              static-site-size-in-mb: 0.809473
-              kwh-per-gb-network: 0.001
-              grid-intensity: 765.49
-            - timestamp: '2024-07-26T00:00:00'
-              duration:	86400	
-              site-visits: 172
-              end-user-energy-coefficient: 0.080
-              static-site-size-in-mb: 0.809473
-              kwh-per-gb-network: 0.001
-              grid-intensity: 765.49
-            - timestamp: '2024-07-27T00:00:00'
-              duration:	86400	
-              site-visits: 38
-              end-user-energy-coefficient: 0.080
-              static-site-size-in-mb: 0.809473
-              kwh-per-gb-network: 0.001
-              grid-intensity: 765.49
-            - timestamp: '2024-07-28T00:00:00'
-              duration:	86400	
-              site-visits: 63
-              end-user-energy-coefficient: 0.080
-              static-site-size-in-mb: 0.809473
-              kwh-per-gb-network: 0.001
-              grid-intensity: 765.49
-            - timestamp: '2024-07-29T00:00:00'
-              duration:	86400	
-              site-visits: 621
-              end-user-energy-coefficient: 0.080
-              static-site-size-in-mb: 0.809473
-              kwh-per-gb-network: 0.001
-              grid-intensity: 765.49
-            - timestamp: '2024-07-30T00:00:00'
-              duration:	86400	
-              site-visits: 181
-              end-user-energy-coefficient: 0.080
-              static-site-size-in-mb: 0.809473
-              kwh-per-gb-network: 0.001
-              grid-intensity: 765.49
-            - timestamp: '2024-07-31T00:00:00'
-              duration:	86400	
-              site-visits: 213
-              end-user-energy-coefficient: 0.080
-              static-site-size-in-mb: 0.809473
-              kwh-per-gb-network: 0.001
-              grid-intensity: 765.49
             - timestamp: '2024-08-01T00:00:00'
               duration:	86400	
-              site-visits: 167
+              site-visits: 445
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
             - timestamp: '2024-08-02T00:00:00'
               duration:	86400	
-              site-visits: 428
+              site-visits: 922
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
             - timestamp: '2024-08-03T00:00:00'
               duration:	86400	
-              site-visits: 58
+              site-visits: 132
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
             - timestamp: '2024-08-04T00:00:00'
               duration:	86400	
-              site-visits: 66
+              site-visits: 162
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
             - timestamp: '2024-08-05T00:00:00'
               duration:	86400	
-              site-visits: 301
+              site-visits: 2097
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
             - timestamp: '2024-08-06T00:00:00'
               duration:	86400	
-              site-visits: 193
+              site-visits: 579
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
             - timestamp: '2024-08-07T00:00:00'
               duration:	86400	
-              site-visits: 220
+              site-visits: 681
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
             - timestamp: '2024-08-08T00:00:00'
               duration:	86400	
-              site-visits: 215
+              site-visits: 557
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
             - timestamp: '2024-08-09T00:00:00'
               duration:	86400	
-              site-visits: 516
+              site-visits: 1168
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
             - timestamp: '2024-08-10T00:00:00'
               duration:	86400	
-              site-visits: 42
+              site-visits: 166
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
             - timestamp: '2024-08-11T00:00:00'
               duration:	86400	
-              site-visits: 76
+              site-visits: 190
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
             - timestamp: '2024-08-12T00:00:00'
               duration:	86400	
-              site-visits: 226
+              site-visits: 1201
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
             - timestamp: '2024-08-13T00:00:00'
               duration:	86400	
-              site-visits: 180
+              site-visits: 465
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
             - timestamp: '2024-08-14T00:00:00'
               duration:	86400	
-              site-visits: 232
+              site-visits: 575
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
             - timestamp: '2024-08-15T00:00:00'
               duration:	86400	
-              site-visits: 175
+              site-visits: 477
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
             - timestamp: '2024-08-16T00:00:00'
               duration:	86400	
-              site-visits: 235
+              site-visits: 765
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
             - timestamp: '2024-08-17T00:00:00'
               duration:	86400	
-              site-visits: 44
+              site-visits: 142
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
             - timestamp: '2024-08-18T00:00:00'
               duration:	86400	
-              site-visits: 31
+              site-visits: 183
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-19T00:00:00'
+              duration:	86400	
+              site-visits: 1821
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-20T00:00:00'
+              duration:	86400	
+              site-visits: 815
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-21T00:00:00'
+              duration:	86400	
+              site-visits: 632
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-22T00:00:00'
+              duration:	86400	
+              site-visits: 622
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-23T00:00:00'
+              duration:	86400	
+              site-visits: 787
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-24T00:00:00'
+              duration:	86400	
+              site-visits: 93
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-25T00:00:00'
+              duration:	86400	
+              site-visits: 132
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-26T00:00:00'
+              duration:	86400	
+              site-visits: 1088
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-27T00:00:00'
+              duration:	86400	
+              site-visits: 425
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-28T00:00:00'
+              duration:	86400	
+              site-visits: 602
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-29T00:00:00'
+              duration:	86400	
+              site-visits: 586
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-30T00:00:00'
+              duration:	86400	
+              site-visits: 824
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-31T00:00:00'
+              duration:	86400	
+              site-visits: 182
               end-user-energy-coefficient: 0.080
               static-site-size-in-mb: 0.809473
               kwh-per-gb-network: 0.001
@@ -2379,115 +2522,190 @@ tree:
               - total-embodied-carbon
               - sci
           inputs:
-            - timestamp: '2024-07-22T00:00:00'
-              duration:	86400	
-              site-visits: 228
-              time: 120
-            - timestamp: '2024-07-23T00:00:00'
-              duration:	86400	
-              site-visits: 216
-              time: 120
-            - timestamp: '2024-07-24T00:00:00'
-              duration:	86400	
-              site-visits: 203
-              time: 120
-            - timestamp: '2024-07-25T00:00:00'
-              duration:	86400	
-              site-visits: 203
-              time: 120
-            - timestamp: '2024-07-26T00:00:00'
-              duration:	86400	
-              site-visits: 172
-              time: 120
-            - timestamp: '2024-07-27T00:00:00'
-              duration:	86400	
-              site-visits: 38
-              time: 120
-            - timestamp: '2024-07-28T00:00:00'
-              duration:	86400	
-              site-visits: 63
-              time: 120
-            - timestamp: '2024-07-29T00:00:00'
-              duration:	86400	
-              site-visits: 621
-              time: 120
-            - timestamp: '2024-07-30T00:00:00'
-              duration:	86400	
-              site-visits: 181
-              time: 120
-            - timestamp: '2024-07-31T00:00:00'
-              duration:	86400	
-              site-visits: 213
-              time: 120
             - timestamp: '2024-08-01T00:00:00'
               duration:	86400	
-              site-visits: 167
+              site-visits: 445
               time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
             - timestamp: '2024-08-02T00:00:00'
               duration:	86400	
-              site-visits: 428
+              site-visits: 922
               time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
             - timestamp: '2024-08-03T00:00:00'
               duration:	86400	
-              site-visits: 58
+              site-visits: 132
               time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
             - timestamp: '2024-08-04T00:00:00'
               duration:	86400	
-              site-visits: 66
+              site-visits: 162
               time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
             - timestamp: '2024-08-05T00:00:00'
               duration:	86400	
-              site-visits: 301
+              site-visits: 2097
               time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
             - timestamp: '2024-08-06T00:00:00'
               duration:	86400	
-              site-visits: 193
+              site-visits: 579
               time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
             - timestamp: '2024-08-07T00:00:00'
               duration:	86400	
-              site-visits: 220
+              site-visits: 681
               time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
             - timestamp: '2024-08-08T00:00:00'
               duration:	86400	
-              site-visits: 215
+              site-visits: 557
               time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
             - timestamp: '2024-08-09T00:00:00'
               duration:	86400	
-              site-visits: 516
+              site-visits: 1168
               time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
             - timestamp: '2024-08-10T00:00:00'
               duration:	86400	
-              site-visits: 42
+              site-visits: 166
               time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
             - timestamp: '2024-08-11T00:00:00'
               duration:	86400	
-              site-visits: 76
+              site-visits: 190
               time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
             - timestamp: '2024-08-12T00:00:00'
               duration:	86400	
-              site-visits: 226
+              site-visits: 1201
               time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
             - timestamp: '2024-08-13T00:00:00'
               duration:	86400	
-              site-visits: 180
+              site-visits: 465
               time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
             - timestamp: '2024-08-14T00:00:00'
               duration:	86400	
-              site-visits: 232
+              site-visits: 575
               time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
             - timestamp: '2024-08-15T00:00:00'
               duration:	86400	
-              site-visits: 175
+              site-visits: 477
               time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
             - timestamp: '2024-08-16T00:00:00'
               duration:	86400	
-              site-visits: 235
+              site-visits: 765
               time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
             - timestamp: '2024-08-17T00:00:00'
               duration:	86400	
-              site-visits: 44
+              site-visits: 142
               time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
             - timestamp: '2024-08-18T00:00:00'
               duration:	86400	
-              site-visits: 31
+              site-visits: 183
               time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-19T00:00:00'
+              duration:	86400	
+              site-visits: 1821
+              time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-20T00:00:00'
+              duration:	86400	
+              site-visits: 815
+              time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-21T00:00:00'
+              duration:	86400	
+              site-visits: 632
+              time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-22T00:00:00'
+              duration:	86400	
+              site-visits: 622
+              time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-23T00:00:00'
+              duration:	86400	
+              site-visits: 787
+              time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-24T00:00:00'
+              duration:	86400	
+              site-visits: 93
+              time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-25T00:00:00'
+              duration:	86400	
+              site-visits: 132
+              time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-26T00:00:00'
+              duration:	86400	
+              site-visits: 1088
+              time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-27T00:00:00'
+              duration:	86400	
+              site-visits: 425
+              time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-28T00:00:00'
+              duration:	86400	
+              site-visits: 602
+              time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-29T00:00:00'
+              duration:	86400	
+              site-visits: 586
+              time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-30T00:00:00'
+              duration:	86400	
+              site-visits: 824
+              time: 120
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
+            - timestamp: '2024-08-31T00:00:00'
+              duration:	86400	
+              site-visits: 182
+              end-user-energy-coefficient: 0.080
+              static-site-size-in-mb: 0.809473
+              kwh-per-gb-network: 0.001
+              grid-intensity: 765.49
