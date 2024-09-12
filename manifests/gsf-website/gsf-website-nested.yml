@@ -2705,7 +2705,6 @@ tree:
             - timestamp: '2024-08-31T00:00:00'
               duration:	86400	
               site-visits: 182
-              end-user-energy-coefficient: 0.080
-              static-site-size-in-mb: 0.809473
+              time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49

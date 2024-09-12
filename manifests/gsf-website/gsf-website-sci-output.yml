@@ -881,7 +881,7 @@ execution:
     os: linux
     os-version: 5.15.0-117-generic
     node-version: 21.4.0
-    date-time: 2024-09-12T10:43:48.920Z (UTC)
+    date-time: 2024-09-12T10:52:02.878Z (UTC)
     dependencies:
       - '@babel/core@7.22.10'
       - '@babel/preset-typescript@7.23.3'
@@ -6522,8 +6522,7 @@ tree:
             - timestamp: '2024-08-31T00:00:00'
               duration: 86400
               site-visits: 182
-              end-user-energy-coefficient: 0.08
-              static-site-size-in-mb: 0.809473
+              time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
           outputs:
@@ -6800,16 +6799,15 @@ tree:
             - timestamp: '2024-08-31T00:00:00'
               duration: 86400
               site-visits: 182
-              end-user-energy-coefficient: 0.08
-              static-site-size-in-mb: 0.809473
+              time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
-              carbon-per-device: 47.310267857142854
-              carbon: 8610.46875
-              sci: 47.310267857142854
+              carbon-per-device: 0.06570870535714286
+              carbon: 11.958984375000002
+              sci: 0.06570870535714286
           aggregated:
-            carbon: 9880.880859375
-            sci: 1.5897267425115207
+            carbon: 1282.3710937500002
+            sci: 0.06570870535714284
       outputs:
         - carbon: 51.29968201294058
           sci: 0.11528018429874287
@@ -6931,13 +6929,13 @@ tree:
           sci: 0.11528018429874287
           timestamp: '2024-08-30T00:00:00'
           duration: 86400
-        - carbon: 8619.490759167371
-          sci: 47.359839336084455
+        - carbon: 20.980993542371202
+          sci: 0.11528018429874287
           timestamp: '2024-08-31T00:00:00'
           duration: 86400
       aggregated:
-        carbon: 10848.317842399265
-        sci: 1.6392982214531204
+        carbon: 2249.8080767742663
+        sci: 0.11528018429874279
   outputs:
     - carbon: 54.2428329172646
       sci: 0.12189400655565079
@@ -7059,10 +7057,10 @@ tree:
       sci: 0.1191369753009393
       timestamp: '2024-08-30T00:00:00'
       duration: 86400
-    - carbon: 8622.270943834674
-      sci: 47.375115076014694
+    - carbon: 23.761178209674718
+      sci: 0.13055592422898196
       timestamp: '2024-08-31T00:00:00'
       duration: 86400
   aggregated:
-    carbon: 10949.333251538785
-    sci: 1.6483574426698615
+    carbon: 2350.8234859137856
+    sci: 0.12433940551548364
