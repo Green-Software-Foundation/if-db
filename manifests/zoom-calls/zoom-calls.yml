@@ -1,0 +1,610 @@
+name: GSF Website SCI
+description: generates SCI score (gCO2eq/visit) for greensoftware.foundation website
+tags:
+aggregation:
+  metrics:
+    - carbon
+    - sci
+  type: both
+explainer: true  
+initialize:
+  plugins:
+
+    ## data transferred between call participants
+    #############################################
+
+    network-energy-to-transfer-call-data:
+        path: builtin
+        method: Multiply
+        config:
+          input-parameters:
+            - data-transferred
+            - kwh-per-gb-network
+          output-parameter: energy
+        parameter-metadata:
+          inputs:
+            data-transferred:
+              unit: GB
+              description: Data transferred over network, in GB. Estimated from values here https://tactiq.io/learn/zoom-data-usage-facts.
+              aggregation-method:
+                time: sum
+                component: sum
+            kwh-per-gb-network:
+              unit: kWh/GB
+              description: >-
+                Coefficient relating energy expendidture to 1GB of data
+                transferred over network. Taken from Orbinger et al 2021 (https://www.sciencedirect.com/science/article/abs/pii/S0921344920307072)
+              aggregation-method:
+                time: copy
+                component: copy
+          outputs:
+            energy:
+              unit: kWh
+              description: Energy due to data transferred over network, in kWh. 
+              aggregation-method:
+                time: sum
+                component: sum
+    energy-to-carbon:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters:
+          - energy
+          - grid-intensity
+        output-parameter: carbon
+      parameter-metadata:
+        inputs:
+          energy:
+            unit: kWh
+            description: Energy due to data transferred over network, in kWh. 
+            aggregation-method:
+              time: sum
+              component: sum          
+          grid-intensity:
+            unit: gCO2e/kWh
+            description: Carbon emissions per unit energy. 
+            aggregation-method:
+              time: copy
+              component: copy
+        outputs:
+          carbon:   
+            unit: gCO2e
+            description: mass of carbon emitted. 
+            aggregation-method:
+              time: sum
+              component: sum   
+
+    ## Operational carbon at server
+    ###############################
+
+    interpolate-power-curve:
+      method: Interpolation
+      path: 'builtin'
+      config:
+        method: linear
+        x: [0, 10, 50, 100]
+        y: [0.12, 0.32, 0.75, 1.02]
+        input-parameter: 'cpu-util-server'
+        output-parameter: 'cpu-factor'
+      parameter-metadata:
+        inputs:
+          cpu-util-server:
+            unit: percent
+            description: percentage total CPU utilization during build process
+            aggregation-method:
+              time: avg
+              component: avg     
+        outputs:
+          cpu-factor:
+            unit: dimensionless
+            description: A multiplier applied to the processor TDP to estimate power draw.
+            aggregation-method:
+              time: copy
+              component: copy  
+    cpu-factor-to-wattage:
+      method: Multiply
+      path: builtin
+      config:
+        input-parameters: ["cpu-factor", "thermal-design-power"]
+        output-parameter: "cpu-wattage-server"
+      parameter-metadata:
+        inputs:
+          cpu-factor:
+            unit: dimensionless
+            description: A multiplier applied to the processor TDP to estimate power draw.
+            aggregation-method:
+              time: copy
+              component: copy  
+          thermal-design-power:
+            unit: W
+            description: Estimate of the maximum power draw by a processor.
+            aggregation-method:
+              time: copy
+              component: copy  
+        outputs:
+          cpu-wattage-server:
+            unit: W
+            description: Power used by CPU during build process, estimated as the product of the cpu-factor and the TDP.
+            aggregation-method:
+              time: sum
+              component: sum  
+    cpu-wattage-times-timestep-duration:
+      method: Multiply
+      path: builtin
+      config:
+        input-parameters: ["cpu-wattage-server", "duration"]
+        output-parameter: "cpu-wattage-times-duration"
+      parameter-metadata:
+        inputs:
+          cpu-wattage:
+            unit: W
+            description: Power used by CPU during build process,estimated as the product of the cpu-factor and the TDP.
+            aggregation-method:
+              time: sum
+              component: sum  
+          build-duration:
+            unit: s
+            description: Time taken for build process to complete.
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          cpu-wattage-times-duration:
+            unit: Ws
+            description: Energy used by CPU during build process.
+            aggregation-method:
+              time: sum
+              component: sum  
+    cpu-wattage-to-energy-kwh:
+      method: Divide
+      path: "builtin"
+      config:
+        numerator: cpu-wattage-times-duration
+        denominator: 3600000
+        output: energy-server-cpu-kwh
+      parameter-metadata:
+        inputs:
+          cpu-wattage-times-duration:
+            unit: Ws
+            description: Energy used by CPU during build process.
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          energy-server-cpu-kwh:
+            unit: kWh
+            description: Energy used by CPU during build process, converted to kWh.
+            aggregation-method:
+              time: sum
+              component: sum  
+    memory-coefficient-correction: # memory coefficient in CCF is given /GB/hr - we want to convert to /GB/run-time-duration then x by run duration in s
+      path: builtin
+      method: Coefficient
+      config:
+        input-parameter: duration
+        coefficient: 0.000006533333 # this is 0.000392/60 = KW/GB/H -> KW/GB/s
+        output-parameter: memory-coefficient
+      parameter-metadata:
+        inputs:
+          duration:
+            unit: s
+            description: Duration of the timestep, in seconds.
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          memory-coefficient:
+            unit: kW/GB/s
+            description: Energy used per GB of memory, per second. Converted from CCF coefficient expressed in kW/GB/h kWh.
+            aggregation-method:
+              time: sum
+              component: sum  
+    memory-energy:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters: [memory-server-gb, memory-coefficient]
+        output-parameter: energy-server-memory-kwh
+      parameter-metadata:
+        inputs:
+          memory-server-gb:
+            unit: GB
+            description: Memory used at server during zoom call.
+            aggregation-method:
+              time: sum
+              component: sum  
+          memory-coefficient:
+            unit: kW/GB/s
+            description: Energy used per GB of memory, per second. Converted from CCF coefficient expressed in kW/GB/h kWh.
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          energy-server-memory-kwh:
+            unit: kWh
+            description: Energy consumed at server due to memory usage.
+            aggregation-method:
+              time: sum
+              component: sum  
+    sum-server-energy-components:
+      method: Sum
+      path: builtin
+      config:
+        input-parameters: ['energy-server-cpu-kwh','energy-server-memory-kwh']
+        output-parameter: 'energy'
+      parameter-metadata:
+        inputs:
+          build-energy-cpu-kwh:
+            unit: kWh
+            description: Energy used by CPU at server, converted to kWh.
+            aggregation-method:
+              time: sum
+              component: sum  
+          build-energy-memory-kwh:
+            unit: kWh
+            description: Energy consumed by server due to memory usage.
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          energy:
+            unit: kWh
+            description: Total Energy consumed by the server to handle zoom call, for the given timestep.
+            aggregation-method:
+              time: sum
+              component: sum  
+
+    # Embodied carbon of server
+    ###########################
+
+    # Embodied carbon is added using offline calculations whose results are hardcoded into the input array
+
+    ## SCI
+    ######
+    sci:
+      path: builtin
+      method: Sci
+      config:
+        functional-unit: participants
+      parameter-metadata:
+        outputs:
+          sci:
+            description: software carbon intensity
+            unit: gCO2 / participant
+            aggregation-method:
+              time: sum # sum because the same users arer responsible for emissions in every timestep (average)
+              component: sum  
+
+tree:
+  children:
+    network:
+      children:
+        data-transferred-between-participants:
+          pipeline:
+            compute:
+              - network-energy-to-transfer-call-data
+              - energy-to-carbon
+              - sci
+          defaults:
+            participants: 5
+            kwh-per-gb-network: 0.07
+            grid-intensity: 260 # assume uk
+          inputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:01:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:02:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:03:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:04:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:05:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:06:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:07:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:08:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:09:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:10:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:11:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:12:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:13:00'
+              duration: 60
+              data-transferred: 0.0225 
+            - timestamp: '2024-09-01T10:14:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:15:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:16:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:17:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:18:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:19:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:20:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:21:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:22:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:23:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:24:00'
+              duration: 60
+              data-transferred: 0.0225 
+            - timestamp: '2024-09-01T10:2500'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:26:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:27:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:28:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:29:00'
+              duration: 60
+              data-transferred: 0.0225
+            - timestamp: '2024-09-01T10:30:00'
+              duration: 60
+              data-transferred: 0.0225       
+
+    server:
+      children:
+        operational-carbon-server :
+          pipeline:
+            compute:
+              - interpolate-power-curve
+              - cpu-factor-to-wattage
+              - cpu-wattage-times-timestep-duration
+              - cpu-wattage-to-energy-kwh
+              - memory-coefficient-correction
+              - memory-energy
+              - sum-server-energy-components
+              - energy-to-carbon
+              - sci
+          defaults:
+            participants: 5
+            thermal-design-power: 130
+            grid-intensity: 260 # assume uk
+          inputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:01:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:02:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:03:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:04:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:05:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:06:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:07:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:08:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:09:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:10:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:11:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:12:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:13:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16 
+            - timestamp: '2024-09-01T10:14:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:15:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:16:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:17:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:18:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:19:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:20:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:21:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:22:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:23:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:24:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16 
+            - timestamp: '2024-09-01T10:2500'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:26:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:27:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:28:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:29:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16
+            - timestamp: '2024-09-01T10:30:00'
+              duration: 60
+              cpu-util-server: 20
+              memory-server-gb: 16       
+
+        # embodied-carbon:
+        embodied-carbon-server:
+          pipeline:
+            compute:
+              - sci
+          defaults:
+            participants: 5
+            carbon: 0.00352
+          inputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:01:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:02:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:03:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:04:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:05:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:06:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:07:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:08:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:09:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:10:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:11:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:12:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:13:00'
+              duration: 60 
+            - timestamp: '2024-09-01T10:14:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:15:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:16:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:17:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:18:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:19:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:20:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:21:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:22:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:23:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:24:00'
+              duration: 60 
+            - timestamp: '2024-09-01T10:2500'
+              duration: 60
+            - timestamp: '2024-09-01T10:26:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:27:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:28:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:29:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:30:00'
+              duration: 60       
+
+
+      ## Still to add...
+      
+      # users:
+      #   children:
+      #     operational-carbon:
+      #     embodied-carbon:
+  
