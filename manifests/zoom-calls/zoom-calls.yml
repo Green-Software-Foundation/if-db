@@ -84,11 +84,11 @@ initialize:
         method: linear
         x: [0, 10, 50, 100]
         y: [0.12, 0.32, 0.75, 1.02]
-        input-parameter: 'cpu-util-server'
+        input-parameter: 'cpu-util'
         output-parameter: 'cpu-factor'
       parameter-metadata:
         inputs:
-          cpu-util-server:
+          cpu-util:
             unit: percent
             description: percentage total CPU utilization during build process
             aggregation-method:
@@ -106,7 +106,7 @@ initialize:
       path: builtin
       config:
         input-parameters: ["cpu-factor", "thermal-design-power"]
-        output-parameter: "cpu-wattage-server"
+        output-parameter: "cpu-wattage"
       parameter-metadata:
         inputs:
           cpu-factor:
@@ -122,9 +122,9 @@ initialize:
               time: copy
               component: copy  
         outputs:
-          cpu-wattage-server:
+          cpu-wattage:
             unit: W
-            description: Power used by CPU during build process, estimated as the product of the cpu-factor and the TDP.
+            description: Power used by CPU, estimated as the product of the cpu-factor and the TDP.
             aggregation-method:
               time: sum
               component: sum  
@@ -132,26 +132,26 @@ initialize:
       method: Multiply
       path: builtin
       config:
-        input-parameters: ["cpu-wattage-server", "duration"]
+        input-parameters: ["cpu-wattage", "duration"]
         output-parameter: "cpu-wattage-times-duration"
       parameter-metadata:
         inputs:
           cpu-wattage:
             unit: W
-            description: Power used by CPU during build process,estimated as the product of the cpu-factor and the TDP.
+            description: Power used by CPU, estimated as the product of the cpu-factor and the TDP.
             aggregation-method:
               time: sum
               component: sum  
-          build-duration:
+          duration:
             unit: s
-            description: Time taken for build process to complete.
+            description: Timestep duration in seconds.
             aggregation-method:
               time: sum
               component: sum  
         outputs:
           cpu-wattage-times-duration:
             unit: Ws
-            description: Energy used by CPU during build process.
+            description: Energy used by CPU in timestep.
             aggregation-method:
               time: sum
               component: sum  
@@ -161,19 +161,19 @@ initialize:
       config:
         numerator: cpu-wattage-times-duration
         denominator: 3600000
-        output: energy-server-cpu-kwh
+        output: energy-cpu-kwh
       parameter-metadata:
         inputs:
           cpu-wattage-times-duration:
             unit: Ws
-            description: Energy used by CPU during build process.
+            description: Energy used by CPU, in Ws.
             aggregation-method:
               time: sum
               component: sum  
         outputs:
-          energy-server-cpu-kwh:
+          energy-cpu-kwh:
             unit: kWh
-            description: Energy used by CPU during build process, converted to kWh.
+            description: Energy used by CPU, converted to kWh.
             aggregation-method:
               time: sum
               component: sum  
@@ -203,13 +203,13 @@ initialize:
       path: builtin
       method: Multiply
       config:
-        input-parameters: [memory-server-gb, memory-coefficient]
-        output-parameter: energy-server-memory-kwh
+        input-parameters: [memory-gb, memory-coefficient]
+        output-parameter: energy-memory-kwh
       parameter-metadata:
         inputs:
-          memory-server-gb:
+          memory-gb:
             unit: GB
-            description: Memory used at server during zoom call.
+            description: Memory used at server or client during zoom call.
             aggregation-method:
               time: sum
               component: sum  
@@ -220,27 +220,27 @@ initialize:
               time: sum
               component: sum  
         outputs:
-          energy-server-memory-kwh:
+          energy-memory-kwh:
             unit: kWh
-            description: Energy consumed at server due to memory usage.
+            description: Energy consumed at server or client due to memory usage.
             aggregation-method:
               time: sum
               component: sum  
-    sum-server-energy-components:
+    sum-energy-components:
       method: Sum
       path: builtin
       config:
-        input-parameters: ['energy-server-cpu-kwh','energy-server-memory-kwh']
+        input-parameters: ['energy-cpu-kwh','energy-memory-kwh']
         output-parameter: 'energy'
       parameter-metadata:
         inputs:
-          build-energy-cpu-kwh:
+          energy-cpu-kwh:
             unit: kWh
-            description: Energy used by CPU at server, converted to kWh.
+            description: Energy used by CPU at server or client, converted to kWh.
             aggregation-method:
               time: sum
               component: sum  
-          build-energy-memory-kwh:
+          energy-memory-kwh:
             unit: kWh
             description: Energy consumed by server due to memory usage.
             aggregation-method:
@@ -253,6 +253,13 @@ initialize:
             aggregation-method:
               time: sum
               component: sum  
+
+    multiply-energy-by-participants:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters: [energy, participants]
+        output-parameter: energy
 
     # Embodied carbon of server
     ###########################
@@ -274,7 +281,6 @@ initialize:
             aggregation-method:
               time: sum # sum because the same users arer responsible for emissions in every timestep (average)
               component: sum  
-
 tree:
   children:
     network:
@@ -383,10 +389,9 @@ tree:
             - timestamp: '2024-09-01T10:30:00'
               duration: 60
               data-transferred: 0.0225       
-
     server:
       children:
-        operational-carbon-server :
+        operational-carbon-server:
           pipeline:
             compute:
               - interpolate-power-curve
@@ -395,7 +400,7 @@ tree:
               - cpu-wattage-to-energy-kwh
               - memory-coefficient-correction
               - memory-energy
-              - sum-server-energy-components
+              - sum-energy-components
               - energy-to-carbon
               - sci
           defaults:
@@ -405,128 +410,128 @@ tree:
           inputs:
             - timestamp: '2024-09-01T10:00:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:01:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:02:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:03:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:04:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:05:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:06:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:07:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:08:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:09:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:10:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:11:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:12:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:13:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16 
+              cpu-util: 20
+              memory-gb: 16 
             - timestamp: '2024-09-01T10:14:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:15:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:16:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:17:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:18:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:19:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:20:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:21:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:22:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:23:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:24:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16 
+              cpu-util: 20
+              memory-gb: 16 
             - timestamp: '2024-09-01T10:2500'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:26:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:27:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:28:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:29:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16
+              cpu-util: 20
+              memory-gb: 16
             - timestamp: '2024-09-01T10:30:00'
               duration: 60
-              cpu-util-server: 20
-              memory-server-gb: 16       
+              cpu-util: 20
+              memory-gb: 16       
 
         # embodied-carbon:
         embodied-carbon-server:
@@ -599,12 +604,218 @@ tree:
               duration: 60
             - timestamp: '2024-09-01T10:30:00'
               duration: 60       
+    users:
+      children:
+        operational-carbon:
+          pipeline:
+            compute:
+              - interpolate-power-curve
+              - cpu-factor-to-wattage
+              - cpu-wattage-times-timestep-duration
+              - cpu-wattage-to-energy-kwh
+              - memory-coefficient-correction
+              - memory-energy
+              - sum-energy-components
+              - multiply-energy-by-participants
+              - energy-to-carbon
+              - sci
+          defaults:
+            participants: 5
+            thermal-design-power: 45 # tdp for a macbook pro 13, 15"
+            grid-intensity: 260 # assume uk
+          inputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:01:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:02:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:03:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:04:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:05:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:06:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:07:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:08:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:09:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:10:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:11:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:12:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:13:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15 
+            - timestamp: '2024-09-01T10:14:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:15:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:16:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:17:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:18:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:19:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:20:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:21:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:22:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:23:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:24:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15 
+            - timestamp: '2024-09-01T10:2500'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:26:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:27:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:28:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:29:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15
+            - timestamp: '2024-09-01T10:30:00'
+              duration: 60
+              cpu-util: 80
+              memory-gb: 15   
 
-
-      ## Still to add...
-      
-      # users:
-      #   children:
-      #     operational-carbon:
-      #     embodied-carbon:
-  
+        embodied-carbon:
+          pipeline:
+            compute:
+              - sci
+          defaults:
+            participants: 5
+            carbon: 0.35 # computed offline
+          inputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:01:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:02:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:03:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:04:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:05:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:06:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:07:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:08:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:09:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:10:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:11:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:12:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:13:00'
+              duration: 60 
+            - timestamp: '2024-09-01T10:14:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:15:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:16:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:17:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:18:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:19:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:20:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:21:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:22:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:23:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:24:00'
+              duration: 60 
+            - timestamp: '2024-09-01T10:2500'
+              duration: 60
+            - timestamp: '2024-09-01T10:26:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:27:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:28:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:29:00'
+              duration: 60
+            - timestamp: '2024-09-01T10:30:00'
+              duration: 60       
