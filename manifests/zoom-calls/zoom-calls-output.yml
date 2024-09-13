@@ -305,7 +305,7 @@ execution:
     os: linux
     os-version: 5.15.0-117-generic
     node-version: 21.4.0
-    date-time: 2024-09-13T12:51:05.831Z (UTC)
+    date-time: 2024-09-13T13:19:13.456Z (UTC)
     dependencies:
       - '@babel/core@7.22.10'
       - '@babel/preset-typescript@7.23.3'
@@ -494,6 +494,7 @@ tree:
           pipeline:
             compute:
               - network-energy-to-transfer-call-data
+              - multiply-energy-by-participants
               - energy-to-carbon
               - sci
           defaults:
@@ -601,410 +602,410 @@ tree:
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:01:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:02:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:03:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:04:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:05:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:06:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:07:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:08:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:09:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:10:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:11:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:12:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:13:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:14:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:15:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:16:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:17:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:18:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:19:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:20:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:21:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:22:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:23:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:24:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: 2024-09-01T10:2500
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:26:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:27:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:28:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:29:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
             - timestamp: '2024-09-01T10:30:00'
               duration: 60
               data-transferred: 0.0225
               participants: 5
               kwh-per-gb-network: 0.07
               grid-intensity: 260
-              energy: 0.001575
-              carbon: 0.4095
-              sci: 0.0819
+              energy: 0.007875
+              carbon: 2.0475
+              sci: 0.4095
           aggregated:
-            carbon: 12.69449999999999
-            sci: 2.5389000000000013
+            carbon: 63.47249999999999
+            sci: 12.69449999999999
       outputs:
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:00:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:01:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:02:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:03:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:04:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:05:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:06:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:07:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:08:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:09:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:10:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:11:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:12:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:13:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:14:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:15:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:16:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:17:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:18:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:19:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:20:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:21:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:22:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:23:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:24:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: 2024-09-01T10:2500
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:26:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:27:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:28:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:29:00'
           duration: 60
-        - carbon: 0.4095
-          sci: 0.0819
+        - carbon: 2.0475
+          sci: 0.4095
           timestamp: '2024-09-01T10:30:00'
           duration: 60
       aggregated:
-        carbon: 12.69449999999999
-        sci: 2.5389000000000013
+        carbon: 63.47249999999999
+        sci: 12.69449999999999
     server:
       children:
         operational-carbon-server:
@@ -3007,130 +3008,130 @@ tree:
         carbon: 275.37918791
         sci: 55.07583758200003
   outputs:
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:00:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:01:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:02:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:03:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:04:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:05:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:06:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:07:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:08:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:09:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:10:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:11:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:12:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:13:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:14:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:15:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:16:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:17:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:18:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:19:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:20:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:21:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:22:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:23:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:24:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: 2024-09-01T10:2500
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:26:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:27:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:28:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:29:00'
       duration: 60
-    - carbon: 11.1677645268
-      sci: 2.2335529053600003
+    - carbon: 12.8057645268
+      sci: 2.56115290536
       timestamp: '2024-09-01T10:30:00'
       duration: 60
   aggregated:
-    carbon: 346.2007003308
-    sci: 69.24014006616001
+    carbon: 396.97870033079977
+    sci: 79.39574006616007
