@@ -29,7 +29,7 @@ initialize:
       method: Github
       path: if-github-plugin
       config:
-        repo: "Green-Software-Foundation/if-docs"
+        repo: "Green-Software-Foundation/greensoftware.foundation"
       mapping: # rename outputs
         'size': 'repo-size-source-repo'
         'clones': 'repo-clones-source-repo'

@@ -2,378 +2,6 @@ name: GSF Website SCI
 description: generates SCI score (gCO2eq/visit) for greensoftware.foundation website
 tags: null
 explainer: true
-explain:
-  repo-clones-source-repo:
-    plugins:
-      - storage-and-traffic-from-github-source-repo
-    unit: number
-    description: >-
-      the clones count of the source-repo repository in the specified time
-      range. Renamed from default "clones" output param.
-    aggregation-method:
-      time: sum
-      component: sum
-  repo-size-source-repo:
-    plugins:
-      - storage-and-traffic-from-github-source-repo
-      - storage-in-gb-to-tb-source-repo
-    unit: GB
-    description: >-
-      the size of the source-repo repository. Renamed from default "size" output
-      param in "storage-and-traffic-from-github-source-repo".
-    aggregation-method:
-      time: sum
-      component: sum
-  storage-tb-source-repo:
-    plugins:
-      - storage-in-gb-to-tb-source-repo
-      - storage-energy-in-watts-source-repo
-    unit: TB
-    description: >-
-      the size of the source-repo repository. Renamed from default "size" output
-      param in "storage-and-traffic-from-github-source-repo".
-    aggregation-method:
-      time: copy
-      component: copy
-  watt-hours-per-tb-hour:
-    plugins:
-      - storage-energy-in-watts-source-repo
-      - storage-energy-static-site-in-watts-for-one-hour
-    unit: Wh
-    description: >-
-      Energy required to store 1 TB of data for 1 hour on an SSD, taken from
-      CCF.
-    aggregation-method:
-      time: copy
-      component: copy
-  storage-watts-source-repo:
-    plugins:
-      - storage-energy-in-watts-source-repo
-      - storage-energy-in-wh-source-repo
-    unit: W
-    description: Watts consumed storing IF docs repository.
-    aggregation-method:
-      time: sum
-      component: sum
-  duration-in-hours:
-    plugins:
-      - storage-energy-in-wh-source-repo
-      - storage-energy-in-wh-static-site-per-duration
-    unit: hours
-    description: duration of the timestep converted from seconds to hours.
-    aggregation-method:
-      time: sum
-      component: sum
-  storage-wh-source-repo:
-    plugins:
-      - storage-energy-in-wh-source-repo
-      - storage-energy-to-kwh-source-repo
-    unit: Wh
-    description: Energy consumed storing IF docs repository in Watt hours.
-    aggregation-method:
-      time: sum
-      component: sum
-  energy:
-    plugins:
-      - storage-energy-to-kwh-source-repo
-      - energy-to-carbon
-      - build-energy-total
-      - sum-serving-static-site-energy-components
-      - network-energy-serving-static-site-total
-      - end-user-energy
-    unit: kWh
-    description: >-
-      Energy consumed by all users viewing the site in their browser, in
-      timestep.
-    aggregation-method:
-      time: sum
-      component: sum
-  grid-intensity:
-    plugins:
-      - energy-to-carbon
-    unit: gCO2e/kWh
-    description: Mass of carbon dioxide equivalent emitted per kWh of energy consumed.
-    aggregation-method:
-      time: sum
-      component: sum
-  carbon:
-    plugins:
-      - energy-to-carbon
-      - embodied-carbon-web-server-origin
-      - embodied-carbon-web-server-cdn
-      - embodied-carbon-github
-      - total-embodied-carbon
-    unit: gCO2e
-    description: >-
-      Mass of carbon emitted for all the end-user devices used to visit our
-      site.
-    aggregation-method:
-      time: sum
-      component: sum
-  sci:
-    plugins:
-      - sci
-    unit: gCO2 / visit
-    description: software carbon intensity
-    aggregation-method:
-      time: avg
-      component: sum
-  cpu-utilization-during-build:
-    plugins:
-      - interpolate-power-curve
-    unit: percent
-    description: percentage total CPU utilization during build process
-    aggregation-method:
-      time: avg
-      component: avg
-  cpu-factor:
-    plugins:
-      - interpolate-power-curve
-      - build-stage-cpu-factor-to-wattage
-    unit: dimensionless
-    description: A multiplier applied to the processor TDP to estimate power draw.
-    aggregation-method:
-      time: copy
-      component: copy
-  thermal-design-power:
-    plugins:
-      - build-stage-cpu-factor-to-wattage
-    unit: W
-    description: Estimate of the maximum power draw by a processor.
-    aggregation-method:
-      time: copy
-      component: copy
-  cpu-wattage:
-    plugins:
-      - build-stage-cpu-factor-to-wattage
-      - build-stage-cpu-wattage-times-build-duration
-    unit: W
-    description: >-
-      Power used by CPU during build process,estimated as the product of the
-      cpu-factor and the TDP.
-    aggregation-method:
-      time: sum
-      component: sum
-  build-duration:
-    plugins:
-      - build-stage-cpu-wattage-times-build-duration
-      - memory-coefficient-correction
-    unit: s
-    description: Time taken for build process to complete.
-    aggregation-method:
-      time: sum
-      component: sum
-  cpu-wattage-times-duration:
-    plugins:
-      - build-stage-cpu-wattage-times-build-duration
-      - build-stage-cpu-wattage-to-energy-kwh
-    unit: Ws
-    description: Energy used by CPU during build process.
-    aggregation-method:
-      time: sum
-      component: sum
-  build-energy-cpu-kwh:
-    plugins:
-      - build-stage-cpu-wattage-to-energy-kwh
-      - sum-build-energy-components
-    unit: kWh
-    description: Energy used by CPU during build process, converted to kWh.
-    aggregation-method:
-      time: sum
-      component: sum
-  memory-coefficient:
-    plugins:
-      - memory-coefficient-correction
-      - memory-energy-per-build
-    unit: kW/GB/s
-    description: >-
-      Energy used per GB of memory, per second. Converted from CCF coefficient
-      expressed in kW/GB/h kWh.
-    aggregation-method:
-      time: sum
-      component: sum
-  build-memory-gb:
-    plugins:
-      - memory-energy-per-build
-    unit: GB
-    description: Memory used during build process.
-    aggregation-method:
-      time: sum
-      component: sum
-  build-energy-memory-kwh:
-    plugins:
-      - memory-energy-per-build
-      - sum-build-energy-components
-    unit: kWh
-    description: Energy consumed during build process due to memory usage.
-    aggregation-method:
-      time: sum
-      component: sum
-  build-energy-kwh-per-build:
-    plugins:
-      - sum-build-energy-components
-      - build-energy-total
-    unit: kWh
-    description: Total Energy consumed during build process due to memory and CPU usage.
-    aggregation-method:
-      time: sum
-      component: sum
-  builds:
-    plugins:
-      - build-energy-total
-    unit: builds
-    description: Number of builds that happened in the given timestep.
-    aggregation-method:
-      time: sum
-      component: sum
-  static-site-size-in-mb:
-    plugins:
-      - static-site-size-in-tb
-      - static-site-size-in-gb
-    unit: MB
-    description: Size of static site as reported by Github API.
-    aggregation-method:
-      time: copy
-      component: copy
-  static-site-size-in-tb:
-    plugins:
-      - static-site-size-in-tb
-      - storage-energy-static-site-in-watts-for-one-hour
-    unit: TB
-    description: Size of the static site, taken from Google PageSpeed API.
-    aggregation-method:
-      time: sum
-      component: sum
-  storage-watt-hours-static-site-at-origin:
-    plugins:
-      - storage-energy-static-site-in-watts-for-one-hour
-      - storage-energy-in-wh-static-site-per-duration
-    unit: Wh
-    description: Energy required to store the IF docs repo for one hour.
-    aggregation-method:
-      time: sum
-      component: sum
-  storage-wh-static-site-at-origin:
-    plugins:
-      - storage-energy-in-wh-static-site-per-duration
-      - storage-energy-to-kwh-static-site
-    unit: Wh
-    description: Energy required to store the IF docs repo in each timestep.
-    aggregation-method:
-      time: sum
-      component: sum
-  storage-energy-kwh-static-site-at-origin:
-    plugins:
-      - storage-energy-to-kwh-static-site
-      - storage-energy-per-cdn-node
-      - sum-serving-static-site-energy-components
-    unit: kWh
-    description: Energy required to store the IF docs repo in each timestep, in kWh.
-    aggregation-method:
-      time: sum
-      component: sum
-  storage-energy-per-cdn-node:
-    plugins:
-      - storage-energy-per-cdn-node
-      - storage-energy-for-entire-cdn
-    unit: kWh
-    description: >-
-      Energy required to store the static site at each CDN PoP, assuming it to
-      be 10% of that at the origin.
-    aggregation-method:
-      time: sum
-      component: sum
-  storage-energy-whole-cdn:
-    plugins:
-      - storage-energy-for-entire-cdn
-      - sum-serving-static-site-energy-components
-    unit: kWh
-    description: >-
-      Energy required to store the static site across the entire CDN, assuming
-      46 PoPs.
-    aggregation-method:
-      time: sum
-      component: sum
-  static-site-size-in-gb:
-    plugins:
-      - static-site-size-in-gb
-      - network-energy-serving-static-site-per-view
-      - end-user-energy
-    unit: GB
-    description: Size of static site as reported by Github API, converted to GB.
-    aggregation-method:
-      time: copy
-      component: copy
-  kwh-per-gb-network:
-    plugins:
-      - network-energy-serving-static-site-per-view
-    unit: kWh/GB
-    description: >-
-      Coefficient relating energy expendidture to 1GB of data transferred over
-      network.
-    aggregation-method:
-      time: copy
-      component: copy
-  network-energy-kwh-serving-static-site-per-view:
-    plugins:
-      - network-energy-serving-static-site-per-view
-      - network-energy-serving-static-site-total
-    unit: kWh
-    description: >-
-      Energy required to transfer static site data over the network, for each
-      first-time visitor.
-    aggregation-method:
-      time: sum
-      component: sum
-  site-visits:
-    plugins:
-      - network-energy-serving-static-site-total
-      - end-user-energy
-      - total-embodied-carbon
-    unit: visits
-    description: >-
-      Number of times the site was visited in this timestep, from Google
-      Analytics
-    aggregation-method:
-      time: sum
-      component: sum
-  end-user-energy-coefficient:
-    plugins:
-      - end-user-energy
-    unit: kWh
-    description: >-
-      Coefficient for end user energy expended viewing site in browser, from
-      Sustainable Web Design model.
-    aggregation-method:
-      time: copy
-      component: copy
-  baseline-emissions:
-    plugins:
-      - embodied-carbon-devices
-    unit: gCO2e
-    description: >-
-      Mass of carbon emitted in the production and disposal of a basic rack
-      server with 1 CPU and 16GB RAM.
-    aggregation-method:
-      time: copy
-      component: copy
-  lifespan:
-    plugins:
-      - embodied-carbon-devices
-    unit: s
-    description: Expected lifespan of server, in seconds.
-    aggregation-method:
-      time: copy
-      component: copy
-  carbon-per-device:
-    plugins:
-      - embodied-carbon-devices
-      - total-embodied-carbon
-    unit: gCO2e
-    description: Mass of embodied carbon per user device.
-    aggregation-method:
-      time: sum
-      component: sum
 aggregation:
   metrics:
     - carbon
@@ -395,7 +23,7 @@ initialize:
         size: repo-size-source-repo
         clones: repo-clones-source-repo
       config:
-        repo: Green-Software-Foundation/if-docs
+        repo: Green-Software-Foundation/greensoftware.foundation
       parameter-metadata:
         outputs:
           repo-clones-source-repo:
@@ -1253,7 +881,7 @@ execution:
     os: linux
     os-version: 5.15.0-117-generic
     node-version: 21.4.0
-    date-time: 2024-09-12T15:59:03.653Z (UTC)
+    date-time: 2024-09-13T08:31:52.348Z (UTC)
     dependencies:
       - '@babel/core@7.22.10'
       - '@babel/preset-typescript@7.23.3'
@@ -1287,6 +915,378 @@ execution:
       - winston@3.11.0
       - zod@3.23.8
   status: success
+explain:
+  repo-clones-source-repo:
+    plugins:
+      - storage-and-traffic-from-github-source-repo
+    unit: number
+    description: >-
+      the clones count of the source-repo repository in the specified time
+      range. Renamed from default "clones" output param.
+    aggregation-method:
+      time: sum
+      component: sum
+  repo-size-source-repo:
+    plugins:
+      - storage-and-traffic-from-github-source-repo
+      - storage-in-gb-to-tb-source-repo
+    unit: GB
+    description: >-
+      the size of the source-repo repository. Renamed from default "size" output
+      param in "storage-and-traffic-from-github-source-repo".
+    aggregation-method:
+      time: sum
+      component: sum
+  storage-tb-source-repo:
+    plugins:
+      - storage-in-gb-to-tb-source-repo
+      - storage-energy-in-watts-source-repo
+    unit: TB
+    description: >-
+      the size of the source-repo repository. Renamed from default "size" output
+      param in "storage-and-traffic-from-github-source-repo".
+    aggregation-method:
+      time: copy
+      component: copy
+  watt-hours-per-tb-hour:
+    plugins:
+      - storage-energy-in-watts-source-repo
+      - storage-energy-static-site-in-watts-for-one-hour
+    unit: Wh
+    description: >-
+      Energy required to store 1 TB of data for 1 hour on an SSD, taken from
+      CCF.
+    aggregation-method:
+      time: copy
+      component: copy
+  storage-watts-source-repo:
+    plugins:
+      - storage-energy-in-watts-source-repo
+      - storage-energy-in-wh-source-repo
+    unit: W
+    description: Watts consumed storing IF docs repository.
+    aggregation-method:
+      time: sum
+      component: sum
+  duration-in-hours:
+    plugins:
+      - storage-energy-in-wh-source-repo
+      - storage-energy-in-wh-static-site-per-duration
+    unit: hours
+    description: duration of the timestep converted from seconds to hours.
+    aggregation-method:
+      time: sum
+      component: sum
+  storage-wh-source-repo:
+    plugins:
+      - storage-energy-in-wh-source-repo
+      - storage-energy-to-kwh-source-repo
+    unit: Wh
+    description: Energy consumed storing IF docs repository in Watt hours.
+    aggregation-method:
+      time: sum
+      component: sum
+  energy:
+    plugins:
+      - storage-energy-to-kwh-source-repo
+      - energy-to-carbon
+      - build-energy-total
+      - sum-serving-static-site-energy-components
+      - network-energy-serving-static-site-total
+      - end-user-energy
+    unit: kWh
+    description: >-
+      Energy consumed by all users viewing the site in their browser, in
+      timestep.
+    aggregation-method:
+      time: sum
+      component: sum
+  grid-intensity:
+    plugins:
+      - energy-to-carbon
+    unit: gCO2e/kWh
+    description: Mass of carbon dioxide equivalent emitted per kWh of energy consumed.
+    aggregation-method:
+      time: sum
+      component: sum
+  carbon:
+    plugins:
+      - energy-to-carbon
+      - embodied-carbon-web-server-origin
+      - embodied-carbon-web-server-cdn
+      - embodied-carbon-github
+      - total-embodied-carbon
+    unit: gCO2e
+    description: >-
+      Mass of carbon emitted for all the end-user devices used to visit our
+      site.
+    aggregation-method:
+      time: sum
+      component: sum
+  sci:
+    plugins:
+      - sci
+    unit: gCO2 / visit
+    description: software carbon intensity
+    aggregation-method:
+      time: avg
+      component: sum
+  cpu-utilization-during-build:
+    plugins:
+      - interpolate-power-curve
+    unit: percent
+    description: percentage total CPU utilization during build process
+    aggregation-method:
+      time: avg
+      component: avg
+  cpu-factor:
+    plugins:
+      - interpolate-power-curve
+      - build-stage-cpu-factor-to-wattage
+    unit: dimensionless
+    description: A multiplier applied to the processor TDP to estimate power draw.
+    aggregation-method:
+      time: copy
+      component: copy
+  thermal-design-power:
+    plugins:
+      - build-stage-cpu-factor-to-wattage
+    unit: W
+    description: Estimate of the maximum power draw by a processor.
+    aggregation-method:
+      time: copy
+      component: copy
+  cpu-wattage:
+    plugins:
+      - build-stage-cpu-factor-to-wattage
+      - build-stage-cpu-wattage-times-build-duration
+    unit: W
+    description: >-
+      Power used by CPU during build process,estimated as the product of the
+      cpu-factor and the TDP.
+    aggregation-method:
+      time: sum
+      component: sum
+  build-duration:
+    plugins:
+      - build-stage-cpu-wattage-times-build-duration
+      - memory-coefficient-correction
+    unit: s
+    description: Time taken for build process to complete.
+    aggregation-method:
+      time: sum
+      component: sum
+  cpu-wattage-times-duration:
+    plugins:
+      - build-stage-cpu-wattage-times-build-duration
+      - build-stage-cpu-wattage-to-energy-kwh
+    unit: Ws
+    description: Energy used by CPU during build process.
+    aggregation-method:
+      time: sum
+      component: sum
+  build-energy-cpu-kwh:
+    plugins:
+      - build-stage-cpu-wattage-to-energy-kwh
+      - sum-build-energy-components
+    unit: kWh
+    description: Energy used by CPU during build process, converted to kWh.
+    aggregation-method:
+      time: sum
+      component: sum
+  memory-coefficient:
+    plugins:
+      - memory-coefficient-correction
+      - memory-energy-per-build
+    unit: kW/GB/s
+    description: >-
+      Energy used per GB of memory, per second. Converted from CCF coefficient
+      expressed in kW/GB/h kWh.
+    aggregation-method:
+      time: sum
+      component: sum
+  build-memory-gb:
+    plugins:
+      - memory-energy-per-build
+    unit: GB
+    description: Memory used during build process.
+    aggregation-method:
+      time: sum
+      component: sum
+  build-energy-memory-kwh:
+    plugins:
+      - memory-energy-per-build
+      - sum-build-energy-components
+    unit: kWh
+    description: Energy consumed during build process due to memory usage.
+    aggregation-method:
+      time: sum
+      component: sum
+  build-energy-kwh-per-build:
+    plugins:
+      - sum-build-energy-components
+      - build-energy-total
+    unit: kWh
+    description: Total Energy consumed during build process due to memory and CPU usage.
+    aggregation-method:
+      time: sum
+      component: sum
+  builds:
+    plugins:
+      - build-energy-total
+    unit: builds
+    description: Number of builds that happened in the given timestep.
+    aggregation-method:
+      time: sum
+      component: sum
+  static-site-size-in-mb:
+    plugins:
+      - static-site-size-in-tb
+      - static-site-size-in-gb
+    unit: MB
+    description: Size of static site as reported by Github API.
+    aggregation-method:
+      time: copy
+      component: copy
+  static-site-size-in-tb:
+    plugins:
+      - static-site-size-in-tb
+      - storage-energy-static-site-in-watts-for-one-hour
+    unit: TB
+    description: Size of the static site, taken from Google PageSpeed API.
+    aggregation-method:
+      time: sum
+      component: sum
+  storage-watt-hours-static-site-at-origin:
+    plugins:
+      - storage-energy-static-site-in-watts-for-one-hour
+      - storage-energy-in-wh-static-site-per-duration
+    unit: Wh
+    description: Energy required to store the IF docs repo for one hour.
+    aggregation-method:
+      time: sum
+      component: sum
+  storage-wh-static-site-at-origin:
+    plugins:
+      - storage-energy-in-wh-static-site-per-duration
+      - storage-energy-to-kwh-static-site
+    unit: Wh
+    description: Energy required to store the IF docs repo in each timestep.
+    aggregation-method:
+      time: sum
+      component: sum
+  storage-energy-kwh-static-site-at-origin:
+    plugins:
+      - storage-energy-to-kwh-static-site
+      - storage-energy-per-cdn-node
+      - sum-serving-static-site-energy-components
+    unit: kWh
+    description: Energy required to store the IF docs repo in each timestep, in kWh.
+    aggregation-method:
+      time: sum
+      component: sum
+  storage-energy-per-cdn-node:
+    plugins:
+      - storage-energy-per-cdn-node
+      - storage-energy-for-entire-cdn
+    unit: kWh
+    description: >-
+      Energy required to store the static site at each CDN PoP, assuming it to
+      be 10% of that at the origin.
+    aggregation-method:
+      time: sum
+      component: sum
+  storage-energy-whole-cdn:
+    plugins:
+      - storage-energy-for-entire-cdn
+      - sum-serving-static-site-energy-components
+    unit: kWh
+    description: >-
+      Energy required to store the static site across the entire CDN, assuming
+      46 PoPs.
+    aggregation-method:
+      time: sum
+      component: sum
+  static-site-size-in-gb:
+    plugins:
+      - static-site-size-in-gb
+      - network-energy-serving-static-site-per-view
+      - end-user-energy
+    unit: GB
+    description: Size of static site as reported by Github API, converted to GB.
+    aggregation-method:
+      time: copy
+      component: copy
+  kwh-per-gb-network:
+    plugins:
+      - network-energy-serving-static-site-per-view
+    unit: kWh/GB
+    description: >-
+      Coefficient relating energy expendidture to 1GB of data transferred over
+      network.
+    aggregation-method:
+      time: copy
+      component: copy
+  network-energy-kwh-serving-static-site-per-view:
+    plugins:
+      - network-energy-serving-static-site-per-view
+      - network-energy-serving-static-site-total
+    unit: kWh
+    description: >-
+      Energy required to transfer static site data over the network, for each
+      first-time visitor.
+    aggregation-method:
+      time: sum
+      component: sum
+  site-visits:
+    plugins:
+      - network-energy-serving-static-site-total
+      - end-user-energy
+      - total-embodied-carbon
+    unit: visits
+    description: >-
+      Number of times the site was visited in this timestep, from Google
+      Analytics
+    aggregation-method:
+      time: sum
+      component: sum
+  end-user-energy-coefficient:
+    plugins:
+      - end-user-energy
+    unit: kWh
+    description: >-
+      Coefficient for end user energy expended viewing site in browser, from
+      Sustainable Web Design model.
+    aggregation-method:
+      time: copy
+      component: copy
+  baseline-emissions:
+    plugins:
+      - embodied-carbon-devices
+    unit: gCO2e
+    description: >-
+      Mass of carbon emitted in the production and disposal of a basic rack
+      server with 1 CPU and 16GB RAM.
+    aggregation-method:
+      time: copy
+      component: copy
+  lifespan:
+    plugins:
+      - embodied-carbon-devices
+    unit: s
+    description: Expected lifespan of server, in seconds.
+    aggregation-method:
+      time: copy
+      component: copy
+  carbon-per-device:
+    plugins:
+      - embodied-carbon-devices
+      - total-embodied-carbon
+    unit: gCO2e
+    description: Mass of embodied carbon per user device.
+    aggregation-method:
+      time: sum
+      component: sum
 tree:
   children:
     development:
@@ -1468,13 +1468,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 5.748833340404493e-7
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.0000045031536996674164
             - timestamp: '2024-08-02T00:00:00'
               duration: 86400
               site-visits: 922
@@ -1482,13 +1482,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 2.7746538356616046e-7
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.000002173431015566161
             - timestamp: '2024-08-03T00:00:00'
               duration: 86400
               site-visits: 132
@@ -1496,13 +1496,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 0.0000019380536639999998
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.000015181086336000002
             - timestamp: '2024-08-04T00:00:00'
               duration: 86400
               site-visits: 162
@@ -1510,13 +1510,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 0.0000015791548373333331
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.000012369774051555557
             - timestamp: '2024-08-05T00:00:00'
               duration: 86400
               site-visits: 2097
@@ -1524,13 +1524,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 1.2199479430042916e-7
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 9.556048623519315e-7
             - timestamp: '2024-08-06T00:00:00'
               duration: 86400
               site-visits: 579
@@ -1538,13 +1538,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 4.4183606847668385e-7
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.000003460973050694301
             - timestamp: '2024-08-07T00:00:00'
               duration: 86400
               site-visits: 681
@@ -1552,13 +1552,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 3.7565797892511005e-7
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.0000029425894219559475
             - timestamp: '2024-08-08T00:00:00'
               duration: 86400
               site-visits: 557
@@ -1566,13 +1566,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 4.592874033177737e-7
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.000003597672165802514
             - timestamp: '2024-08-09T00:00:00'
               duration: 86400
               site-visits: 1168
@@ -1580,13 +1580,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 2.1902661271232873e-7
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.0000017156707160547948
             - timestamp: '2024-08-10T00:00:00'
               duration: 86400
               site-visits: 166
@@ -1594,13 +1594,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 0.0000015411029135421685
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.00001207170720693976
             - timestamp: '2024-08-11T00:00:00'
               duration: 86400
               site-visits: 190
@@ -1608,13 +1608,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 0.0000013464372823578946
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.000010546859980800002
             - timestamp: '2024-08-12T00:00:00'
               duration: 86400
               site-visits: 1201
@@ -1622,13 +1622,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 2.130083960432972e-7
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.0000016685290560799336
             - timestamp: '2024-08-13T00:00:00'
               duration: 86400
               site-visits: 465
@@ -1636,13 +1636,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 5.501571691354838e-7
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.000004309469669574194
             - timestamp: '2024-08-14T00:00:00'
               duration: 86400
               site-visits: 575
@@ -1650,13 +1650,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 4.449097106921738e-7
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.0000034850493849600005
             - timestamp: '2024-08-15T00:00:00'
               duration: 86400
               site-visits: 477
@@ -1664,13 +1664,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 5.363167372075471e-7
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.000004201055338264151
             - timestamp: '2024-08-16T00:00:00'
               duration: 86400
               site-visits: 765
@@ -1678,13 +1678,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 3.3440925967058815e-7
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.000002619481563858824
             - timestamp: '2024-08-17T00:00:00'
               duration: 86400
               site-visits: 142
@@ -1692,13 +1692,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 0.0000018015710116056334
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.000014111995748957748
             - timestamp: '2024-08-18T00:00:00'
               duration: 86400
               site-visits: 183
@@ -1706,13 +1706,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 0.0000013979403478032783
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.000010950291783344263
             - timestamp: '2024-08-19T00:00:00'
               duration: 86400
               site-visits: 1821
@@ -1720,13 +1720,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 1.4048494434266883e-7
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.000001100441184158155
             - timestamp: '2024-08-20T00:00:00'
               duration: 86400
               site-visits: 815
@@ -1734,13 +1734,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 3.138933541693251e-7
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.0000024587771734380373
             - timestamp: '2024-08-21T00:00:00'
               duration: 86400
               site-visits: 632
@@ -1748,13 +1748,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 4.047833602025316e-7
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.0000031707332220759496
             - timestamp: '2024-08-22T00:00:00'
               duration: 86400
               site-visits: 622
@@ -1762,13 +1762,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 4.1129113126688097e-7
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.0000032217096404372996
             - timestamp: '2024-08-23T00:00:00'
               duration: 86400
               site-visits: 787
@@ -1776,13 +1776,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 3.250610973926302e-7
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.000002546255903878018
             - timestamp: '2024-08-24T00:00:00'
               duration: 86400
               site-visits: 93
@@ -1790,13 +1790,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 0.000002750785845677419
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.00002154734834787097
             - timestamp: '2024-08-25T00:00:00'
               duration: 86400
               site-visits: 132
@@ -1804,13 +1804,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 0.0000019380536639999998
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.000015181086336000002
             - timestamp: '2024-08-26T00:00:00'
               duration: 86400
               site-visits: 1088
@@ -1818,13 +1818,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 2.351315107058823e-7
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.0000018418229745882356
             - timestamp: '2024-08-27T00:00:00'
               duration: 86400
               site-visits: 425
@@ -1832,13 +1832,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 6.019366674070587e-7
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.000004715066814945883
             - timestamp: '2024-08-28T00:00:00'
               duration: 86400
               site-visits: 602
@@ -1846,27 +1846,27 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 4.2495528845182714e-7
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.0000033287431833089706
             - timestamp: '2024-08-29T00:00:00'
               duration: 86400
               site-visits: 586
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
               duration-in-hours: 24
-              repo-clones-source-repo: 1
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 4.365581632218429e-7
+              repo-clones-source-repo: 0
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.0000034196303692013658
             - timestamp: '2024-08-30T00:00:00'
               duration: 86400
               site-visits: 824
@@ -1874,158 +1874,158 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 3.1046490733980574e-7
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.0000024319215975145635
             - timestamp: '2024-08-31T00:00:00'
               duration: 86400
               site-visits: 182
               watt-hours-per-tb-hour: 1.2
               grid-intensity: 765.49
               duration-in-hours: 24
-              repo-clones-source-repo: 1
-              repo-size-source-repo: 0.011604
-              storage-tb-source-repo: 0.000011604
-              storage-watts-source-repo: 0.0000139248
-              storage-wh-source-repo: 0.0003341952
-              energy: 3.3419519999999997e-7
-              carbon: 0.00025582308364799995
-              sci: 0.0000014056213387252745
+              repo-clones-source-repo: 0
+              repo-size-source-repo: 0.090896
+              storage-tb-source-repo: 0.000090896
+              storage-watts-source-repo: 0.00010907520000000001
+              storage-wh-source-repo: 0.0026178048000000003
+              energy: 0.0000026178048
+              carbon: 0.0020039033963520003
+              sci: 0.000011010458221714287
           aggregated:
-            carbon: 0.007930515593087994
-            sci: 7.694269089559187e-7
+            carbon: 0.06212100528691203
+            sci: 0.000006027044839405136
       outputs:
-        - carbon: 0.00025582308364799995
-          sci: 5.748833340404493e-7
+        - carbon: 0.0020039033963520003
+          sci: 0.0000045031536996674164
           timestamp: '2024-08-01T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 2.7746538356616046e-7
+        - carbon: 0.0020039033963520003
+          sci: 0.000002173431015566161
           timestamp: '2024-08-02T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 0.0000019380536639999998
+        - carbon: 0.0020039033963520003
+          sci: 0.000015181086336000002
           timestamp: '2024-08-03T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 0.0000015791548373333331
+        - carbon: 0.0020039033963520003
+          sci: 0.000012369774051555557
           timestamp: '2024-08-04T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 1.2199479430042916e-7
+        - carbon: 0.0020039033963520003
+          sci: 9.556048623519315e-7
           timestamp: '2024-08-05T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 4.4183606847668385e-7
+        - carbon: 0.0020039033963520003
+          sci: 0.000003460973050694301
           timestamp: '2024-08-06T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 3.7565797892511005e-7
+        - carbon: 0.0020039033963520003
+          sci: 0.0000029425894219559475
           timestamp: '2024-08-07T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 4.592874033177737e-7
+        - carbon: 0.0020039033963520003
+          sci: 0.000003597672165802514
           timestamp: '2024-08-08T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 2.1902661271232873e-7
+        - carbon: 0.0020039033963520003
+          sci: 0.0000017156707160547948
           timestamp: '2024-08-09T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 0.0000015411029135421685
+        - carbon: 0.0020039033963520003
+          sci: 0.00001207170720693976
           timestamp: '2024-08-10T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 0.0000013464372823578946
+        - carbon: 0.0020039033963520003
+          sci: 0.000010546859980800002
           timestamp: '2024-08-11T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 2.130083960432972e-7
+        - carbon: 0.0020039033963520003
+          sci: 0.0000016685290560799336
           timestamp: '2024-08-12T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 5.501571691354838e-7
+        - carbon: 0.0020039033963520003
+          sci: 0.000004309469669574194
           timestamp: '2024-08-13T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 4.449097106921738e-7
+        - carbon: 0.0020039033963520003
+          sci: 0.0000034850493849600005
           timestamp: '2024-08-14T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 5.363167372075471e-7
+        - carbon: 0.0020039033963520003
+          sci: 0.000004201055338264151
           timestamp: '2024-08-15T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 3.3440925967058815e-7
+        - carbon: 0.0020039033963520003
+          sci: 0.000002619481563858824
           timestamp: '2024-08-16T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 0.0000018015710116056334
+        - carbon: 0.0020039033963520003
+          sci: 0.000014111995748957748
           timestamp: '2024-08-17T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 0.0000013979403478032783
+        - carbon: 0.0020039033963520003
+          sci: 0.000010950291783344263
           timestamp: '2024-08-18T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 1.4048494434266883e-7
+        - carbon: 0.0020039033963520003
+          sci: 0.000001100441184158155
           timestamp: '2024-08-19T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 3.138933541693251e-7
+        - carbon: 0.0020039033963520003
+          sci: 0.0000024587771734380373
           timestamp: '2024-08-20T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 4.047833602025316e-7
+        - carbon: 0.0020039033963520003
+          sci: 0.0000031707332220759496
           timestamp: '2024-08-21T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 4.1129113126688097e-7
+        - carbon: 0.0020039033963520003
+          sci: 0.0000032217096404372996
           timestamp: '2024-08-22T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 3.250610973926302e-7
+        - carbon: 0.0020039033963520003
+          sci: 0.000002546255903878018
           timestamp: '2024-08-23T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 0.000002750785845677419
+        - carbon: 0.0020039033963520003
+          sci: 0.00002154734834787097
           timestamp: '2024-08-24T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 0.0000019380536639999998
+        - carbon: 0.0020039033963520003
+          sci: 0.000015181086336000002
           timestamp: '2024-08-25T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 2.351315107058823e-7
+        - carbon: 0.0020039033963520003
+          sci: 0.0000018418229745882356
           timestamp: '2024-08-26T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 6.019366674070587e-7
+        - carbon: 0.0020039033963520003
+          sci: 0.000004715066814945883
           timestamp: '2024-08-27T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 4.2495528845182714e-7
+        - carbon: 0.0020039033963520003
+          sci: 0.0000033287431833089706
           timestamp: '2024-08-28T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 4.365581632218429e-7
+        - carbon: 0.0020039033963520003
+          sci: 0.0000034196303692013658
           timestamp: '2024-08-29T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 3.1046490733980574e-7
+        - carbon: 0.0020039033963520003
+          sci: 0.0000024319215975145635
           timestamp: '2024-08-30T00:00:00'
           duration: 86400
-        - carbon: 0.00025582308364799995
-          sci: 0.0000014056213387252745
+        - carbon: 0.0020039033963520003
+          sci: 0.000011010458221714287
           timestamp: '2024-08-31T00:00:00'
           duration: 86400
       aggregated:
-        carbon: 0.007930515593087994
-        sci: 7.694269089559187e-7
+        carbon: 0.06212100528691203
+        sci: 0.000006027044839405136
     server:
       children:
         netlify-builds:
@@ -6937,130 +6937,130 @@ tree:
         carbon: 2249.8080767742663
         sci: 0.11528018429874279
   outputs:
-    - carbon: 54.2428329172646
-      sci: 0.12189400655565079
+    - carbon: 54.24458099757731
+      sci: 0.12189793482601642
       timestamp: '2024-08-01T00:00:00'
       duration: 86400
-    - carbon: 109.52705077095425
-      sci: 0.11879289671470092
+    - carbon: 109.52879885126694
+      sci: 0.11879479268033291
       timestamp: '2024-08-02T00:00:00'
       duration: 86400
-    - carbon: 17.966186820399074
-      sci: 0.1361074759121142
+    - carbon: 17.967934900711775
+      sci: 0.1361207189447862
       timestamp: '2024-08-03T00:00:00'
       duration: 86400
-    - carbon: 21.44318165396446
-      sci: 0.13236531885163247
+    - carbon: 21.44492973427716
+      sci: 0.1323761094708467
       timestamp: '2024-08-04T00:00:00'
       duration: 86400
-    - carbon: 245.70934841893185
-      sci: 0.11717183997087832
+    - carbon: 245.71109649924455
+      sci: 0.11717267358094637
       timestamp: '2024-08-05T00:00:00'
       duration: 86400
-    - carbon: 69.77340984052333
-      sci: 0.12050675274701783
+    - carbon: 69.77515792083602
+      sci: 0.12050977188400006
       timestamp: '2024-08-06T00:00:00'
       duration: 86400
-    - carbon: 81.59519227464563
-      sci: 0.11981672874397302
+    - carbon: 81.59694035495833
+      sci: 0.11981929567541606
       timestamp: '2024-08-07T00:00:00'
       duration: 86400
-    - carbon: 67.22361362924205
-      sci: 0.12068871387655664
+    - carbon: 67.22536170955475
+      sci: 0.12069185226131912
       timestamp: '2024-08-08T00:00:00'
       duration: 86400
-    - carbon: 138.0384084061904
-      sci: 0.11818356884091645
+    - carbon: 138.04015648650312
+      sci: 0.1181850654850198
       timestamp: '2024-08-09T00:00:00'
       duration: 86400
-    - carbon: 21.906780965106513
-      sci: 0.13196856003076213
+    - carbon: 21.908529045419215
+      sci: 0.1319790906350555
       timestamp: '2024-08-10T00:00:00'
       duration: 86400
-    - carbon: 24.68837683195882
-      sci: 0.1299388254313622
+    - carbon: 24.69012491227152
+      sci: 0.12994802585406065
       timestamp: '2024-08-11T00:00:00'
       duration: 86400
-    - carbon: 141.86310272311232
-      sci: 0.11812081825404858
+    - carbon: 141.86485080342504
+      sci: 0.1181222737747086
       timestamp: '2024-08-12T00:00:00'
       duration: 86400
-    - carbon: 70.3384889541262
-      sci: 0.15126556764328217
+    - carbon: 70.3402370344389
+      sci: 0.1512693269557826
       timestamp: '2024-08-13T00:00:00'
       duration: 86400
-    - carbon: 73.90236368976505
-      sci: 0.12852584989524357
+    - carbon: 73.90411177007776
+      sci: 0.12852889003491785
       timestamp: '2024-08-14T00:00:00'
       duration: 86400
-    - carbon: 80.91439320831992
-      sci: 0.16963185158976926
+    - carbon: 80.91614128863263
+      sci: 0.16963551632837032
       timestamp: '2024-08-15T00:00:00'
       duration: 86400
-    - carbon: 91.33077780862872
-      sci: 0.1193866376583382
+    - carbon: 91.33252588894143
+      sci: 0.11938892273064239
       timestamp: '2024-08-16T00:00:00'
       duration: 86400
-    - carbon: 19.125185098254203
-      sci: 0.1346844021003817
+    - carbon: 19.126933178566908
+      sci: 0.13469671252511906
       timestamp: '2024-08-17T00:00:00'
       duration: 86400
-    - carbon: 23.87707803746023
-      sci: 0.13047583627027448
+    - carbon: 23.878826117772935
+      sci: 0.13048538862171002
       timestamp: '2024-08-18T00:00:00'
       duration: 86400
-    - carbon: 213.72099595013032
-      sci: 0.11736463259205399
+    - carbon: 213.722744030443
+      sci: 0.1173655925482938
       timestamp: '2024-08-19T00:00:00'
       duration: 86400
-    - carbon: 97.12576919790435
-      sci: 0.11917272294221394
+    - carbon: 97.12751727821706
+      sci: 0.11917486782603322
       timestamp: '2024-08-20T00:00:00'
       duration: 86400
-    - carbon: 85.10120703392309
-      sci: 0.13465380859797954
+    - carbon: 85.10295511423578
+      sci: 0.1346565745478414
       timestamp: '2024-08-21T00:00:00'
       duration: 86400
-    - carbon: 74.75710243530037
-      sci: 0.12018826758086879
+    - carbon: 74.75885051561308
+      sci: 0.12019107799937795
       timestamp: '2024-08-22T00:00:00'
       duration: 86400
-    - carbon: 98.47312718029379
-      sci: 0.12512468510837838
+    - carbon: 98.4748752606065
+      sci: 0.12512690630318488
       timestamp: '2024-08-23T00:00:00'
       duration: 86400
-    - carbon: 13.44609353676407
-      sci: 0.144581650932947
+    - carbon: 13.447841617076776
+      sci: 0.1446004474954492
       timestamp: '2024-08-24T00:00:00'
       duration: 86400
-    - carbon: 17.966186820399074
-      sci: 0.1361074759121142
+    - carbon: 17.967934900711775
+      sci: 0.1361207189447862
       timestamp: '2024-08-25T00:00:00'
       duration: 86400
-    - carbon: 128.76642218334936
-      sci: 0.11835149097734318
+    - carbon: 128.76817026366209
+      sci: 0.11835309766880706
       timestamp: '2024-08-26T00:00:00'
       duration: 86400
-    - carbon: 61.109942682321915
-      sci: 0.14378810042899273
+    - carbon: 61.111690762634616
+      sci: 0.14379221355914026
       timestamp: '2024-08-27T00:00:00'
       duration: 86400
-    - carbon: 81.6242122003577
-      sci: 0.13558839235939815
+    - carbon: 81.6259602806704
+      sci: 0.135591296147293
       timestamp: '2024-08-28T00:00:00'
       duration: 86400
-    - carbon: 70.58470863502191
-      sci: 0.12045172122017392
+    - carbon: 70.58645671533462
+      sci: 0.1204547042923799
       timestamp: '2024-08-29T00:00:00'
       duration: 86400
-    - carbon: 98.16886764797398
-      sci: 0.1191369753009393
+    - carbon: 98.17061572828669
+      sci: 0.11913909675762947
       timestamp: '2024-08-30T00:00:00'
       duration: 86400
-    - carbon: 23.761178209674718
-      sci: 0.13055592422898196
+    - carbon: 23.76292628998742
+      sci: 0.13056552906586494
       timestamp: '2024-08-31T00:00:00'
       duration: 86400
   aggregated:
-    carbon: 2418.0715857622627
-    sci: 0.12853520965384801
+    carbon: 2418.1257762519554
+    sci: 0.12854046727177845
