@@ -627,127 +627,127 @@ tree:
           inputs:
             - timestamp: '2024-09-01T10:00:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 60
+              memory-gb: 9
             - timestamp: '2024-09-01T10:01:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 65
+              memory-gb: 9
             - timestamp: '2024-09-01T10:02:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 68
+              memory-gb: 10
             - timestamp: '2024-09-01T10:03:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 70
+              memory-gb: 12
             - timestamp: '2024-09-01T10:04:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 73
+              memory-gb: 12
             - timestamp: '2024-09-01T10:05:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 76
+              memory-gb: 12
             - timestamp: '2024-09-01T10:06:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 77
+              memory-gb: 12
             - timestamp: '2024-09-01T10:07:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 79
+              memory-gb: 13
             - timestamp: '2024-09-01T10:08:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 82
+              memory-gb: 13
             - timestamp: '2024-09-01T10:09:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 82
+              memory-gb: 13
             - timestamp: '2024-09-01T10:10:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 86
+              memory-gb: 14
             - timestamp: '2024-09-01T10:11:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 85
+              memory-gb: 14
             - timestamp: '2024-09-01T10:12:00'
               duration: 60
-              cpu-util: 80
+              cpu-util: 85
               memory-gb: 15
             - timestamp: '2024-09-01T10:13:00'
               duration: 60
-              cpu-util: 80
+              cpu-util: 86
               memory-gb: 15 
             - timestamp: '2024-09-01T10:14:00'
               duration: 60
-              cpu-util: 80
+              cpu-util: 89
               memory-gb: 15
             - timestamp: '2024-09-01T10:15:00'
               duration: 60
-              cpu-util: 80
+              cpu-util: 86
               memory-gb: 15
             - timestamp: '2024-09-01T10:16:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 93
+              memory-gb: 16
             - timestamp: '2024-09-01T10:17:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 100
+              memory-gb: 16
             - timestamp: '2024-09-01T10:18:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 100
+              memory-gb: 16
             - timestamp: '2024-09-01T10:19:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 100
+              memory-gb: 16
             - timestamp: '2024-09-01T10:20:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 90
+              memory-gb: 16
             - timestamp: '2024-09-01T10:21:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 88
+              memory-gb: 16
             - timestamp: '2024-09-01T10:22:00'
               duration: 60
-              cpu-util: 80
+              cpu-util: 84
               memory-gb: 15
             - timestamp: '2024-09-01T10:23:00'
               duration: 60
               cpu-util: 80
-              memory-gb: 15
+              memory-gb: 14
             - timestamp: '2024-09-01T10:24:00'
               duration: 60
               cpu-util: 80
-              memory-gb: 15 
+              memory-gb: 14 
             - timestamp: '2024-09-01T10:2500'
               duration: 60
               cpu-util: 80
-              memory-gb: 15
+              memory-gb: 14
             - timestamp: '2024-09-01T10:26:00'
               duration: 60
-              cpu-util: 80
+              cpu-util: 88
               memory-gb: 15
             - timestamp: '2024-09-01T10:27:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 100
+              memory-gb: 16
             - timestamp: '2024-09-01T10:28:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 90
+              memory-gb: 16
             - timestamp: '2024-09-01T10:29:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 83
+              memory-gb: 14
             - timestamp: '2024-09-01T10:30:00'
               duration: 60
-              cpu-util: 80
+              cpu-util: 77
               memory-gb: 15   
 
         embodied-carbon:

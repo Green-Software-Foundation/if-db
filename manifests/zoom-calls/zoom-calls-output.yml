@@ -305,7 +305,7 @@ execution:
     os: linux
     os-version: 5.15.0-117-generic
     node-version: 21.4.0
-    date-time: 2024-09-13T13:19:13.456Z (UTC)
+    date-time: 2024-09-13T13:46:18.650Z (UTC)
     dependencies:
       - '@babel/core@7.22.10'
       - '@babel/preset-typescript@7.23.3'
@@ -2028,501 +2028,501 @@ tree:
           inputs:
             - timestamp: '2024-09-01T10:00:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 60
+              memory-gb: 9
             - timestamp: '2024-09-01T10:01:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 65
+              memory-gb: 9
             - timestamp: '2024-09-01T10:02:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 68
+              memory-gb: 10
             - timestamp: '2024-09-01T10:03:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 70
+              memory-gb: 12
             - timestamp: '2024-09-01T10:04:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 73
+              memory-gb: 12
             - timestamp: '2024-09-01T10:05:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 76
+              memory-gb: 12
             - timestamp: '2024-09-01T10:06:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 77
+              memory-gb: 12
             - timestamp: '2024-09-01T10:07:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 79
+              memory-gb: 13
             - timestamp: '2024-09-01T10:08:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 82
+              memory-gb: 13
             - timestamp: '2024-09-01T10:09:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 82
+              memory-gb: 13
             - timestamp: '2024-09-01T10:10:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 86
+              memory-gb: 14
             - timestamp: '2024-09-01T10:11:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 85
+              memory-gb: 14
             - timestamp: '2024-09-01T10:12:00'
               duration: 60
-              cpu-util: 80
+              cpu-util: 85
               memory-gb: 15
             - timestamp: '2024-09-01T10:13:00'
               duration: 60
-              cpu-util: 80
+              cpu-util: 86
               memory-gb: 15
             - timestamp: '2024-09-01T10:14:00'
               duration: 60
-              cpu-util: 80
+              cpu-util: 89
               memory-gb: 15
             - timestamp: '2024-09-01T10:15:00'
               duration: 60
-              cpu-util: 80
+              cpu-util: 86
               memory-gb: 15
             - timestamp: '2024-09-01T10:16:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 93
+              memory-gb: 16
             - timestamp: '2024-09-01T10:17:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 100
+              memory-gb: 16
             - timestamp: '2024-09-01T10:18:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 100
+              memory-gb: 16
             - timestamp: '2024-09-01T10:19:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 100
+              memory-gb: 16
             - timestamp: '2024-09-01T10:20:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 90
+              memory-gb: 16
             - timestamp: '2024-09-01T10:21:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 88
+              memory-gb: 16
             - timestamp: '2024-09-01T10:22:00'
               duration: 60
-              cpu-util: 80
+              cpu-util: 84
               memory-gb: 15
             - timestamp: '2024-09-01T10:23:00'
               duration: 60
               cpu-util: 80
-              memory-gb: 15
+              memory-gb: 14
             - timestamp: '2024-09-01T10:24:00'
               duration: 60
               cpu-util: 80
-              memory-gb: 15
+              memory-gb: 14
             - timestamp: 2024-09-01T10:2500
               duration: 60
               cpu-util: 80
-              memory-gb: 15
+              memory-gb: 14
             - timestamp: '2024-09-01T10:26:00'
               duration: 60
-              cpu-util: 80
+              cpu-util: 88
               memory-gb: 15
             - timestamp: '2024-09-01T10:27:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 100
+              memory-gb: 16
             - timestamp: '2024-09-01T10:28:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 90
+              memory-gb: 16
             - timestamp: '2024-09-01T10:29:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 83
+              memory-gb: 14
             - timestamp: '2024-09-01T10:30:00'
               duration: 60
-              cpu-util: 80
+              cpu-util: 77
               memory-gb: 15
           outputs:
             - timestamp: '2024-09-01T10:00:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 60
+              memory-gb: 9
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 0.804
+              cpu-wattage: 36.18
+              cpu-wattage-times-duration: 2170.8
+              energy-cpu-kwh: 0.000603
               memory-coefficient: 0.00039199998
-              energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy-memory-kwh: 0.00352799982
+              energy: 0.0206549991
+              carbon: 5.3702997660000005
+              sci: 1.0740599532000001
             - timestamp: '2024-09-01T10:01:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 65
+              memory-gb: 9
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 0.831
+              cpu-wattage: 37.394999999999996
+              cpu-wattage-times-duration: 2243.7
+              energy-cpu-kwh: 0.00062325
               memory-coefficient: 0.00039199998
-              energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy-memory-kwh: 0.00352799982
+              energy: 0.020756249100000002
+              carbon: 5.396624766
+              sci: 1.0793249532
             - timestamp: '2024-09-01T10:02:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 68
+              memory-gb: 10
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 0.8472
+              cpu-wattage: 38.123999999999995
+              cpu-wattage-times-duration: 2287.4399999999996
+              energy-cpu-kwh: 0.0006353999999999999
               memory-coefficient: 0.00039199998
-              energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy-memory-kwh: 0.0039199998
+              energy: 0.022776999
+              carbon: 5.92201974
+              sci: 1.184403948
             - timestamp: '2024-09-01T10:03:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 70
+              memory-gb: 12
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 0.858
+              cpu-wattage: 38.61
+              cpu-wattage-times-duration: 2316.6
+              energy-cpu-kwh: 0.0006435
               memory-coefficient: 0.00039199998
-              energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy-memory-kwh: 0.00470399976
+              energy: 0.0267374988
+              carbon: 6.951749688
+              sci: 1.3903499376
             - timestamp: '2024-09-01T10:04:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 73
+              memory-gb: 12
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 0.8742
+              cpu-wattage: 39.339
+              cpu-wattage-times-duration: 2360.34
+              energy-cpu-kwh: 0.00065565
               memory-coefficient: 0.00039199998
-              energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy-memory-kwh: 0.00470399976
+              energy: 0.0267982488
+              carbon: 6.967544688
+              sci: 1.3935089376
             - timestamp: '2024-09-01T10:05:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 76
+              memory-gb: 12
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 0.8904
+              cpu-wattage: 40.068
+              cpu-wattage-times-duration: 2404.08
+              energy-cpu-kwh: 0.0006678
               memory-coefficient: 0.00039199998
-              energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy-memory-kwh: 0.00470399976
+              energy: 0.0268589988
+              carbon: 6.983339688
+              sci: 1.3966679376
             - timestamp: '2024-09-01T10:06:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 77
+              memory-gb: 12
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 0.8958
+              cpu-wattage: 40.311
+              cpu-wattage-times-duration: 2418.66
+              energy-cpu-kwh: 0.00067185
               memory-coefficient: 0.00039199998
-              energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy-memory-kwh: 0.00470399976
+              energy: 0.026879248799999998
+              carbon: 6.988604688
+              sci: 1.3977209376
             - timestamp: '2024-09-01T10:07:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 79
+              memory-gb: 13
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 0.9066000000000001
+              cpu-wattage: 40.797000000000004
+              cpu-wattage-times-duration: 2447.82
+              energy-cpu-kwh: 0.00067995
               memory-coefficient: 0.00039199998
-              energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy-memory-kwh: 0.00509599974
+              energy: 0.028879748700000003
+              carbon: 7.508734662000001
+              sci: 1.5017469324000001
             - timestamp: '2024-09-01T10:08:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 82
+              memory-gb: 13
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 0.9228000000000001
+              cpu-wattage: 41.526
+              cpu-wattage-times-duration: 2491.5600000000004
+              energy-cpu-kwh: 0.0006921000000000001
               memory-coefficient: 0.00039199998
-              energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy-memory-kwh: 0.00509599974
+              energy: 0.0289404987
+              carbon: 7.524529662
+              sci: 1.5049059324
             - timestamp: '2024-09-01T10:09:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 82
+              memory-gb: 13
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 0.9228000000000001
+              cpu-wattage: 41.526
+              cpu-wattage-times-duration: 2491.5600000000004
+              energy-cpu-kwh: 0.0006921000000000001
               memory-coefficient: 0.00039199998
-              energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy-memory-kwh: 0.00509599974
+              energy: 0.0289404987
+              carbon: 7.524529662
+              sci: 1.5049059324
             - timestamp: '2024-09-01T10:10:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 86
+              memory-gb: 14
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 0.9444
+              cpu-wattage: 42.498
+              cpu-wattage-times-duration: 2549.8799999999997
+              energy-cpu-kwh: 0.0007082999999999999
               memory-coefficient: 0.00039199998
-              energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy-memory-kwh: 0.00548799972
+              energy: 0.0309814986
+              carbon: 8.055189636
+              sci: 1.6110379272
             - timestamp: '2024-09-01T10:11:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 85
+              memory-gb: 14
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 0.9390000000000001
+              cpu-wattage: 42.255
+              cpu-wattage-times-duration: 2535.3
+              energy-cpu-kwh: 0.00070425
               memory-coefficient: 0.00039199998
-              energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy-memory-kwh: 0.00548799972
+              energy: 0.0309612486
+              carbon: 8.049924636
+              sci: 1.6099849272
             - timestamp: '2024-09-01T10:12:00'
               duration: 60
-              cpu-util: 80
+              cpu-util: 85
               memory-gb: 15
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 0.9390000000000001
+              cpu-wattage: 42.255
+              cpu-wattage-times-duration: 2535.3
+              energy-cpu-kwh: 0.00070425
               memory-coefficient: 0.00039199998
               energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy: 0.0329212485
+              carbon: 8.55952461
+              sci: 1.711904922
             - timestamp: '2024-09-01T10:13:00'
               duration: 60
-              cpu-util: 80
+              cpu-util: 86
               memory-gb: 15
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 0.9444
+              cpu-wattage: 42.498
+              cpu-wattage-times-duration: 2549.8799999999997
+              energy-cpu-kwh: 0.0007082999999999999
               memory-coefficient: 0.00039199998
               energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy: 0.0329414985
+              carbon: 8.56478961
+              sci: 1.712957922
             - timestamp: '2024-09-01T10:14:00'
               duration: 60
-              cpu-util: 80
+              cpu-util: 89
               memory-gb: 15
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 0.9606
+              cpu-wattage: 43.227000000000004
+              cpu-wattage-times-duration: 2593.6200000000003
+              energy-cpu-kwh: 0.0007204500000000001
               memory-coefficient: 0.00039199998
               energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy: 0.0330022485
+              carbon: 8.580584609999999
+              sci: 1.7161169219999999
             - timestamp: '2024-09-01T10:15:00'
               duration: 60
-              cpu-util: 80
+              cpu-util: 86
               memory-gb: 15
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 0.9444
+              cpu-wattage: 42.498
+              cpu-wattage-times-duration: 2549.8799999999997
+              energy-cpu-kwh: 0.0007082999999999999
               memory-coefficient: 0.00039199998
               energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy: 0.0329414985
+              carbon: 8.56478961
+              sci: 1.712957922
             - timestamp: '2024-09-01T10:16:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 93
+              memory-gb: 16
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 0.9822
+              cpu-wattage: 44.199
+              cpu-wattage-times-duration: 2651.94
+              energy-cpu-kwh: 0.00073665
               memory-coefficient: 0.00039199998
-              energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy-memory-kwh: 0.00627199968
+              energy: 0.035043248400000004
+              carbon: 9.111244584000001
+              sci: 1.8222489168000002
             - timestamp: '2024-09-01T10:17:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 100
+              memory-gb: 16
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 1.02
+              cpu-wattage: 45.9
+              cpu-wattage-times-duration: 2754
+              energy-cpu-kwh: 0.000765
               memory-coefficient: 0.00039199998
-              energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy-memory-kwh: 0.00627199968
+              energy: 0.0351849984
+              carbon: 9.148099584
+              sci: 1.8296199168
             - timestamp: '2024-09-01T10:18:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 100
+              memory-gb: 16
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 1.02
+              cpu-wattage: 45.9
+              cpu-wattage-times-duration: 2754
+              energy-cpu-kwh: 0.000765
               memory-coefficient: 0.00039199998
-              energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy-memory-kwh: 0.00627199968
+              energy: 0.0351849984
+              carbon: 9.148099584
+              sci: 1.8296199168
             - timestamp: '2024-09-01T10:19:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 100
+              memory-gb: 16
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 1.02
+              cpu-wattage: 45.9
+              cpu-wattage-times-duration: 2754
+              energy-cpu-kwh: 0.000765
               memory-coefficient: 0.00039199998
-              energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy-memory-kwh: 0.00627199968
+              energy: 0.0351849984
+              carbon: 9.148099584
+              sci: 1.8296199168
             - timestamp: '2024-09-01T10:20:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 90
+              memory-gb: 16
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 0.966
+              cpu-wattage: 43.47
+              cpu-wattage-times-duration: 2608.2
+              energy-cpu-kwh: 0.0007245
               memory-coefficient: 0.00039199998
-              energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy-memory-kwh: 0.00627199968
+              energy: 0.034982498400000006
+              carbon: 9.095449584
+              sci: 1.8190899168
             - timestamp: '2024-09-01T10:21:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 88
+              memory-gb: 16
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 0.9552
+              cpu-wattage: 42.984
+              cpu-wattage-times-duration: 2579.04
+              energy-cpu-kwh: 0.0007164
               memory-coefficient: 0.00039199998
-              energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy-memory-kwh: 0.00627199968
+              energy: 0.0349419984
+              carbon: 9.084919584
+              sci: 1.8169839168
             - timestamp: '2024-09-01T10:22:00'
               duration: 60
-              cpu-util: 80
+              cpu-util: 84
               memory-gb: 15
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 0.9336
+              cpu-wattage: 42.012
+              cpu-wattage-times-duration: 2520.7200000000003
+              energy-cpu-kwh: 0.0007002000000000001
               memory-coefficient: 0.00039199998
               energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy: 0.0329009985
+              carbon: 8.55425961
+              sci: 1.7108519220000002
             - timestamp: '2024-09-01T10:23:00'
               duration: 60
               cpu-util: 80
-              memory-gb: 15
+              memory-gb: 14
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
@@ -2531,14 +2531,14 @@ tree:
               cpu-wattage-times-duration: 2462.4
               energy-cpu-kwh: 0.000684
               memory-coefficient: 0.00039199998
-              energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy-memory-kwh: 0.00548799972
+              energy: 0.0308599986
+              carbon: 8.023599636
+              sci: 1.6047199272000001
             - timestamp: '2024-09-01T10:24:00'
               duration: 60
               cpu-util: 80
-              memory-gb: 15
+              memory-gb: 14
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
@@ -2547,14 +2547,14 @@ tree:
               cpu-wattage-times-duration: 2462.4
               energy-cpu-kwh: 0.000684
               memory-coefficient: 0.00039199998
-              energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy-memory-kwh: 0.00548799972
+              energy: 0.0308599986
+              carbon: 8.023599636
+              sci: 1.6047199272000001
             - timestamp: 2024-09-01T10:2500
               duration: 60
               cpu-util: 80
-              memory-gb: 15
+              memory-gb: 14
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
@@ -2563,93 +2563,93 @@ tree:
               cpu-wattage-times-duration: 2462.4
               energy-cpu-kwh: 0.000684
               memory-coefficient: 0.00039199998
-              energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy-memory-kwh: 0.00548799972
+              energy: 0.0308599986
+              carbon: 8.023599636
+              sci: 1.6047199272000001
             - timestamp: '2024-09-01T10:26:00'
               duration: 60
-              cpu-util: 80
+              cpu-util: 88
               memory-gb: 15
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 0.9552
+              cpu-wattage: 42.984
+              cpu-wattage-times-duration: 2579.04
+              energy-cpu-kwh: 0.0007164
               memory-coefficient: 0.00039199998
               energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy: 0.0329819985
+              carbon: 8.57531961
+              sci: 1.715063922
             - timestamp: '2024-09-01T10:27:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 100
+              memory-gb: 16
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 1.02
+              cpu-wattage: 45.9
+              cpu-wattage-times-duration: 2754
+              energy-cpu-kwh: 0.000765
               memory-coefficient: 0.00039199998
-              energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy-memory-kwh: 0.00627199968
+              energy: 0.0351849984
+              carbon: 9.148099584
+              sci: 1.8296199168
             - timestamp: '2024-09-01T10:28:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 90
+              memory-gb: 16
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 0.966
+              cpu-wattage: 43.47
+              cpu-wattage-times-duration: 2608.2
+              energy-cpu-kwh: 0.0007245
               memory-coefficient: 0.00039199998
-              energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy-memory-kwh: 0.00627199968
+              energy: 0.034982498400000006
+              carbon: 9.095449584
+              sci: 1.8190899168
             - timestamp: '2024-09-01T10:29:00'
               duration: 60
-              cpu-util: 80
-              memory-gb: 15
+              cpu-util: 83
+              memory-gb: 14
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 0.9282
+              cpu-wattage: 41.769
+              cpu-wattage-times-duration: 2506.14
+              energy-cpu-kwh: 0.00069615
               memory-coefficient: 0.00039199998
-              energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy-memory-kwh: 0.00548799972
+              energy: 0.030920748600000002
+              carbon: 8.039394636
+              sci: 1.6078789272000003
             - timestamp: '2024-09-01T10:30:00'
               duration: 60
-              cpu-util: 80
+              cpu-util: 77
               memory-gb: 15
               participants: 5
               thermal-design-power: 45
               grid-intensity: 260
-              cpu-factor: 0.912
-              cpu-wattage: 41.04
-              cpu-wattage-times-duration: 2462.4
-              energy-cpu-kwh: 0.000684
+              cpu-factor: 0.8958
+              cpu-wattage: 40.311
+              cpu-wattage-times-duration: 2418.66
+              energy-cpu-kwh: 0.00067185
               memory-coefficient: 0.00039199998
               energy-memory-kwh: 0.0058799997
-              energy: 0.0328199985
-              carbon: 8.53319961
-              sci: 1.7066399220000001
+              energy: 0.0327592485
+              carbon: 8.51740461
+              sci: 1.703480922
           aggregated:
-            carbon: 264.52918790999996
-            sci: 52.90583758200002
+            carbon: 248.249418768
+            sci: 49.6498837536
         embodied-carbon:
           pipeline:
             compute:
@@ -2880,258 +2880,258 @@ tree:
             carbon: 10.849999999999994
             sci: 2.17
       outputs:
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 5.720299766
+          sci: 1.1440599532000002
           timestamp: '2024-09-01T10:00:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 5.746624766
+          sci: 1.1493249532
           timestamp: '2024-09-01T10:01:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 6.272019739999999
+          sci: 1.254403948
           timestamp: '2024-09-01T10:02:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 7.301749687999999
+          sci: 1.4603499376
           timestamp: '2024-09-01T10:03:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 7.317544688
+          sci: 1.4635089376000001
           timestamp: '2024-09-01T10:04:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 7.333339688
+          sci: 1.4666679376
           timestamp: '2024-09-01T10:05:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 7.338604687999999
+          sci: 1.4677209376
           timestamp: '2024-09-01T10:06:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 7.858734662000001
+          sci: 1.5717469324000002
           timestamp: '2024-09-01T10:07:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 7.874529662
+          sci: 1.5749059324
           timestamp: '2024-09-01T10:08:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 7.874529662
+          sci: 1.5749059324
           timestamp: '2024-09-01T10:09:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 8.405189636
+          sci: 1.6810379272
           timestamp: '2024-09-01T10:10:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 8.399924636
+          sci: 1.6799849272
           timestamp: '2024-09-01T10:11:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 8.90952461
+          sci: 1.781904922
           timestamp: '2024-09-01T10:12:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 8.91478961
+          sci: 1.782957922
           timestamp: '2024-09-01T10:13:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 8.930584609999999
+          sci: 1.786116922
           timestamp: '2024-09-01T10:14:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 8.91478961
+          sci: 1.782957922
           timestamp: '2024-09-01T10:15:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 9.461244584000001
+          sci: 1.8922489168000003
           timestamp: '2024-09-01T10:16:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 9.498099584
+          sci: 1.8996199168
           timestamp: '2024-09-01T10:17:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 9.498099584
+          sci: 1.8996199168
           timestamp: '2024-09-01T10:18:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 9.498099584
+          sci: 1.8996199168
           timestamp: '2024-09-01T10:19:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 9.445449584
+          sci: 1.8890899168000002
           timestamp: '2024-09-01T10:20:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 9.434919584
+          sci: 1.8869839168
           timestamp: '2024-09-01T10:21:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 8.90425961
+          sci: 1.7808519220000003
           timestamp: '2024-09-01T10:22:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 8.373599636
+          sci: 1.6747199272000002
           timestamp: '2024-09-01T10:23:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 8.373599636
+          sci: 1.6747199272000002
           timestamp: '2024-09-01T10:24:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 8.373599636
+          sci: 1.6747199272000002
           timestamp: 2024-09-01T10:2500
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 8.925319609999999
+          sci: 1.785063922
           timestamp: '2024-09-01T10:26:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 9.498099584
+          sci: 1.8996199168
           timestamp: '2024-09-01T10:27:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 9.445449584
+          sci: 1.8890899168000002
           timestamp: '2024-09-01T10:28:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 8.389394636
+          sci: 1.6778789272000003
           timestamp: '2024-09-01T10:29:00'
           duration: 60
-        - carbon: 8.88319961
-          sci: 1.7766399220000002
+        - carbon: 8.86740461
+          sci: 1.773480922
           timestamp: '2024-09-01T10:30:00'
           duration: 60
       aggregated:
-        carbon: 275.37918791
-        sci: 55.07583758200003
+        carbon: 259.0994187679999
+        sci: 51.81988375360001
   outputs:
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 9.642864682799999
+      sci: 1.9285729365600002
       timestamp: '2024-09-01T10:00:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 9.669189682799999
+      sci: 1.93383793656
       timestamp: '2024-09-01T10:01:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 10.1945846568
+      sci: 2.03891693136
       timestamp: '2024-09-01T10:02:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 11.2243146048
+      sci: 2.24486292096
       timestamp: '2024-09-01T10:03:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 11.2401096048
+      sci: 2.2480219209600003
       timestamp: '2024-09-01T10:04:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 11.2559046048
+      sci: 2.25118092096
       timestamp: '2024-09-01T10:05:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 11.2611696048
+      sci: 2.25223392096
       timestamp: '2024-09-01T10:06:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 11.7812995788
+      sci: 2.35625991576
       timestamp: '2024-09-01T10:07:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 11.7970945788
+      sci: 2.35941891576
       timestamp: '2024-09-01T10:08:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 11.7970945788
+      sci: 2.35941891576
       timestamp: '2024-09-01T10:09:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 12.327754552799998
+      sci: 2.46555091056
       timestamp: '2024-09-01T10:10:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 12.3224895528
+      sci: 2.46449791056
       timestamp: '2024-09-01T10:11:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 12.8320895268
+      sci: 2.56641790536
       timestamp: '2024-09-01T10:12:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 12.837354526799999
+      sci: 2.56747090536
       timestamp: '2024-09-01T10:13:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 12.8531495268
+      sci: 2.5706299053599997
       timestamp: '2024-09-01T10:14:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 12.837354526799999
+      sci: 2.56747090536
       timestamp: '2024-09-01T10:15:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 13.383809500800002
+      sci: 2.6767619001600003
       timestamp: '2024-09-01T10:16:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 13.420664500800001
+      sci: 2.68413290016
       timestamp: '2024-09-01T10:17:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 13.420664500800001
+      sci: 2.68413290016
       timestamp: '2024-09-01T10:18:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 13.420664500800001
+      sci: 2.68413290016
       timestamp: '2024-09-01T10:19:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 13.368014500800001
+      sci: 2.67360290016
       timestamp: '2024-09-01T10:20:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 13.357484500799998
+      sci: 2.67149690016
       timestamp: '2024-09-01T10:21:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 12.8268245268
+      sci: 2.56536490536
       timestamp: '2024-09-01T10:22:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 12.2961645528
+      sci: 2.45923291056
       timestamp: '2024-09-01T10:23:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 12.2961645528
+      sci: 2.45923291056
       timestamp: '2024-09-01T10:24:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 12.2961645528
+      sci: 2.45923291056
       timestamp: 2024-09-01T10:2500
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 12.847884526799998
+      sci: 2.56957690536
       timestamp: '2024-09-01T10:26:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 13.420664500800001
+      sci: 2.68413290016
       timestamp: '2024-09-01T10:27:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 13.368014500800001
+      sci: 2.67360290016
       timestamp: '2024-09-01T10:28:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 12.311959552800001
+      sci: 2.46239191056
       timestamp: '2024-09-01T10:29:00'
       duration: 60
-    - carbon: 12.8057645268
-      sci: 2.56115290536
+    - carbon: 12.7899695268
+      sci: 2.55799390536
       timestamp: '2024-09-01T10:30:00'
       duration: 60
   aggregated:
-    carbon: 396.97870033079977
-    sci: 79.39574006616007
+    carbon: 380.69893118880003
+    sci: 76.13978623775998
