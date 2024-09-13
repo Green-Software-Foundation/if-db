@@ -261,6 +261,14 @@ initialize:
         input-parameters: [energy, participants]
         output-parameter: energy
 
+    multiply-carbon-by-participants:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters: [carbon, participants]
+        output-parameter: carbon
+
+
     # Embodied carbon of server
     ###########################
 
@@ -534,7 +542,6 @@ tree:
               cpu-util: 20
               memory-gb: 16       
 
-        # embodied-carbon:
         embodied-carbon-server:
           pipeline:
             compute:
@@ -753,6 +760,7 @@ tree:
         embodied-carbon:
           pipeline:
             compute:
+              - multiply-carbon-by-participants
               - sci
           defaults:
             participants: 5

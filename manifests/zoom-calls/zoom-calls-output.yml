@@ -282,6 +282,14 @@ initialize:
           - energy
           - participants
         output-parameter: energy
+    multiply-carbon-by-participants:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters:
+          - carbon
+          - participants
+        output-parameter: carbon
     sci:
       path: builtin
       method: Sci
@@ -305,7 +313,7 @@ execution:
     os: linux
     os-version: 5.15.0-117-generic
     node-version: 21.4.0
-    date-time: 2024-09-13T13:46:18.650Z (UTC)
+    date-time: 2024-09-13T14:25:44.148Z (UTC)
     dependencies:
       - '@babel/core@7.22.10'
       - '@babel/preset-typescript@7.23.3'
@@ -2653,6 +2661,7 @@ tree:
         embodied-carbon:
           pipeline:
             compute:
+              - multiply-carbon-by-participants
               - sci
           defaults:
             participants: 5
@@ -2724,414 +2733,414 @@ tree:
             - timestamp: '2024-09-01T10:00:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:01:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:02:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:03:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:04:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:05:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:06:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:07:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:08:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:09:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:10:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:11:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:12:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:13:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:14:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:15:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:16:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:17:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:18:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:19:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:20:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:21:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:22:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:23:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:24:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: 2024-09-01T10:2500
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:26:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:27:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:28:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:29:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
             - timestamp: '2024-09-01T10:30:00'
               duration: 60
               participants: 5
-              carbon: 0.35
-              sci: 0.06999999999999999
+              carbon: 1.75
+              sci: 0.35
           aggregated:
-            carbon: 10.849999999999994
-            sci: 2.17
+            carbon: 54.25
+            sci: 10.849999999999994
       outputs:
-        - carbon: 5.720299766
-          sci: 1.1440599532000002
+        - carbon: 7.1202997660000005
+          sci: 1.4240599532
           timestamp: '2024-09-01T10:00:00'
           duration: 60
-        - carbon: 5.746624766
-          sci: 1.1493249532
+        - carbon: 7.146624766
+          sci: 1.4293249532
           timestamp: '2024-09-01T10:01:00'
           duration: 60
-        - carbon: 6.272019739999999
-          sci: 1.254403948
+        - carbon: 7.67201974
+          sci: 1.534403948
           timestamp: '2024-09-01T10:02:00'
           duration: 60
-        - carbon: 7.301749687999999
-          sci: 1.4603499376
+        - carbon: 8.701749688
+          sci: 1.7403499376
           timestamp: '2024-09-01T10:03:00'
           duration: 60
-        - carbon: 7.317544688
-          sci: 1.4635089376000001
+        - carbon: 8.717544688
+          sci: 1.7435089376000001
           timestamp: '2024-09-01T10:04:00'
           duration: 60
-        - carbon: 7.333339688
-          sci: 1.4666679376
+        - carbon: 8.733339688000001
+          sci: 1.7466679375999998
           timestamp: '2024-09-01T10:05:00'
           duration: 60
-        - carbon: 7.338604687999999
-          sci: 1.4677209376
+        - carbon: 8.738604687999999
+          sci: 1.7477209376
           timestamp: '2024-09-01T10:06:00'
           duration: 60
-        - carbon: 7.858734662000001
-          sci: 1.5717469324000002
+        - carbon: 9.258734662000002
+          sci: 1.8517469324000002
           timestamp: '2024-09-01T10:07:00'
           duration: 60
-        - carbon: 7.874529662
-          sci: 1.5749059324
+        - carbon: 9.274529661999999
+          sci: 1.8549059324
           timestamp: '2024-09-01T10:08:00'
           duration: 60
-        - carbon: 7.874529662
-          sci: 1.5749059324
+        - carbon: 9.274529661999999
+          sci: 1.8549059324
           timestamp: '2024-09-01T10:09:00'
           duration: 60
-        - carbon: 8.405189636
-          sci: 1.6810379272
+        - carbon: 9.805189636
+          sci: 1.9610379272
           timestamp: '2024-09-01T10:10:00'
           duration: 60
-        - carbon: 8.399924636
-          sci: 1.6799849272
+        - carbon: 9.799924636
+          sci: 1.9599849271999998
           timestamp: '2024-09-01T10:11:00'
           duration: 60
-        - carbon: 8.90952461
-          sci: 1.781904922
+        - carbon: 10.30952461
+          sci: 2.061904922
           timestamp: '2024-09-01T10:12:00'
           duration: 60
-        - carbon: 8.91478961
-          sci: 1.782957922
+        - carbon: 10.31478961
+          sci: 2.062957922
           timestamp: '2024-09-01T10:13:00'
           duration: 60
-        - carbon: 8.930584609999999
-          sci: 1.786116922
+        - carbon: 10.330584609999999
+          sci: 2.066116922
           timestamp: '2024-09-01T10:14:00'
           duration: 60
-        - carbon: 8.91478961
-          sci: 1.782957922
+        - carbon: 10.31478961
+          sci: 2.062957922
           timestamp: '2024-09-01T10:15:00'
           duration: 60
-        - carbon: 9.461244584000001
-          sci: 1.8922489168000003
+        - carbon: 10.861244584000001
+          sci: 2.1722489168
           timestamp: '2024-09-01T10:16:00'
           duration: 60
-        - carbon: 9.498099584
-          sci: 1.8996199168
+        - carbon: 10.898099584
+          sci: 2.1796199168
           timestamp: '2024-09-01T10:17:00'
           duration: 60
-        - carbon: 9.498099584
-          sci: 1.8996199168
+        - carbon: 10.898099584
+          sci: 2.1796199168
           timestamp: '2024-09-01T10:18:00'
           duration: 60
-        - carbon: 9.498099584
-          sci: 1.8996199168
+        - carbon: 10.898099584
+          sci: 2.1796199168
           timestamp: '2024-09-01T10:19:00'
           duration: 60
-        - carbon: 9.445449584
-          sci: 1.8890899168000002
+        - carbon: 10.845449584
+          sci: 2.1690899168
           timestamp: '2024-09-01T10:20:00'
           duration: 60
-        - carbon: 9.434919584
-          sci: 1.8869839168
+        - carbon: 10.834919584
+          sci: 2.1669839168
           timestamp: '2024-09-01T10:21:00'
           duration: 60
-        - carbon: 8.90425961
-          sci: 1.7808519220000003
+        - carbon: 10.30425961
+          sci: 2.0608519220000003
           timestamp: '2024-09-01T10:22:00'
           duration: 60
-        - carbon: 8.373599636
-          sci: 1.6747199272000002
+        - carbon: 9.773599636
+          sci: 1.9547199272000002
           timestamp: '2024-09-01T10:23:00'
           duration: 60
-        - carbon: 8.373599636
-          sci: 1.6747199272000002
+        - carbon: 9.773599636
+          sci: 1.9547199272000002
           timestamp: '2024-09-01T10:24:00'
           duration: 60
-        - carbon: 8.373599636
-          sci: 1.6747199272000002
+        - carbon: 9.773599636
+          sci: 1.9547199272000002
           timestamp: 2024-09-01T10:2500
           duration: 60
-        - carbon: 8.925319609999999
-          sci: 1.785063922
+        - carbon: 10.32531961
+          sci: 2.0650639219999998
           timestamp: '2024-09-01T10:26:00'
           duration: 60
-        - carbon: 9.498099584
-          sci: 1.8996199168
+        - carbon: 10.898099584
+          sci: 2.1796199168
           timestamp: '2024-09-01T10:27:00'
           duration: 60
-        - carbon: 9.445449584
-          sci: 1.8890899168000002
+        - carbon: 10.845449584
+          sci: 2.1690899168
           timestamp: '2024-09-01T10:28:00'
           duration: 60
-        - carbon: 8.389394636
-          sci: 1.6778789272000003
+        - carbon: 9.789394636
+          sci: 1.9578789272000003
           timestamp: '2024-09-01T10:29:00'
           duration: 60
-        - carbon: 8.86740461
-          sci: 1.773480922
+        - carbon: 10.26740461
+          sci: 2.053480922
           timestamp: '2024-09-01T10:30:00'
           duration: 60
       aggregated:
-        carbon: 259.0994187679999
-        sci: 51.81988375360001
+        carbon: 302.49941876799994
+        sci: 60.499883753599995
   outputs:
-    - carbon: 9.642864682799999
-      sci: 1.9285729365600002
+    - carbon: 11.042864682800001
+      sci: 2.20857293656
       timestamp: '2024-09-01T10:00:00'
       duration: 60
-    - carbon: 9.669189682799999
-      sci: 1.93383793656
+    - carbon: 11.069189682800001
+      sci: 2.21383793656
       timestamp: '2024-09-01T10:01:00'
       duration: 60
-    - carbon: 10.1945846568
-      sci: 2.03891693136
+    - carbon: 11.594584656799999
+      sci: 2.31891693136
       timestamp: '2024-09-01T10:02:00'
       duration: 60
-    - carbon: 11.2243146048
-      sci: 2.24486292096
+    - carbon: 12.624314604799999
+      sci: 2.52486292096
       timestamp: '2024-09-01T10:03:00'
       duration: 60
-    - carbon: 11.2401096048
-      sci: 2.2480219209600003
+    - carbon: 12.6401096048
+      sci: 2.52802192096
       timestamp: '2024-09-01T10:04:00'
       duration: 60
-    - carbon: 11.2559046048
-      sci: 2.25118092096
+    - carbon: 12.6559046048
+      sci: 2.53118092096
       timestamp: '2024-09-01T10:05:00'
       duration: 60
-    - carbon: 11.2611696048
-      sci: 2.25223392096
+    - carbon: 12.661169604799998
+      sci: 2.53223392096
       timestamp: '2024-09-01T10:06:00'
       duration: 60
-    - carbon: 11.7812995788
-      sci: 2.35625991576
+    - carbon: 13.181299578800001
+      sci: 2.63625991576
       timestamp: '2024-09-01T10:07:00'
       duration: 60
-    - carbon: 11.7970945788
-      sci: 2.35941891576
+    - carbon: 13.197094578799998
+      sci: 2.63941891576
       timestamp: '2024-09-01T10:08:00'
       duration: 60
-    - carbon: 11.7970945788
-      sci: 2.35941891576
+    - carbon: 13.197094578799998
+      sci: 2.63941891576
       timestamp: '2024-09-01T10:09:00'
       duration: 60
-    - carbon: 12.327754552799998
-      sci: 2.46555091056
+    - carbon: 13.7277545528
+      sci: 2.74555091056
       timestamp: '2024-09-01T10:10:00'
       duration: 60
-    - carbon: 12.3224895528
-      sci: 2.46449791056
+    - carbon: 13.722489552799999
+      sci: 2.74449791056
       timestamp: '2024-09-01T10:11:00'
       duration: 60
-    - carbon: 12.8320895268
-      sci: 2.56641790536
+    - carbon: 14.2320895268
+      sci: 2.84641790536
       timestamp: '2024-09-01T10:12:00'
       duration: 60
-    - carbon: 12.837354526799999
-      sci: 2.56747090536
+    - carbon: 14.2373545268
+      sci: 2.84747090536
       timestamp: '2024-09-01T10:13:00'
       duration: 60
-    - carbon: 12.8531495268
-      sci: 2.5706299053599997
+    - carbon: 14.253149526799998
+      sci: 2.85062990536
       timestamp: '2024-09-01T10:14:00'
       duration: 60
-    - carbon: 12.837354526799999
-      sci: 2.56747090536
+    - carbon: 14.2373545268
+      sci: 2.84747090536
       timestamp: '2024-09-01T10:15:00'
       duration: 60
-    - carbon: 13.383809500800002
-      sci: 2.6767619001600003
+    - carbon: 14.7838095008
+      sci: 2.95676190016
       timestamp: '2024-09-01T10:16:00'
       duration: 60
-    - carbon: 13.420664500800001
-      sci: 2.68413290016
+    - carbon: 14.8206645008
+      sci: 2.96413290016
       timestamp: '2024-09-01T10:17:00'
       duration: 60
-    - carbon: 13.420664500800001
-      sci: 2.68413290016
+    - carbon: 14.8206645008
+      sci: 2.96413290016
       timestamp: '2024-09-01T10:18:00'
       duration: 60
-    - carbon: 13.420664500800001
-      sci: 2.68413290016
+    - carbon: 14.8206645008
+      sci: 2.96413290016
       timestamp: '2024-09-01T10:19:00'
       duration: 60
-    - carbon: 13.368014500800001
-      sci: 2.67360290016
+    - carbon: 14.7680145008
+      sci: 2.95360290016
       timestamp: '2024-09-01T10:20:00'
       duration: 60
-    - carbon: 13.357484500799998
-      sci: 2.67149690016
+    - carbon: 14.7574845008
+      sci: 2.95149690016
       timestamp: '2024-09-01T10:21:00'
       duration: 60
-    - carbon: 12.8268245268
-      sci: 2.56536490536
+    - carbon: 14.226824526800002
+      sci: 2.8453649053600003
       timestamp: '2024-09-01T10:22:00'
       duration: 60
-    - carbon: 12.2961645528
-      sci: 2.45923291056
+    - carbon: 13.6961645528
+      sci: 2.73923291056
       timestamp: '2024-09-01T10:23:00'
       duration: 60
-    - carbon: 12.2961645528
-      sci: 2.45923291056
+    - carbon: 13.6961645528
+      sci: 2.73923291056
       timestamp: '2024-09-01T10:24:00'
       duration: 60
-    - carbon: 12.2961645528
-      sci: 2.45923291056
+    - carbon: 13.6961645528
+      sci: 2.73923291056
       timestamp: 2024-09-01T10:2500
       duration: 60
-    - carbon: 12.847884526799998
-      sci: 2.56957690536
+    - carbon: 14.2478845268
+      sci: 2.8495769053599997
       timestamp: '2024-09-01T10:26:00'
       duration: 60
-    - carbon: 13.420664500800001
-      sci: 2.68413290016
+    - carbon: 14.8206645008
+      sci: 2.96413290016
       timestamp: '2024-09-01T10:27:00'
       duration: 60
-    - carbon: 13.368014500800001
-      sci: 2.67360290016
+    - carbon: 14.7680145008
+      sci: 2.95360290016
       timestamp: '2024-09-01T10:28:00'
       duration: 60
-    - carbon: 12.311959552800001
-      sci: 2.46239191056
+    - carbon: 13.7119595528
+      sci: 2.7423919105600003
       timestamp: '2024-09-01T10:29:00'
       duration: 60
-    - carbon: 12.7899695268
-      sci: 2.55799390536
+    - carbon: 14.189969526799999
+      sci: 2.83799390536
       timestamp: '2024-09-01T10:30:00'
       duration: 60
   aggregated:
-    carbon: 380.69893118880003
-    sci: 76.13978623775998
+    carbon: 424.09893118879995
+    sci: 84.81978623776
