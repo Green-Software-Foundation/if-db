@@ -1,5 +1,5 @@
-name: GSF Website SCI
-description: generates SCI score (gCO2eq/visit) for greensoftware.foundation website
+name: Zoom SCI
+description: generates SCI score (gCO2eq/participant) for a 30 minute, 5 person Zoom call
 tags: null
 explainer: true
 aggregation:
