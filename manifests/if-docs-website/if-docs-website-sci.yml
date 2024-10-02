@@ -277,893 +277,898 @@ initialize:
           sci:
             description: software carbon intensity
             unit: gCO2 / visit
-            aggregation-method: 'avg'
+            aggregation-method:
+              time: 'avg'
+              component: 'sum'
 
 tree:
   children:
-    github-storage-for-if-docs:
-      pipeline:
-        compute:
-          - duration-in-hours
-          - storage-and-traffic-from-github-if-docs
-          - storage-in-gb-to-tb-if-docs
-          - storage-energy-in-watts-if-docs
-          - storage-energy-in-wh-if-docs
-          - storage-energy-to-kwh-if-docs
-          - energy-to-carbon
-          - sci
-      defaults:
-        watts-per-tb: 1.2 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
-        grid-intensity: 765.49 # US average
-      inputs:
-        - timestamp: '2024-07-22T00:00:00'
-          duration:	86400	
-          site-visits: 12
-        - timestamp: '2024-07-23T00:00:00'
-          duration:	86400	
-          site-visits: 5
-        - timestamp: '2024-07-24T00:00:00'
-          duration:	86400	
-          site-visits: 3
-        - timestamp: '2024-07-25T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-07-26T00:00:00'
-          duration:	86400	
-          site-visits: 10
-        - timestamp: '2024-07-27T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-07-28T00:00:00'
-          duration:	86400	
-          site-visits: 16
-        - timestamp: '2024-07-29T00:00:00'
-          duration:	86400	
-          site-visits: 11
-        - timestamp: '2024-07-30T00:00:00'
-          duration:	86400	
-          site-visits: 1
-        - timestamp: '2024-07-31T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-01T00:00:00'
-          duration:	86400	
-          site-visits: 21
-        - timestamp: '2024-08-02T00:00:00'
-          duration:	86400	
-          site-visits: 30
-        - timestamp: '2024-08-03T00:00:00'
-          duration:	86400	
-          site-visits: 36
-        - timestamp: '2024-08-04T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-08-05T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-08-06T00:00:00'
-          duration:	86400	
-          site-visits: 2
-        - timestamp: '2024-08-07T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-08T00:00:00'
-          duration:	86400	
-          site-visits: 25
-        - timestamp: '2024-08-09T00:00:00'
-          duration:	86400	
-          site-visits: 31
-        - timestamp: '2024-08-10T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-08-11T00:00:00'
-          duration:	86400	
-          site-visits: 13
-        - timestamp: '2024-08-12T00:00:00'
-          duration:	86400	
-          site-visits: 13
-        - timestamp: '2024-08-13T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-14T00:00:00'
-          duration:	86400	
-          site-visits: 3
-        - timestamp: '2024-08-15T00:00:00'
-          duration:	86400	
-          site-visits: 16
-        - timestamp: '2024-08-16T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-08-17T00:00:00'
-          duration:	86400	
-          site-visits: 21
-        - timestamp: '2024-08-18T00:00:00'
-          duration:	86400	
-          site-visits: 0
+    servers:
+      children:
+        github-storage-for-if-docs:
+          pipeline:
+            compute:
+              - duration-in-hours
+              - storage-and-traffic-from-github-if-docs
+              - storage-in-gb-to-tb-if-docs
+              - storage-energy-in-watts-if-docs
+              - storage-energy-in-wh-if-docs
+              - storage-energy-to-kwh-if-docs
+              - energy-to-carbon
+              - sci
+          defaults:
+            watts-per-tb: 1.2 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
+            grid-intensity: 765.49 # US average
+          inputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration:	86400	
+              site-visits: 12
+            - timestamp: '2024-07-23T00:00:00'
+              duration:	86400	
+              site-visits: 5
+            - timestamp: '2024-07-24T00:00:00'
+              duration:	86400	
+              site-visits: 3
+            - timestamp: '2024-07-25T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-07-26T00:00:00'
+              duration:	86400	
+              site-visits: 10
+            - timestamp: '2024-07-27T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-07-28T00:00:00'
+              duration:	86400	
+              site-visits: 16
+            - timestamp: '2024-07-29T00:00:00'
+              duration:	86400	
+              site-visits: 11
+            - timestamp: '2024-07-30T00:00:00'
+              duration:	86400	
+              site-visits: 1
+            - timestamp: '2024-07-31T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-01T00:00:00'
+              duration:	86400	
+              site-visits: 21
+            - timestamp: '2024-08-02T00:00:00'
+              duration:	86400	
+              site-visits: 30
+            - timestamp: '2024-08-03T00:00:00'
+              duration:	86400	
+              site-visits: 36
+            - timestamp: '2024-08-04T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-08-05T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-08-06T00:00:00'
+              duration:	86400	
+              site-visits: 2
+            - timestamp: '2024-08-07T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-08T00:00:00'
+              duration:	86400	
+              site-visits: 25
+            - timestamp: '2024-08-09T00:00:00'
+              duration:	86400	
+              site-visits: 31
+            - timestamp: '2024-08-10T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-08-11T00:00:00'
+              duration:	86400	
+              site-visits: 13
+            - timestamp: '2024-08-12T00:00:00'
+              duration:	86400	
+              site-visits: 13
+            - timestamp: '2024-08-13T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-14T00:00:00'
+              duration:	86400	
+              site-visits: 3
+            - timestamp: '2024-08-15T00:00:00'
+              duration:	86400	
+              site-visits: 16
+            - timestamp: '2024-08-16T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-08-17T00:00:00'
+              duration:	86400	
+              site-visits: 21
+            - timestamp: '2024-08-18T00:00:00'
+              duration:	86400	
+              site-visits: 1
 
+        storing-static-site-data-on-gh-pages:
+          pipeline:
+            compute:
+              - duration-in-hours        
+              - static-site-size-in-tb
+              - storage-energy-static-site-in-watts
+              - storage-energy-in-wh-static-site
+              - storage-energy-to-kwh-static-site
+              - storage-energy-per-cdn-node        
+              - storage-energy-for-entire-cdn
+              - sum-serving-static-site-energy-components
+              - energy-to-carbon
+              - sci
+          defaults:
+            static-site-size-in-mb: 1.4 # from google pagespeed api
+            watts-per-tb: 1.2 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
+            grid-intensity: 765.49 # US average
+          inputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration:	86400	
+              site-visits: 12
+            - timestamp: '2024-07-23T00:00:00'
+              duration:	86400	
+              site-visits: 5
+            - timestamp: '2024-07-24T00:00:00'
+              duration:	86400	
+              site-visits: 3
+            - timestamp: '2024-07-25T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-07-26T00:00:00'
+              duration:	86400	
+              site-visits: 10
+            - timestamp: '2024-07-27T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-07-28T00:00:00'
+              duration:	86400	
+              site-visits: 16
+            - timestamp: '2024-07-29T00:00:00'
+              duration:	86400	
+              site-visits: 11
+            - timestamp: '2024-07-30T00:00:00'
+              duration:	86400	
+              site-visits: 1
+            - timestamp: '2024-07-31T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-01T00:00:00'
+              duration:	86400	
+              site-visits: 21
+            - timestamp: '2024-08-02T00:00:00'
+              duration:	86400	
+              site-visits: 30
+            - timestamp: '2024-08-03T00:00:00'
+              duration:	86400	
+              site-visits: 36
+            - timestamp: '2024-08-04T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-08-05T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-08-06T00:00:00'
+              duration:	86400	
+              site-visits: 2
+            - timestamp: '2024-08-07T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-08T00:00:00'
+              duration:	86400	
+              site-visits: 25
+            - timestamp: '2024-08-09T00:00:00'
+              duration:	86400	
+              site-visits: 31
+            - timestamp: '2024-08-10T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-08-11T00:00:00'
+              duration:	86400	
+              site-visits: 13
+            - timestamp: '2024-08-12T00:00:00'
+              duration:	86400	
+              site-visits: 13
+            - timestamp: '2024-08-13T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-14T00:00:00'
+              duration:	86400	
+              site-visits: 3
+            - timestamp: '2024-08-15T00:00:00'
+              duration:	86400	
+              site-visits: 16
+            - timestamp: '2024-08-16T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-08-17T00:00:00'
+              duration:	86400	
+              site-visits: 21
+            - timestamp: '2024-08-18T00:00:00'
+              duration:	86400	
+              site-visits: 1
 
-    storing-static-site-data-on-netlify:
-      pipeline:
-        compute:
-          - duration-in-hours        
-          - static-site-size-in-tb
-          - storage-energy-static-site-in-watts
-          - storage-energy-in-wh-static-site
-          - storage-energy-to-kwh-static-site
-          - storage-energy-per-cdn-node        
-          - storage-energy-for-entire-cdn
-          - sum-serving-static-site-energy-components
-          - energy-to-carbon
-          - sci
-      defaults:
-        static-site-size-in-mb: 1.4 # from google pagespeed api
-        watts-per-tb: 1.2 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
-        grid-intensity: 765.49 # US average
-      inputs:
-        - timestamp: '2024-07-22T00:00:00'
-          duration:	86400	
-          site-visits: 12
-        - timestamp: '2024-07-23T00:00:00'
-          duration:	86400	
-          site-visits: 5
-        - timestamp: '2024-07-24T00:00:00'
-          duration:	86400	
-          site-visits: 3
-        - timestamp: '2024-07-25T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-07-26T00:00:00'
-          duration:	86400	
-          site-visits: 10
-        - timestamp: '2024-07-27T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-07-28T00:00:00'
-          duration:	86400	
-          site-visits: 16
-        - timestamp: '2024-07-29T00:00:00'
-          duration:	86400	
-          site-visits: 11
-        - timestamp: '2024-07-30T00:00:00'
-          duration:	86400	
-          site-visits: 1
-        - timestamp: '2024-07-31T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-01T00:00:00'
-          duration:	86400	
-          site-visits: 21
-        - timestamp: '2024-08-02T00:00:00'
-          duration:	86400	
-          site-visits: 30
-        - timestamp: '2024-08-03T00:00:00'
-          duration:	86400	
-          site-visits: 36
-        - timestamp: '2024-08-04T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-08-05T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-08-06T00:00:00'
-          duration:	86400	
-          site-visits: 2
-        - timestamp: '2024-08-07T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-08T00:00:00'
-          duration:	86400	
-          site-visits: 25
-        - timestamp: '2024-08-09T00:00:00'
-          duration:	86400	
-          site-visits: 31
-        - timestamp: '2024-08-10T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-08-11T00:00:00'
-          duration:	86400	
-          site-visits: 13
-        - timestamp: '2024-08-12T00:00:00'
-          duration:	86400	
-          site-visits: 13
-        - timestamp: '2024-08-13T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-14T00:00:00'
-          duration:	86400	
-          site-visits: 3
-        - timestamp: '2024-08-15T00:00:00'
-          duration:	86400	
-          site-visits: 16
-        - timestamp: '2024-08-16T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-08-17T00:00:00'
-          duration:	86400	
-          site-visits: 21
-        - timestamp: '2024-08-18T00:00:00'
-          duration:	86400	
-          site-visits: 0
+        gh-pages-builds:
+          pipeline:
+            compute:
+              - interpolate-power-curve
+              - build-stage-cpu-factor-to-wattage
+              - build-stage-cpu-wattage-times-build-duration
+              - build-stage-cpu-wattage-to-energy-kwh
+              - memory-coefficient-correction # memory coefficient in CCF is given /GB/hr - we want to convert to /GB/run-time-duration then x by run duration in s
+              - memory-energy-per-build
+              - sum-build-energy-components
+              - build-energy-total
+              - energy-to-carbon
+              - sci
+          defaults:
+            end-user-energy-coefficient: 0.080 # https://sustainablewebdesign.org/estimating-digital-emissions/
+            static-site-size-in-mb: 0.809473 # from google pagespeed api
+            kwh-per-gb-network: 0.001 # https://www.cloudcarbonfootprint.org/docs/methodology/#networking
+            grid-intensity: 765.49 # US average
+            build-duration: 5
+            build-memory-gb: 0.34
+            builds-per-month: 3
+            thermal-design-power: 205 # from our if-data
+            cpu-utilization-during-build: 100
+          inputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration:	86400	
+              site-visits: 12
+            - timestamp: '2024-07-23T00:00:00'
+              duration:	86400	
+              site-visits: 5
+            - timestamp: '2024-07-24T00:00:00'
+              duration:	86400	
+              site-visits: 3
+            - timestamp: '2024-07-25T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-07-26T00:00:00'
+              duration:	86400	
+              site-visits: 10
+            - timestamp: '2024-07-27T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-07-28T00:00:00'
+              duration:	86400	
+              site-visits: 16
+            - timestamp: '2024-07-29T00:00:00'
+              duration:	86400	
+              site-visits: 11
+            - timestamp: '2024-07-30T00:00:00'
+              duration:	86400	
+              site-visits: 1
+            - timestamp: '2024-07-31T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-01T00:00:00'
+              duration:	86400	
+              site-visits: 21
+            - timestamp: '2024-08-02T00:00:00'
+              duration:	86400	
+              site-visits: 30
+            - timestamp: '2024-08-03T00:00:00'
+              duration:	86400	
+              site-visits: 36
+            - timestamp: '2024-08-04T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-08-05T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-08-06T00:00:00'
+              duration:	86400	
+              site-visits: 2
+            - timestamp: '2024-08-07T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-08T00:00:00'
+              duration:	86400	
+              site-visits: 25
+            - timestamp: '2024-08-09T00:00:00'
+              duration:	86400	
+              site-visits: 31
+            - timestamp: '2024-08-10T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-08-11T00:00:00'
+              duration:	86400	
+              site-visits: 13
+            - timestamp: '2024-08-12T00:00:00'
+              duration:	86400	
+              site-visits: 13
+            - timestamp: '2024-08-13T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-14T00:00:00'
+              duration:	86400	
+              site-visits: 3
+            - timestamp: '2024-08-15T00:00:00'
+              duration:	86400	
+              site-visits: 16
+            - timestamp: '2024-08-16T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-08-17T00:00:00'
+              duration:	86400	
+              site-visits: 21
+            - timestamp: '2024-08-18T00:00:00'
+              duration:	86400	
+              site-visits: 1
 
-    networking-energy-to-serve-static-site-over-the-wire:
-      pipeline:
-        compute:
-          - static-site-size-in-gb
-          - network-energy-serving-static-site-per-view
-          - network-energy-serving-static-site-total
-          - energy-to-carbon
-          - sci
-      defaults:
-        static-site-size-in-mb: 1.4 # from google pagespeed api
-        kwh-per-gb-network: 0.001 # https://www.cloudcarbonfootprint.org/docs/methodology/#networking
-        watts-per-tb: 1.2 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
-        grid-intensity: 765.49 # US average
-      inputs:
-        - timestamp: '2024-07-22T00:00:00'
-          duration:	86400	
-          site-visits: 12
-        - timestamp: '2024-07-23T00:00:00'
-          duration:	86400	
-          site-visits: 5
-        - timestamp: '2024-07-24T00:00:00'
-          duration:	86400	
-          site-visits: 3
-        - timestamp: '2024-07-25T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-07-26T00:00:00'
-          duration:	86400	
-          site-visits: 10
-        - timestamp: '2024-07-27T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-07-28T00:00:00'
-          duration:	86400	
-          site-visits: 16
-        - timestamp: '2024-07-29T00:00:00'
-          duration:	86400	
-          site-visits: 11
-        - timestamp: '2024-07-30T00:00:00'
-          duration:	86400	
-          site-visits: 1
-        - timestamp: '2024-07-31T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-01T00:00:00'
-          duration:	86400	
-          site-visits: 21
-        - timestamp: '2024-08-02T00:00:00'
-          duration:	86400	
-          site-visits: 30
-        - timestamp: '2024-08-03T00:00:00'
-          duration:	86400	
-          site-visits: 36
-        - timestamp: '2024-08-04T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-08-05T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-08-06T00:00:00'
-          duration:	86400	
-          site-visits: 2
-        - timestamp: '2024-08-07T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-08T00:00:00'
-          duration:	86400	
-          site-visits: 25
-        - timestamp: '2024-08-09T00:00:00'
-          duration:	86400	
-          site-visits: 31
-        - timestamp: '2024-08-10T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-08-11T00:00:00'
-          duration:	86400	
-          site-visits: 13
-        - timestamp: '2024-08-12T00:00:00'
-          duration:	86400	
-          site-visits: 13
-        - timestamp: '2024-08-13T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-14T00:00:00'
-          duration:	86400	
-          site-visits: 3
-        - timestamp: '2024-08-15T00:00:00'
-          duration:	86400	
-          site-visits: 16
-        - timestamp: '2024-08-16T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-08-17T00:00:00'
-          duration:	86400	
-          site-visits: 21
-        - timestamp: '2024-08-18T00:00:00'
-          duration:	86400	
-          site-visits: 0
+        embodied-carbon-for-web-server:
+          pipeline:
+            compute:
+              - embodied-carbon-web-server-origin
+              - sci
+          defaults:
+            usage-ratio: 0.0014
+          inputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration:	86400	
+              site-visits: 12
+            - timestamp: '2024-07-23T00:00:00'
+              duration:	86400	
+              site-visits: 5
+            - timestamp: '2024-07-24T00:00:00'
+              duration:	86400	
+              site-visits: 3
+            - timestamp: '2024-07-25T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-07-26T00:00:00'
+              duration:	86400	
+              site-visits: 10
+            - timestamp: '2024-07-27T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-07-28T00:00:00'
+              duration:	86400	
+              site-visits: 16
+            - timestamp: '2024-07-29T00:00:00'
+              duration:	86400	
+              site-visits: 11
+            - timestamp: '2024-07-30T00:00:00'
+              duration:	86400	
+              site-visits: 1
+            - timestamp: '2024-07-31T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-01T00:00:00'
+              duration:	86400	
+              site-visits: 21
+            - timestamp: '2024-08-02T00:00:00'
+              duration:	86400	
+              site-visits: 30
+            - timestamp: '2024-08-03T00:00:00'
+              duration:	86400	
+              site-visits: 36
+            - timestamp: '2024-08-04T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-08-05T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-08-06T00:00:00'
+              duration:	86400	
+              site-visits: 2
+            - timestamp: '2024-08-07T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-08T00:00:00'
+              duration:	86400	
+              site-visits: 25
+            - timestamp: '2024-08-09T00:00:00'
+              duration:	86400	
+              site-visits: 31
+            - timestamp: '2024-08-10T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-08-11T00:00:00'
+              duration:	86400	
+              site-visits: 13
+            - timestamp: '2024-08-12T00:00:00'
+              duration:	86400	
+              site-visits: 13
+            - timestamp: '2024-08-13T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-14T00:00:00'
+              duration:	86400	
+              site-visits: 3
+            - timestamp: '2024-08-15T00:00:00'
+              duration:	86400	
+              site-visits: 16
+            - timestamp: '2024-08-16T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-08-17T00:00:00'
+              duration:	86400	
+              site-visits: 21
+            - timestamp: '2024-08-18T00:00:00'
+              duration:	86400	
+              site-visits: 1
 
-    end-user-operational-carbon:
-      pipeline:
-        compute:
-          - static-site-size-in-gb
-          - end-user-energy
-          - energy-to-carbon
-          - sci
-      defaults:
-        end-user-energy-coefficient: 0.080 # https://sustainablewebdesign.org/estimating-digital-emissions/
-        static-site-size-in-mb: 1.4 # from google pagespeed api
-        kwh-per-gb-network: 0.001 # https://www.cloudcarbonfootprint.org/docs/methodology/#networking
-        grid-intensity: 765.49 # US average
-      inputs:
-        - timestamp: '2024-07-22T00:00:00'
-          duration:	86400	
-          site-visits: 12
-        - timestamp: '2024-07-23T00:00:00'
-          duration:	86400	
-          site-visits: 5
-        - timestamp: '2024-07-24T00:00:00'
-          duration:	86400	
-          site-visits: 3
-        - timestamp: '2024-07-25T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-07-26T00:00:00'
-          duration:	86400	
-          site-visits: 10
-        - timestamp: '2024-07-27T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-07-28T00:00:00'
-          duration:	86400	
-          site-visits: 16
-        - timestamp: '2024-07-29T00:00:00'
-          duration:	86400	
-          site-visits: 11
-        - timestamp: '2024-07-30T00:00:00'
-          duration:	86400	
-          site-visits: 1
-        - timestamp: '2024-07-31T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-01T00:00:00'
-          duration:	86400	
-          site-visits: 21
-        - timestamp: '2024-08-02T00:00:00'
-          duration:	86400	
-          site-visits: 30
-        - timestamp: '2024-08-03T00:00:00'
-          duration:	86400	
-          site-visits: 36
-        - timestamp: '2024-08-04T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-08-05T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-08-06T00:00:00'
-          duration:	86400	
-          site-visits: 2
-        - timestamp: '2024-08-07T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-08T00:00:00'
-          duration:	86400	
-          site-visits: 25
-        - timestamp: '2024-08-09T00:00:00'
-          duration:	86400	
-          site-visits: 31
-        - timestamp: '2024-08-10T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-08-11T00:00:00'
-          duration:	86400	
-          site-visits: 13
-        - timestamp: '2024-08-12T00:00:00'
-          duration:	86400	
-          site-visits: 13
-        - timestamp: '2024-08-13T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-14T00:00:00'
-          duration:	86400	
-          site-visits: 3
-        - timestamp: '2024-08-15T00:00:00'
-          duration:	86400	
-          site-visits: 16
-        - timestamp: '2024-08-16T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-08-17T00:00:00'
-          duration:	86400	
-          site-visits: 21
-        - timestamp: '2024-08-18T00:00:00'
-          duration:	86400	
-          site-visits: 0
+        embodied-carbon-for-cdn:
+          pipeline:
+            compute:
+              - embodied-carbon-web-server-cdn
+              - sci
+          defaults:
+            usage-ratio: 0.0014
+          inputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration:	86400	
+              site-visits: 12
+            - timestamp: '2024-07-23T00:00:00'
+              duration:	86400	
+              site-visits: 5
+            - timestamp: '2024-07-24T00:00:00'
+              duration:	86400	
+              site-visits: 3
+            - timestamp: '2024-07-25T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-07-26T00:00:00'
+              duration:	86400	
+              site-visits: 10
+            - timestamp: '2024-07-27T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-07-28T00:00:00'
+              duration:	86400	
+              site-visits: 16
+            - timestamp: '2024-07-29T00:00:00'
+              duration:	86400	
+              site-visits: 11
+            - timestamp: '2024-07-30T00:00:00'
+              duration:	86400	
+              site-visits: 1
+            - timestamp: '2024-07-31T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-01T00:00:00'
+              duration:	86400	
+              site-visits: 21
+            - timestamp: '2024-08-02T00:00:00'
+              duration:	86400	
+              site-visits: 30
+            - timestamp: '2024-08-03T00:00:00'
+              duration:	86400	
+              site-visits: 36
+            - timestamp: '2024-08-04T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-08-05T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-08-06T00:00:00'
+              duration:	86400	
+              site-visits: 2
+            - timestamp: '2024-08-07T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-08T00:00:00'
+              duration:	86400	
+              site-visits: 25
+            - timestamp: '2024-08-09T00:00:00'
+              duration:	86400	
+              site-visits: 31
+            - timestamp: '2024-08-10T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-08-11T00:00:00'
+              duration:	86400	
+              site-visits: 13
+            - timestamp: '2024-08-12T00:00:00'
+              duration:	86400	
+              site-visits: 13
+            - timestamp: '2024-08-13T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-14T00:00:00'
+              duration:	86400	
+              site-visits: 3
+            - timestamp: '2024-08-15T00:00:00'
+              duration:	86400	
+              site-visits: 16
+            - timestamp: '2024-08-16T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-08-17T00:00:00'
+              duration:	86400	
+              site-visits: 21
+            - timestamp: '2024-08-18T00:00:00'
+              duration:	86400	
+              site-visits: 1
 
-    gh-pages-builds:
-      pipeline:
-        compute:
-          - interpolate-power-curve
-          - build-stage-cpu-factor-to-wattage
-          - build-stage-cpu-wattage-times-build-duration
-          - build-stage-cpu-wattage-to-energy-kwh
-          - memory-coefficient-correction # memory coefficient in CCF is given /GB/hr - we want to convert to /GB/run-time-duration then x by run duration in s
-          - memory-energy-per-build
-          - sum-build-energy-components
-          - build-energy-total
-          - energy-to-carbon
-          - sci
-      defaults:
-        end-user-energy-coefficient: 0.080 # https://sustainablewebdesign.org/estimating-digital-emissions/
-        static-site-size-in-mb: 0.809473 # from google pagespeed api
-        kwh-per-gb-network: 0.001 # https://www.cloudcarbonfootprint.org/docs/methodology/#networking
-        grid-intensity: 765.49 # US average
-        build-duration: 5
-        build-memory-gb: 0.34
-        builds-per-month: 3
-        thermal-design-power: 205 # from our if-data
-        cpu-utilization-during-build: 100
-      inputs:
-        - timestamp: '2024-07-22T00:00:00'
-          duration:	86400	
-          site-visits: 12
-        - timestamp: '2024-07-23T00:00:00'
-          duration:	86400	
-          site-visits: 5
-        - timestamp: '2024-07-24T00:00:00'
-          duration:	86400	
-          site-visits: 3
-        - timestamp: '2024-07-25T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-07-26T00:00:00'
-          duration:	86400	
-          site-visits: 10
-        - timestamp: '2024-07-27T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-07-28T00:00:00'
-          duration:	86400	
-          site-visits: 16
-        - timestamp: '2024-07-29T00:00:00'
-          duration:	86400	
-          site-visits: 11
-        - timestamp: '2024-07-30T00:00:00'
-          duration:	86400	
-          site-visits: 1
-        - timestamp: '2024-07-31T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-01T00:00:00'
-          duration:	86400	
-          site-visits: 21
-        - timestamp: '2024-08-02T00:00:00'
-          duration:	86400	
-          site-visits: 30
-        - timestamp: '2024-08-03T00:00:00'
-          duration:	86400	
-          site-visits: 36
-        - timestamp: '2024-08-04T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-08-05T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-08-06T00:00:00'
-          duration:	86400	
-          site-visits: 2
-        - timestamp: '2024-08-07T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-08T00:00:00'
-          duration:	86400	
-          site-visits: 25
-        - timestamp: '2024-08-09T00:00:00'
-          duration:	86400	
-          site-visits: 31
-        - timestamp: '2024-08-10T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-08-11T00:00:00'
-          duration:	86400	
-          site-visits: 13
-        - timestamp: '2024-08-12T00:00:00'
-          duration:	86400	
-          site-visits: 13
-        - timestamp: '2024-08-13T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-14T00:00:00'
-          duration:	86400	
-          site-visits: 3
-        - timestamp: '2024-08-15T00:00:00'
-          duration:	86400	
-          site-visits: 16
-        - timestamp: '2024-08-16T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-08-17T00:00:00'
-          duration:	86400	
-          site-visits: 21
-        - timestamp: '2024-08-18T00:00:00'
-          duration:	86400	
-          site-visits: 0
+        embodied-carbon-for-github-server:
+          pipeline:
+            compute:
+              - embodied-carbon-github
+              - sci
+          defaults:
+            usage-ratio: 3.784666666666667e-8
+            vCPUs: 160
+            memory: 1280
+          inputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration:	86400	
+              site-visits: 12
+            - timestamp: '2024-07-23T00:00:00'
+              duration:	86400	
+              site-visits: 5
+            - timestamp: '2024-07-24T00:00:00'
+              duration:	86400	
+              site-visits: 3
+            - timestamp: '2024-07-25T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-07-26T00:00:00'
+              duration:	86400	
+              site-visits: 10
+            - timestamp: '2024-07-27T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-07-28T00:00:00'
+              duration:	86400	
+              site-visits: 16
+            - timestamp: '2024-07-29T00:00:00'
+              duration:	86400	
+              site-visits: 11
+            - timestamp: '2024-07-30T00:00:00'
+              duration:	86400	
+              site-visits: 1
+            - timestamp: '2024-07-31T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-01T00:00:00'
+              duration:	86400	
+              site-visits: 21
+            - timestamp: '2024-08-02T00:00:00'
+              duration:	86400	
+              site-visits: 30
+            - timestamp: '2024-08-03T00:00:00'
+              duration:	86400	
+              site-visits: 36
+            - timestamp: '2024-08-04T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-08-05T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-08-06T00:00:00'
+              duration:	86400	
+              site-visits: 2
+            - timestamp: '2024-08-07T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-08T00:00:00'
+              duration:	86400	
+              site-visits: 25
+            - timestamp: '2024-08-09T00:00:00'
+              duration:	86400	
+              site-visits: 31
+            - timestamp: '2024-08-10T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-08-11T00:00:00'
+              duration:	86400	
+              site-visits: 13
+            - timestamp: '2024-08-12T00:00:00'
+              duration:	86400	
+              site-visits: 13
+            - timestamp: '2024-08-13T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-14T00:00:00'
+              duration:	86400	
+              site-visits: 3
+            - timestamp: '2024-08-15T00:00:00'
+              duration:	86400	
+              site-visits: 16
+            - timestamp: '2024-08-16T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-08-17T00:00:00'
+              duration:	86400	
+              site-visits: 21
+            - timestamp: '2024-08-18T00:00:00'
+              duration:	86400	
+              site-visits: 1
 
-    embodied-carbon-for-web-server:
-      pipeline:
-        compute:
-          - embodied-carbon-web-server-origin
-          - sci
-      defaults:
-        usage-ratio: 0.0014
-      inputs:
-        - timestamp: '2024-07-22T00:00:00'
-          duration:	86400	
-          site-visits: 12
-        - timestamp: '2024-07-23T00:00:00'
-          duration:	86400	
-          site-visits: 5
-        - timestamp: '2024-07-24T00:00:00'
-          duration:	86400	
-          site-visits: 3
-        - timestamp: '2024-07-25T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-07-26T00:00:00'
-          duration:	86400	
-          site-visits: 10
-        - timestamp: '2024-07-27T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-07-28T00:00:00'
-          duration:	86400	
-          site-visits: 16
-        - timestamp: '2024-07-29T00:00:00'
-          duration:	86400	
-          site-visits: 11
-        - timestamp: '2024-07-30T00:00:00'
-          duration:	86400	
-          site-visits: 1
-        - timestamp: '2024-07-31T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-01T00:00:00'
-          duration:	86400	
-          site-visits: 21
-        - timestamp: '2024-08-02T00:00:00'
-          duration:	86400	
-          site-visits: 30
-        - timestamp: '2024-08-03T00:00:00'
-          duration:	86400	
-          site-visits: 36
-        - timestamp: '2024-08-04T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-08-05T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-08-06T00:00:00'
-          duration:	86400	
-          site-visits: 2
-        - timestamp: '2024-08-07T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-08T00:00:00'
-          duration:	86400	
-          site-visits: 25
-        - timestamp: '2024-08-09T00:00:00'
-          duration:	86400	
-          site-visits: 31
-        - timestamp: '2024-08-10T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-08-11T00:00:00'
-          duration:	86400	
-          site-visits: 13
-        - timestamp: '2024-08-12T00:00:00'
-          duration:	86400	
-          site-visits: 13
-        - timestamp: '2024-08-13T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-14T00:00:00'
-          duration:	86400	
-          site-visits: 3
-        - timestamp: '2024-08-15T00:00:00'
-          duration:	86400	
-          site-visits: 16
-        - timestamp: '2024-08-16T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-08-17T00:00:00'
-          duration:	86400	
-          site-visits: 21
-        - timestamp: '2024-08-18T00:00:00'
-          duration:	86400	
-          site-visits: 0
+    network:
+      children:
+        networking-energy-to-serve-static-site-over-the-wire:
+          pipeline:
+            compute:
+              - static-site-size-in-gb
+              - network-energy-serving-static-site-per-view
+              - network-energy-serving-static-site-total
+              - energy-to-carbon
+              - sci
+          defaults:
+            static-site-size-in-mb: 1.4 # from google pagespeed api
+            kwh-per-gb-network: 0.001 # https://www.cloudcarbonfootprint.org/docs/methodology/#networking
+            watts-per-tb: 1.2 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
+            grid-intensity: 765.49 # US average
+          inputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration:	86400	
+              site-visits: 12
+            - timestamp: '2024-07-23T00:00:00'
+              duration:	86400	
+              site-visits: 5
+            - timestamp: '2024-07-24T00:00:00'
+              duration:	86400	
+              site-visits: 3
+            - timestamp: '2024-07-25T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-07-26T00:00:00'
+              duration:	86400	
+              site-visits: 10
+            - timestamp: '2024-07-27T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-07-28T00:00:00'
+              duration:	86400	
+              site-visits: 16
+            - timestamp: '2024-07-29T00:00:00'
+              duration:	86400	
+              site-visits: 11
+            - timestamp: '2024-07-30T00:00:00'
+              duration:	86400	
+              site-visits: 1
+            - timestamp: '2024-07-31T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-01T00:00:00'
+              duration:	86400	
+              site-visits: 21
+            - timestamp: '2024-08-02T00:00:00'
+              duration:	86400	
+              site-visits: 30
+            - timestamp: '2024-08-03T00:00:00'
+              duration:	86400	
+              site-visits: 36
+            - timestamp: '2024-08-04T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-08-05T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-08-06T00:00:00'
+              duration:	86400	
+              site-visits: 2
+            - timestamp: '2024-08-07T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-08T00:00:00'
+              duration:	86400	
+              site-visits: 25
+            - timestamp: '2024-08-09T00:00:00'
+              duration:	86400	
+              site-visits: 31
+            - timestamp: '2024-08-10T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-08-11T00:00:00'
+              duration:	86400	
+              site-visits: 13
+            - timestamp: '2024-08-12T00:00:00'
+              duration:	86400	
+              site-visits: 13
+            - timestamp: '2024-08-13T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-14T00:00:00'
+              duration:	86400	
+              site-visits: 3
+            - timestamp: '2024-08-15T00:00:00'
+              duration:	86400	
+              site-visits: 16
+            - timestamp: '2024-08-16T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-08-17T00:00:00'
+              duration:	86400	
+              site-visits: 21
+            - timestamp: '2024-08-18T00:00:00'
+              duration:	86400	
+              site-visits: 1
 
-    embodied-carbon-for-cdn:
-      pipeline:
-        compute:
-          - embodied-carbon-web-server-cdn
-          - sci
-      defaults:
-        usage-ratio: 0.0014
-      inputs:
-        - timestamp: '2024-07-22T00:00:00'
-          duration:	86400	
-          site-visits: 12
-        - timestamp: '2024-07-23T00:00:00'
-          duration:	86400	
-          site-visits: 5
-        - timestamp: '2024-07-24T00:00:00'
-          duration:	86400	
-          site-visits: 3
-        - timestamp: '2024-07-25T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-07-26T00:00:00'
-          duration:	86400	
-          site-visits: 10
-        - timestamp: '2024-07-27T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-07-28T00:00:00'
-          duration:	86400	
-          site-visits: 16
-        - timestamp: '2024-07-29T00:00:00'
-          duration:	86400	
-          site-visits: 11
-        - timestamp: '2024-07-30T00:00:00'
-          duration:	86400	
-          site-visits: 1
-        - timestamp: '2024-07-31T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-01T00:00:00'
-          duration:	86400	
-          site-visits: 21
-        - timestamp: '2024-08-02T00:00:00'
-          duration:	86400	
-          site-visits: 30
-        - timestamp: '2024-08-03T00:00:00'
-          duration:	86400	
-          site-visits: 36
-        - timestamp: '2024-08-04T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-08-05T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-08-06T00:00:00'
-          duration:	86400	
-          site-visits: 2
-        - timestamp: '2024-08-07T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-08T00:00:00'
-          duration:	86400	
-          site-visits: 25
-        - timestamp: '2024-08-09T00:00:00'
-          duration:	86400	
-          site-visits: 31
-        - timestamp: '2024-08-10T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-08-11T00:00:00'
-          duration:	86400	
-          site-visits: 13
-        - timestamp: '2024-08-12T00:00:00'
-          duration:	86400	
-          site-visits: 13
-        - timestamp: '2024-08-13T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-14T00:00:00'
-          duration:	86400	
-          site-visits: 3
-        - timestamp: '2024-08-15T00:00:00'
-          duration:	86400	
-          site-visits: 16
-        - timestamp: '2024-08-16T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-08-17T00:00:00'
-          duration:	86400	
-          site-visits: 21
-        - timestamp: '2024-08-18T00:00:00'
-          duration:	86400	
-          site-visits: 0
+    users:
+      children:
+        end-user-operational-carbon:
+          pipeline:
+            compute:
+              - static-site-size-in-gb
+              - end-user-energy
+              - energy-to-carbon
+              - sci
+          defaults:
+            end-user-energy-coefficient: 0.080 # https://sustainablewebdesign.org/estimating-digital-emissions/
+            static-site-size-in-mb: 1.4 # from google pagespeed api
+            kwh-per-gb-network: 0.001 # https://www.cloudcarbonfootprint.org/docs/methodology/#networking
+            grid-intensity: 765.49 # US average
+          inputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration:	86400	
+              site-visits: 12
+            - timestamp: '2024-07-23T00:00:00'
+              duration:	86400	
+              site-visits: 5
+            - timestamp: '2024-07-24T00:00:00'
+              duration:	86400	
+              site-visits: 3
+            - timestamp: '2024-07-25T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-07-26T00:00:00'
+              duration:	86400	
+              site-visits: 10
+            - timestamp: '2024-07-27T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-07-28T00:00:00'
+              duration:	86400	
+              site-visits: 16
+            - timestamp: '2024-07-29T00:00:00'
+              duration:	86400	
+              site-visits: 11
+            - timestamp: '2024-07-30T00:00:00'
+              duration:	86400	
+              site-visits: 1
+            - timestamp: '2024-07-31T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-01T00:00:00'
+              duration:	86400	
+              site-visits: 21
+            - timestamp: '2024-08-02T00:00:00'
+              duration:	86400	
+              site-visits: 30
+            - timestamp: '2024-08-03T00:00:00'
+              duration:	86400	
+              site-visits: 36
+            - timestamp: '2024-08-04T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-08-05T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-08-06T00:00:00'
+              duration:	86400	
+              site-visits: 2
+            - timestamp: '2024-08-07T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-08T00:00:00'
+              duration:	86400	
+              site-visits: 25
+            - timestamp: '2024-08-09T00:00:00'
+              duration:	86400	
+              site-visits: 31
+            - timestamp: '2024-08-10T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-08-11T00:00:00'
+              duration:	86400	
+              site-visits: 13
+            - timestamp: '2024-08-12T00:00:00'
+              duration:	86400	
+              site-visits: 13
+            - timestamp: '2024-08-13T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-14T00:00:00'
+              duration:	86400	
+              site-visits: 3
+            - timestamp: '2024-08-15T00:00:00'
+              duration:	86400	
+              site-visits: 16
+            - timestamp: '2024-08-16T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-08-17T00:00:00'
+              duration:	86400	
+              site-visits: 21
+            - timestamp: '2024-08-18T00:00:00'
+              duration:	86400	
+              site-visits: 1
 
-
-    embodied-carbon-for-github-server:
-      pipeline:
-        compute:
-          - embodied-carbon-github
-          - sci
-      defaults:
-        usage-ratio: 3.784666666666667e-8
-        vCPUs: 160
-        memory: 1280
-      inputs:
-        - timestamp: '2024-07-22T00:00:00'
-          duration:	86400	
-          site-visits: 12
-        - timestamp: '2024-07-23T00:00:00'
-          duration:	86400	
-          site-visits: 5
-        - timestamp: '2024-07-24T00:00:00'
-          duration:	86400	
-          site-visits: 3
-        - timestamp: '2024-07-25T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-07-26T00:00:00'
-          duration:	86400	
-          site-visits: 10
-        - timestamp: '2024-07-27T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-07-28T00:00:00'
-          duration:	86400	
-          site-visits: 16
-        - timestamp: '2024-07-29T00:00:00'
-          duration:	86400	
-          site-visits: 11
-        - timestamp: '2024-07-30T00:00:00'
-          duration:	86400	
-          site-visits: 1
-        - timestamp: '2024-07-31T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-01T00:00:00'
-          duration:	86400	
-          site-visits: 21
-        - timestamp: '2024-08-02T00:00:00'
-          duration:	86400	
-          site-visits: 30
-        - timestamp: '2024-08-03T00:00:00'
-          duration:	86400	
-          site-visits: 36
-        - timestamp: '2024-08-04T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-08-05T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-08-06T00:00:00'
-          duration:	86400	
-          site-visits: 2
-        - timestamp: '2024-08-07T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-08T00:00:00'
-          duration:	86400	
-          site-visits: 25
-        - timestamp: '2024-08-09T00:00:00'
-          duration:	86400	
-          site-visits: 31
-        - timestamp: '2024-08-10T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-08-11T00:00:00'
-          duration:	86400	
-          site-visits: 13
-        - timestamp: '2024-08-12T00:00:00'
-          duration:	86400	
-          site-visits: 13
-        - timestamp: '2024-08-13T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-14T00:00:00'
-          duration:	86400	
-          site-visits: 3
-        - timestamp: '2024-08-15T00:00:00'
-          duration:	86400	
-          site-visits: 16
-        - timestamp: '2024-08-16T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-08-17T00:00:00'
-          duration:	86400	
-          site-visits: 21
-        - timestamp: '2024-08-18T00:00:00'
-          duration:	86400	
-          site-visits: 0
-
-
-    embodied-carbon-for-end-user-devices:
-      pipeline:
-        compute:
-          - embodied-carbon-devices
-          - total-embodied-carbon
-          - sci
-      defaults:
-        time: 40
-      inputs:
-        - timestamp: '2024-07-22T00:00:00'
-          duration:	86400	
-          site-visits: 12
-        - timestamp: '2024-07-23T00:00:00'
-          duration:	86400	
-          site-visits: 5
-        - timestamp: '2024-07-24T00:00:00'
-          duration:	86400	
-          site-visits: 3
-        - timestamp: '2024-07-25T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-07-26T00:00:00'
-          duration:	86400	
-          site-visits: 10
-        - timestamp: '2024-07-27T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-07-28T00:00:00'
-          duration:	86400	
-          site-visits: 16
-        - timestamp: '2024-07-29T00:00:00'
-          duration:	86400	
-          site-visits: 11
-        - timestamp: '2024-07-30T00:00:00'
-          duration:	86400	
-          site-visits: 1
-        - timestamp: '2024-07-31T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-01T00:00:00'
-          duration:	86400	
-          site-visits: 21
-        - timestamp: '2024-08-02T00:00:00'
-          duration:	86400	
-          site-visits: 30
-        - timestamp: '2024-08-03T00:00:00'
-          duration:	86400	
-          site-visits: 36
-        - timestamp: '2024-08-04T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-08-05T00:00:00'
-          duration:	86400	
-          site-visits: 17
-        - timestamp: '2024-08-06T00:00:00'
-          duration:	86400	
-          site-visits: 2
-        - timestamp: '2024-08-07T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-08T00:00:00'
-          duration:	86400	
-          site-visits: 25
-        - timestamp: '2024-08-09T00:00:00'
-          duration:	86400	
-          site-visits: 31
-        - timestamp: '2024-08-10T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-08-11T00:00:00'
-          duration:	86400	
-          site-visits: 13
-        - timestamp: '2024-08-12T00:00:00'
-          duration:	86400	
-          site-visits: 13
-        - timestamp: '2024-08-13T00:00:00'
-          duration:	86400	
-          site-visits: 4
-        - timestamp: '2024-08-14T00:00:00'
-          duration:	86400	
-          site-visits: 3
-        - timestamp: '2024-08-15T00:00:00'
-          duration:	86400	
-          site-visits: 16
-        - timestamp: '2024-08-16T00:00:00'
-          duration:	86400	
-          site-visits: 18
-        - timestamp: '2024-08-17T00:00:00'
-          duration:	86400	
-          site-visits: 21
-        - timestamp: '2024-08-18T00:00:00'
-          duration:	86400	
-          site-visits: 0
+        embodied-carbon-for-end-user-devices:
+          pipeline:
+            compute:
+              - embodied-carbon-devices
+              - total-embodied-carbon
+              - sci
+          defaults:
+            time: 40
+          inputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration:	86400	
+              site-visits: 12
+            - timestamp: '2024-07-23T00:00:00'
+              duration:	86400	
+              site-visits: 5
+            - timestamp: '2024-07-24T00:00:00'
+              duration:	86400	
+              site-visits: 3
+            - timestamp: '2024-07-25T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-07-26T00:00:00'
+              duration:	86400	
+              site-visits: 10
+            - timestamp: '2024-07-27T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-07-28T00:00:00'
+              duration:	86400	
+              site-visits: 16
+            - timestamp: '2024-07-29T00:00:00'
+              duration:	86400	
+              site-visits: 11
+            - timestamp: '2024-07-30T00:00:00'
+              duration:	86400	
+              site-visits: 1
+            - timestamp: '2024-07-31T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-01T00:00:00'
+              duration:	86400	
+              site-visits: 21
+            - timestamp: '2024-08-02T00:00:00'
+              duration:	86400	
+              site-visits: 30
+            - timestamp: '2024-08-03T00:00:00'
+              duration:	86400	
+              site-visits: 36
+            - timestamp: '2024-08-04T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-08-05T00:00:00'
+              duration:	86400	
+              site-visits: 17
+            - timestamp: '2024-08-06T00:00:00'
+              duration:	86400	
+              site-visits: 2
+            - timestamp: '2024-08-07T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-08T00:00:00'
+              duration:	86400	
+              site-visits: 25
+            - timestamp: '2024-08-09T00:00:00'
+              duration:	86400	
+              site-visits: 31
+            - timestamp: '2024-08-10T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-08-11T00:00:00'
+              duration:	86400	
+              site-visits: 13
+            - timestamp: '2024-08-12T00:00:00'
+              duration:	86400	
+              site-visits: 13
+            - timestamp: '2024-08-13T00:00:00'
+              duration:	86400	
+              site-visits: 4
+            - timestamp: '2024-08-14T00:00:00'
+              duration:	86400	
+              site-visits: 3
+            - timestamp: '2024-08-15T00:00:00'
+              duration:	86400	
+              site-visits: 16
+            - timestamp: '2024-08-16T00:00:00'
+              duration:	86400	
+              site-visits: 18
+            - timestamp: '2024-08-17T00:00:00'
+              duration:	86400	
+              site-visits: 21
+            - timestamp: '2024-08-18T00:00:00'
+              duration:	86400	
+              site-visits: 1
