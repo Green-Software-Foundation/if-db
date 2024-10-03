@@ -1,6 +1,5 @@
 # Impact Framework Life Cycle Assessment
 
-
 ## Useful links
 
 [GHG spec for IT](https://ghgprotocol.org/sites/default/files/GHGP-ICTSG%20-%20ALL%20Chapters.pdf)
@@ -96,15 +95,15 @@ npm i && npm link if-eco-ci-plugin if-github-plugin
 
 ## Methodology
 
-### Code storage
+## Code storage
 
-#### Github
+### Github
 
 We take the repository size for each active IF repository and multiply it by a coefficient for energy per TB of storage obtained from Cloud Carbon Footprint. Then, we take a grid carbon intensity for the West coast of USA assuming our repositories are stored on Github's servers on the W coast of USA.
 
 The size of the repository can be accessed using a github plugin that hits the `/repos` endpoint.
 
-##### Pipeline
+#### Pipeline
 
 | Action                                             | Plugin type   | Instance name                | Inputs                                 | Outputs             |
 | -------------------------------------------------- | ------------- | ---------------------------- | -------------------------------------- | ------------------- |
@@ -128,7 +127,7 @@ In manifest format, this pipeline looks as follows:
 - energy-to-carbon
 ```
 
-##### Constants and coefficients
+#### Constants and coefficients
 
 - `grid-carbon-intensity`: 765.5
 - `watt-hours-per-tb-hour`: 1.2
@@ -146,20 +145,20 @@ This pipeline will be repeated identically for each IF repository:
 
 The only change required to rerun the pipeline for the different repositories is to change the `repo-name` parameter passed to the `if-github-plugin` plugin.
 
-##### Assumptions
+#### Assumptions
 
 - Github servers are on W Coast USA and grid intensity is 765.49 (from Watt-time API in July 2024).
 - The CCF coeffcient for relating TB storage to energy is appropriate ([link](https://www.cloudcarbonfootprint.org/docs/methodology/#storage))
 - The repository size really represents the storage space on Github's ervers (the files are not compressed, or duplicated across multiple servers for redundancy)
 
-##### Data
+#### Data
 
 For this component we need data for Github storage size at daily timesteps. The Github API only provides access to historical data for the most recent month.
 
 
-### Servers
+## Servers
 
-#### Serving source code from Github
+### Serving source code from Github
 
 The number of times the repo is cloned is available from the Github API, which we wrap in the `if-github-plugin`. We calculate the energy required to transfer this amount of data over the internet and multiply that by the number of clones in each timestep. 
 
@@ -184,13 +183,13 @@ In manifest format, this pipeline looks as follows:
 - energy-to-carbon
 ```
 
-##### Constants and coefficients
+#### Constants and coefficients
 
 - `grid-carbon-intensity`: 765.5
 - `kwh-per-gb-network`: 0.001 ([CCF](https://www.cloudcarbonfootprint.org/docs/methodology/#networking))
 
 
-#### Serving website
+### Serving website
 
 Serving the IF website comprises several child components. These are:
 
@@ -220,7 +219,7 @@ The total energy used to store that static site is therefore
 `data-transfer size + (46 * (transfer size / 10))`
 
 
-##### Pipeline
+#### Pipeline
 
 We don't have a plugin for google analytics or google pagespeed api yet, so we will hard code our static site size after manually querying the pagespeed api with curl.
 
@@ -249,7 +248,7 @@ In manifest format, this pipeline looks as follows:
 
 **Networking energy to serve static site over the internet**
 
-##### Pipeline
+#### Pipeline
 
 | Action                              | Plugin type | Instance name             | Inputs              | Outputs               |
 | ----------------------------------- | ----------- | ------------------------- | ------------------- | --------------------- |
