@@ -33,8 +33,12 @@ npm i && npm link if-eco-ci-plugin if-github-plugin
 
 ## LCA Boundary
 
-**in scope:**
+The following tree diagram shows the components that will be considered in this LCA. it also shows the grouping and nesting of components as they will be organized int he manifest file. For any element with children, we will receive a carbon value that aggregates the carbon values of all the children.
 
+
+**In scope:**
+
+```
 - Code storage	
   - gh-storage-if
   - gh-actions-if
@@ -56,13 +60,15 @@ npm i && npm link if-eco-ci-plugin if-github-plugin
     - daily standup
     - monthly IF call
     - weekly office hours
+
   - slack
     - work hours daily
             end-user-internet-infra:
             children:
-              router:
-              modem:
-              wifi:   
+              router
+              modem
+              wifi 
+
 - developers	
   - lighting
   - heating
@@ -81,16 +87,16 @@ npm i && npm link if-eco-ci-plugin if-github-plugin
   - browsing site
   - running iF
   - embodied & operational carbon of internet infra incl. router, modem, wifi repeater
+```
 
+**Out of scope**
 
-**out of scope**
-
+```
 - food and other general life activities of devs
 - any non-essential devices (no spotify, speakers, headphones etc)
 - commuting (if any devs use workspaces, for example)
 - use of dynamic call backgrounds
-
-
+```
 
 
 ## Methodology
@@ -107,7 +113,7 @@ The size of the repository can be accessed using a github plugin that hits the `
 
 | Action                                             | Plugin type   | Instance name                | Inputs                                 | Outputs             |
 | -------------------------------------------------- | ------------- | ---------------------------- | -------------------------------------- | ------------------- |
-| Convert duration unit from seconds to hours        | `Coefficient  | `duration-to-hours`          | `duration`, `coefficient`              | `duration-in-hours` |
+| Convert duration unit from seconds to hours        | `Coefficient` | `duration-to-hours`          | `duration`, `coefficient`              | `duration-in-hours` |
 | Retrieve repo size from Github API                 | `Github`      | `get-github-repo-size-if`    | `repo-name`, `time`                    | `size`, `clones`    |
 | Convert repo size unit from GB to TB               | `Coefficient` | `repo-size-unit-gb-to-tb`    | `repo-size`, `coefficient`             | `repo-size-tb`      |
 | Multiply storage in TB by coefficient in Watts/TBh | `Multiply`    | `storage-to-energy-in-watts` | `storage-tb`, `watt-hours-per-tb-hour` | `storage-watts`     |
@@ -145,11 +151,13 @@ This pipeline will be repeated identically for each IF repository:
 
 The only change required to rerun the pipeline for the different repositories is to change the `repo-name` parameter passed to the `if-github-plugin` plugin.
 
+
 #### Assumptions
 
 - Github servers are on W Coast USA and grid intensity is 765.49 (from Watt-time API in July 2024).
 - The CCF coeffcient for relating TB storage to energy is appropriate ([link](https://www.cloudcarbonfootprint.org/docs/methodology/#storage))
 - The repository size really represents the storage space on Github's ervers (the files are not compressed, or duplicated across multiple servers for redundancy)
+
 
 #### Data
 
@@ -189,6 +197,17 @@ In manifest format, this pipeline looks as follows:
 - `kwh-per-gb-network`: 0.001 ([CCF](https://www.cloudcarbonfootprint.org/docs/methodology/#networking))
 
 
+#### Assumptions
+
+- The US grid carbon intensity value is appropriate for the Github server
+- The CCF networking coefficient is appropriate for converting data transferred to energy consumed
+- The number of clones of our ancillary repositories is negligible (observations show 0 clones in past month)
+
+#### Data
+
+We want repo size and number of clones per day for a month. We cna only get one month's worth of data using the GHithub API.
+
+
 ### Serving website
 
 Serving the IF website comprises several child components. These are:
@@ -203,8 +222,7 @@ Serving the IF website comprises several child components. These are:
 We'll treat these individually and then aggregate up to the parent node in IF.
 
 
-
-**Storing the static site data on Github pages**
+### Storing the static site data on Github pages
 
 Once the site is built, the static data is stored on servers waiting to transfer the site data to end users. There is an origin server that stores the whole static site, then a content delivery network (CDN) of servers storing a cached fraction of the total static site data for fast delivery.
 
@@ -227,32 +245,51 @@ We don't have a plugin for google analytics or google pagespeed api yet, so we w
 | ------------------------------------------- | ------------- | --------------------------- | --------------------------------------- | ------------------------ |
 | Convert duration unit from seconds to hours | `Coefficient` | `duration-to-hours`         | `duration`, `coefficient`               | `duration-in-hours`      |
 | Convert static site size in MB to TB        | `Coefficient` | `static-site-size-mb-to-tb` | `static-site-size-in-mb`, `denominator` | `static-site-size-in-tb` |
-
+| Convert static site size in TB to energy in W | `Multiply` | `storage-energy-static-site-at-origin-in-watts` |`static-site-size-in-tb`, `watt-hours-per-tb-hour` | `storage-energy-static-site-at-origin-watts` |
+| Convert storage energy in W to Wh | `Multiply` | `storage-energy-static-site-at-origin-to-wh`|`storage-energy-static-site-at-origin-watts` , `duration-in-hours` | `storage-energy-static-site-at-origin-wh` |
+| Convert storage energy in Wh to kWh| `Coefficient` | `storage-energy-static-site-at-origin-to-kwh` |`storage-energy-static-site-at-origin-wh`, `coefficient` | `storage-energy-static-site-at-origin-kwh` |
+| Calculate storage energy in each CDN PoP | `Divide` | `storage-energy-static-site-at-cdn-node-kwh` |`storage-energy-static-site-at-origin-kwh`, `denominator` | `storage-energy-static-site-at-cdn-node-kwh` |
+| Calculate storage energy across whole CDN | `Coefficient` | `storage-energy-static-site-whole-cdn-kwh` |`storage-energy-static-site-at-cdn-node-kwh`, `coefficient` | `storage-energy-static-site-whole-cdn-kwh` |
+| Sum storage energy at origin and storage energy across CDN| `Sum` | `sum-static-site-server-energy-components` |`storage-energy-static-site-across-cdn-kwh`, `storage-energy-static-site-at-origin-kwh` | `energy` |
+| Convert energy to carbon                                | `Multiply`    | `energy-to-carbon`          | `storage-kwh`, `grid-carbon-intensity`                | `carbon`  
 
 In manifest format, this pipeline looks as follows:
 
 ```yaml
 - duration-in-hours
-- static-site-size-in-tb
-- storage-energy-static-site-in-watts
-- storage-energy-in-wh-static-site
-- storage-energy-to-kwh-static-site
-- storage-energy-per-cdn-node
-- storage-energy-for-entire-cdn
-- sum-serving-static-site-energy-components
+- static-site-size-mb-to-tb
+- storage-energy-static-site-at-origin-in-watts
+- storage-energy-static-site-at-origin-to-wh
+- storage-energy-static-site-at-origin-to-kwh
+- storage-energy-static-site-at-cdn-node-kwh
+- storage-energy-static-site-whole-cdn-kwh
+- sum-static-site-server-energy-components
 - energy-to-carbon
-- sci
 ```
 
 
+#### Coefficients
 
-**Networking energy to serve static site over the internet**
+- `grid-carbon-intensity`: 765.5
+- `watt-hours-per-tb-hour`: 1.2
+- `denominator`:
+  - `storage-energy-static-site-at-cdn-node-kwh`: 10
+  - `static-site-size-mb-to-tb`: 1000000
+- `coefficient`:
+  - `storage-energy-static-site-at-origin-to-kwh`: 0.001
+  - `storage-energy-static-site-whole-cdn-kwh`: 46
+
+
+### Networking energy to serve static site over the internet
 
 #### Pipeline
 
 | Action                              | Plugin type | Instance name             | Inputs              | Outputs               |
 | ----------------------------------- | ----------- | ------------------------- | ------------------- | --------------------- |
-| Grab size of source code repository | `Github`    | `get-github-repo-size-if` | `repo-name`, `time` | `repo-size`, `clones` |
+| Convert static site size from Mb to GB | `Coefficient`    | `static-site-size-in-gb` |`static-site-size-in-mb`,  `coefficient` | `static-site-size-in-gb` |
+| Calculate networking energy to load site per visit | `Multiply`    | `network-energy-serving-static-site-per-view` |`static-site-size-in-gb`, `kwh-per-gb-network` | `network-energy-serving-static-site-per-view-kwh` |
+| Multiply energy per visit by number of visits | `Multiply`    | `network-energy-serving-static-site-total-kwh` |`network-energy-kwh-serving-static-site-per-view-kwh`, `site-visits` | `network-energy-serving-static-site-per-view-total` |
+| Convert energy to carbon                                | `Multiply`    | `energy-to-carbon`          | `storage-kwh`, `grid-carbon-intensity`                | `carbon` 
 
 In manifest format, this pipeline looks as follows:
 
@@ -261,8 +298,18 @@ In manifest format, this pipeline looks as follows:
 - network-energy-serving-static-site-per-view
 - network-energy-serving-static-site-total
 - energy-to-carbon
-- sci
 ```
+
+#### Coefficients
+
+- `grid-carbon-intensity`: 765.5
+- `denominator`:
+  - `storage-energy-static-site-at-cdn-node-kwh`: 10
+
+- `coefficient`:
+  - `static-site-size-mb-to-gb`: 0.001
+
+
 
 
 
