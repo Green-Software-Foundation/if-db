@@ -376,9 +376,7 @@ So this can be hardcoded as a default in the time series.
 
 Embodied carbon
 
-Each user is assumed to be using a Macbook Pro 13 (15"). It's embodied carbon is 159 kg CO2e according to the manufacturer. We scale this value by the proportion of the device lifespan (4 years) accounted for by the call (30 mins). We add one-minutes' worth of this embodied carbon to each timestep.
-
-The calculated value is multiplied by the number of participants.
+Each user is assumed to be using a Macbook Pro 13 (15"). It's embodied carbon is 159 kg CO2e according to the manufacturer. We scale this value by the proportion of the device lifespan (4 years) accounted for by the call (30 mins). The calculated value is multiplied by the number of participants for each day there is a call.
 
 Operational carbon:
 
@@ -415,7 +413,7 @@ In manifest format, this pipeline looks as follows:
 
 | Action                                                     | Plugin type   | Instance name                   | Inputs                                 | Outputs              |
 | ---------------------------------------------------------- | ------------- | ------------------------------- | -------------------------------------- | -------------------- |
-| Interpolate CPOU power curve                               | `Interpolate` | `interpolate-power-curve`       | `cpu-util`                             | `cpu-factor`         |
+| Interpolate CPU power curve                                | `Interpolate` | `interpolate-power-curve`       | `cpu-util`                             | `cpu-factor`         |
 | Apply cpu-factor to processor TDP                          | `Multiply`    | `cpu-factor-to-power-w`         | `cpu-factor`, `thermal-design-power`   | `cpu-power-w`        |
 | Convert power to energy                                    | `Multiply`    | `cpu-power-to-energy-ws`        | `cpu-power-w`, `duration`              | `cpu-energy-ws`      |
 | Convert energy to unit of kWh                              | `Divide`      | `cpu-energy-to-kwh`             | `cpu-power-Ws`, `denominator`          | `cpu-energy-kwh`     |
@@ -438,22 +436,75 @@ In manifest format, this pipeline looks as follows:
 ```
 
 
+
+**Operational carbon of the user devices**
+
+This is identical to the operational carbon for the server except for the TDP of the processor and the grid-carbon-intensity given..
+
+
+| Action                                                     | Plugin type   | Instance name                     | Inputs                                 | Outputs              |
+| ---------------------------------------------------------- | ------------- | --------------------------------- | -------------------------------------- | -------------------- |
+| Interpolate CPU power curve                                | `Interpolate` | `interpolate-power-curve`         | `cpu-util`                             | `cpu-factor`         |
+| Apply cpu-factor to processor TDP                          | `Multiply`    | `cpu-factor-to-power-w`           | `cpu-factor`, `thermal-design-power`   | `cpu-power-w`        |
+| Convert power to energy                                    | `Multiply`    | `cpu-power-to-energy-ws`          | `cpu-power-w`, `duration`              | `cpu-energy-ws`      |
+| Convert energy to unit of kWh                              | `Divide`      | `cpu-energy-to-kwh`               | `cpu-power-Ws`, `denominator`          | `cpu-energy-kwh`     |
+| Convert memory coefficient from CCF to unit of GB/duration | `Coefficient` | `memory-coefficient-correction`   | `duration`, `coefficient`              | `memory-coefficient` |
+| Apply memory coefficient to memory utilization             | `Multiply`    | `memory-util-to-energy-kwh`       | `memory-gb`, `memory-coefficient`      | `memory-energy-kwh`  |
+| Sum energy components                                      | `Sum`         | `sum-energy-components-calls`     | `memory-energy-kwh`, `cpu-energy-kwh`  | `energy`             |
+| Convert energy to carbon                                   | `Multiply`    | `energy-to-carbon`                | `storage-kwh`, `grid-carbon-intensity` | `carbon`             |
+| Multiply carbon by number of participants                  | `Multiply`    | `multiply-carbon-by-participants` | `carbon`, `n-participants`             | `carbon`             |
+
+In manifest format, this pipeline looks as follows:
+
+```yaml
+- interpolate-power-curve
+- cpu-factor-to-power-w
+- cpu-power-to-energy-ws
+- cpu-energy-to-kwh
+- memory-coefficient-correction
+- memory-energy
+- sum-energy-components
+- energy-to-carbon
+- multiply-carbon-by-participants
+```
+
+**Embodied carbon of the remote server**
+
+There is no pipeline to execute for this component, as we calculated the `carbon` offline and simply add it to the time series for the days the calls happened.
+
+
+**Embodied carbon of the user devices**
+
+There is no pipeline to execute for this component, as we calculated the `carbon` offline and simply add it to the time series for the days the calls happened.
+
+
+
 #### Coefficients
 
 **Network energy to transfer call data**
 
 - `grid-carbon-intensity`: 765.5
 - `kwh-per-gb-network`: 0.001
-- `n-participants`: 5
+- `n-participants`: 12
   
 
 **Operational carbon of the remote server**
 
+- `grid-carbon-intensity`: 765.5
 - `denominator`:
   - `cpu-energy-to-kwh`: 3600000
 - `coefficient`:
   - `memory-coefficient-correction`: 0.000006533333
   
+
+**Operational carbon of the user devices**
+
+- `grid-carbon-intensity`: 265.5
+- `denominator`:
+  - `cpu-energy-to-kwh`: 3600000
+- `coefficient`:
+  - `memory-coefficient-correction`: 0.000006533333
+- - `n-participants`: 12
 
 #### Data
 
@@ -490,72 +541,28 @@ We also assume that the app is running for 7 working hours each day, "idling" in
 We'll simply add these values to each daily timestep for each developer on the team.
 
 
+## Developers
+
+- developers	
+  - lighting
+  - heating
+  - monitor embodied
+  - monitors operational
+  - mouse embodied
+  - laptops embodied
+  - laptops operational
+  - travel
+  - open source developers
+  - routers, modems, wifi embodied & operational
 
 
 
 
-
-*********************
-SCRATCH NOTES:: WIP!
-**********************
-
-
-    gh-pages-builds:
-      pipeline:
-        compute:
-          - interpolate-power-curve
-          - build-stage-cpu-factor-to-wattage
-          - build-stage-cpu-wattage-times-build-duration
-          - build-stage-cpu-wattage-to-energy-kwh
-          - memory-coefficient-correction # memory coefficient in CCF is given /GB/hr - we want to convert to /GB/run-time-duration then x by run duration in s
-          - memory-energy-per-build
-          - sum-build-energy-components
-          - build-energy-total
-          - energy-to-carbon
-          - sci
-
-    embodied-carbon-for-web-server:
-      pipeline:
-        compute:
-          - embodied-carbon-web-server-origin
-          - sci
-
-    embodied-carbon-for-cdn:
-      pipeline:
-        compute:
-          - embodied-carbon-web-server-cdn
-          - sci
-
-    embodied-carbon-for-github-server:
-      pipeline:
-        compute:
-          - embodied-carbon-github
-          - sci
-
-
-  - serving website
-    - CDN origin
-    - CDN PoPs
-    - gh-pages hosting
-  - serving code via github
-    - network transfer of `repo-size` bytes for each clone
-
-
-
-
-
-
-
-### Github actions
-
-We use the Green Coding plugin to measure the energy of our actions. The methodology is explained here: [EcoCI](https://www.green-coding.io/projects/eco-ci/).
-
-Once the app is integrated into our Github Actions we can request data for a date range using an APi which we wrap in an IF plugin.
 
 
 ### WFH
 
-#### Lighting:
+#### Lighting and heating:
 
 Average UK household uses 3941kWh electricity per year, of which 15% is due to lighting (https://www.ovoenergy.com/guides/energy-guides/how-much-electricity-does-a-home-use).
 
@@ -616,57 +623,3 @@ Bike is 0 kg Co2eq (https://www.gov.uk/government/publications/greenhouse-gas-re
 None required - the cost of deleting the IF repo from a local computer is negligible and does not generate any electrical waste.
 IF is not tied to any specific hardware that become suseless withouyt IF software being installed on it.
 This might not be the case with certain firmware, for example.
-
-## if-docs website
-
-Since writing docs is part of our normal developer work-day, and we typically do it in the same IDE as we use to write code, we rol it in with "development" rather than accounting separately. However, the docs are hosted on n independent repository that has its own storage, traffic and GH actions, plus there is hosting and viewership to account for too.
-
-We here use the CLI tool "greenframe" to analyse the website's carbon emissions: https://docs.greenframe.io/commands
-the CLi estimates the usage as: 
-
-12.807 mg eq. co2 ± 3.6% (28.976 mWh)
-== 0.012807 g CO2eq
-
-Alternatives include using the GWF CO2js model (which we have a plugin for)
-
-
-
-
-### github storage and traffic
-- carbon due to GH storage and downloads
-### ci/cd
-- carbon for PRs/preview deploys
-### hosting/deployment
-- carbon to host site on server
-### viewers
-- carbon due to each end uyser viewing the website on desktop/mobile
-
-
-
-
-## End users
-
-
-## Other
-
-employee travel
-employee commuting
-purchased goods and services
-
-
-
-
- 
-## TODOs
-
-- create plugin for querying EcoCI data
-  - wraps 
-
-```
-curl -X 'GET' 'https://api.green-coding.io/v1/ci/measurements?repo=https%3A%2F%2Fgithub.com%2Fgreen-coding-berlin%2Fdjango&branch=main&workflow=usage_scenario.yml&start_date=1720359036238303&end_date=1720360753137587' -H 'accept: application/json'
-
-```
-- create plugin that wraps GH metrics API:
-```
-gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28"  /repos/Green-Software-Foundation/if
-```
