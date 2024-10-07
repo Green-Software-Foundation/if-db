@@ -556,13 +556,7 @@ We'll simply add these values to each daily timestep for each developer on the t
   - routers, modems, wifi embodied & operational
 
 
-
-
-
-
-### WFH
-
-#### Lighting and heating:
+### Lighting:
 
 Average UK household uses 3941kWh electricity per year, of which 15% is due to lighting (https://www.ovoenergy.com/guides/energy-guides/how-much-electricity-does-a-home-use).
 
@@ -572,6 +566,14 @@ A laptop uses approximately 0.05kWh per working day (https://www.ovoenergy.com/g
 EDF electricity has grid intensity of 87 gCO2/kWh (2024) (https://www.edfenergy.com/fuel-mix)
 So a developer working a normal day will emit `0.05 * 87 =  4.35 gCO2`
 
+We will add this to each timestep for each developer.
+
+#### Pipeline
+
+There is no pipeline to execute for this component, as we calculated the `carbon` offline and simply add it to the time series for the days the calls happened.
+
+
+### Heating
 
 A typical UK household uses 11500 kWh of natural gas/year (https://www.ofgem.gov.uk/average-gas-and-electricity-usage). We scale this value down to 1/5 of the total space in the house which is used for home working = `11500 * 0.2 = 2300 kWh/yr`.
 
@@ -583,6 +585,11 @@ This equates to `0.20196 kg CO2/ kWh = 201.96 gCO2 / kWh`
 So heating a house for WFH purposes is `2300 / 365 / 3 = 2.1 kWh/working day` (assuming 8 hours a day: 8 * 3 = 24)
 `2.1 kWh/day * 201.96 = 0.000424gC02/day`
 
+We will add this to each timestep for each developer.
+
+#### Pipeline
+
+There is no pipeline to execute for this component, as we calculated the `carbon` offline and simply add it to the time series for the days the calls happened.
 
 
 ## Developer laptop embodied carbon
@@ -596,6 +603,12 @@ Say work accoutns for 8 hours a day, 5 days a week, the embodied carbon allocate
 
 `178.87 + 424  + 4.35 + 0.32 = 607.54 g/day`
 
+We add this for each developer for each day.
+
+#### Pipeline
+
+There is no pipeline to execute for this component, as we calculated the `carbon` offline and simply add it to the time series for the days the calls happened.
+
 
 
 ## Additional screens/keyboards/mouses
@@ -606,7 +619,14 @@ Say work accoutns for 8 hours a day, 5 days a week, the embodied carbon allocate
 - This assumes 6 year lifespan, so `368/6/365 = embodied-per-day = 0.16 kgCO2 = 160gCO2/day`
 
 - usage is 65W for 8 hours per day = `65*8 = 520Wh = 0.52 kWh/day`
-- carbon due to screen usage is `use x carbon-intensity = 0.52 * 87 = 45.24`
+- carbon due to screen usage is `use x carbon-intensity = 0.52 * 87 = 45.24 gCO2e/day`
+
+We'll add this to each developer's time series for each day.
+
+#### Pipeline
+
+There is no pipeline to execute for this component, as we calculated the `carbon` offline and simply add it to the time series for the days the calls happened.
+
 
 
 ## Travel
@@ -616,6 +636,12 @@ Flying is 1.46 kg per passenger per 10 km (https://www.gov.uk/government/publica
 Motorbike is 1.13 kg per passenger per 10 km (https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2020)
 Bus is 1.03 kg per passenger per 10 km (https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2020)
 Bike is 0 kg Co2eq (https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2020)
+
+We will add conference travel for each developer using these coefficients.
+
+#### Pipeline
+
+There is no pipeline to execute for this component, as we calculated the `carbon` offline and simply add it to the time series for the days the calls happened.
 
 
 ## Product disposal
