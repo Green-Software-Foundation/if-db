@@ -241,17 +241,17 @@ The total energy used to store that static site is therefore
 
 We don't have a plugin for google analytics or google pagespeed api yet, so we will hard code our static site size after manually querying the pagespeed api with curl.
 
-| Action                                      | Plugin type   | Instance name               | Inputs                                  | Outputs                  |
-| ------------------------------------------- | ------------- | --------------------------- | --------------------------------------- | ------------------------ |
-| Convert duration unit from seconds to hours | `Coefficient` | `duration-to-hours`         | `duration`, `coefficient`               | `duration-in-hours`      |
-| Convert static site size in MB to TB        | `Coefficient` | `static-site-size-mb-to-tb` | `static-site-size-in-mb`, `denominator` | `static-site-size-in-tb` |
-| Convert static site size in TB to energy in W | `Multiply` | `storage-energy-static-site-at-origin-in-watts` |`static-site-size-in-tb`, `watt-hours-per-tb-hour` | `storage-energy-static-site-at-origin-watts` |
-| Convert storage energy in W to Wh | `Multiply` | `storage-energy-static-site-at-origin-to-wh`|`storage-energy-static-site-at-origin-watts` , `duration-in-hours` | `storage-energy-static-site-at-origin-wh` |
-| Convert storage energy in Wh to kWh| `Coefficient` | `storage-energy-static-site-at-origin-to-kwh` |`storage-energy-static-site-at-origin-wh`, `coefficient` | `storage-energy-static-site-at-origin-kwh` |
-| Calculate storage energy in each CDN PoP | `Divide` | `storage-energy-static-site-at-cdn-node-kwh` |`storage-energy-static-site-at-origin-kwh`, `denominator` | `storage-energy-static-site-at-cdn-node-kwh` |
-| Calculate storage energy across whole CDN | `Coefficient` | `storage-energy-static-site-whole-cdn-kwh` |`storage-energy-static-site-at-cdn-node-kwh`, `coefficient` | `storage-energy-static-site-whole-cdn-kwh` |
-| Sum storage energy at origin and storage energy across CDN| `Sum` | `sum-static-site-server-energy-components` |`storage-energy-static-site-across-cdn-kwh`, `storage-energy-static-site-at-origin-kwh` | `energy` |
-| Convert energy to carbon                                | `Multiply`    | `energy-to-carbon`          | `storage-kwh`, `grid-carbon-intensity`                | `carbon`  
+| Action                                                     | Plugin type   | Instance name                                   | Inputs                                                                                  | Outputs                                      |
+| ---------------------------------------------------------- | ------------- | ----------------------------------------------- | --------------------------------------------------------------------------------------- | -------------------------------------------- |
+| Convert duration unit from seconds to hours                | `Coefficient` | `duration-to-hours`                             | `duration`, `coefficient`                                                               | `duration-in-hours`                          |
+| Convert static site size in MB to TB                       | `Coefficient` | `static-site-size-mb-to-tb`                     | `static-site-size-in-mb`, `denominator`                                                 | `static-site-size-in-tb`                     |
+| Convert static site size in TB to energy in W              | `Multiply`    | `storage-energy-static-site-at-origin-in-watts` | `static-site-size-in-tb`, `watt-hours-per-tb-hour`                                      | `storage-energy-static-site-at-origin-watts` |
+| Convert storage energy in W to Wh                          | `Multiply`    | `storage-energy-static-site-at-origin-to-wh`    | `storage-energy-static-site-at-origin-watts` , `duration-in-hours`                      | `storage-energy-static-site-at-origin-wh`    |
+| Convert storage energy in Wh to kWh                        | `Coefficient` | `storage-energy-static-site-at-origin-to-kwh`   | `storage-energy-static-site-at-origin-wh`, `coefficient`                                | `storage-energy-static-site-at-origin-kwh`   |
+| Calculate storage energy in each CDN PoP                   | `Divide`      | `storage-energy-static-site-at-cdn-node-kwh`    | `storage-energy-static-site-at-origin-kwh`, `denominator`                               | `storage-energy-static-site-at-cdn-node-kwh` |
+| Calculate storage energy across whole CDN                  | `Coefficient` | `storage-energy-static-site-whole-cdn-kwh`      | `storage-energy-static-site-at-cdn-node-kwh`, `coefficient`                             | `storage-energy-static-site-whole-cdn-kwh`   |
+| Sum storage energy at origin and storage energy across CDN | `Sum`         | `sum-static-site-server-energy-components`      | `storage-energy-static-site-across-cdn-kwh`, `storage-energy-static-site-at-origin-kwh` | `energy`                                     |
+| Convert energy to carbon                                   | `Multiply`    | `energy-to-carbon`                              | `storage-kwh`, `grid-carbon-intensity`                                                  | `carbon`                                     |
 
 In manifest format, this pipeline looks as follows:
 
@@ -284,12 +284,12 @@ In manifest format, this pipeline looks as follows:
 
 #### Pipeline
 
-| Action                              | Plugin type | Instance name             | Inputs              | Outputs               |
-| ----------------------------------- | ----------- | ------------------------- | ------------------- | --------------------- |
-| Convert static site size from Mb to GB | `Coefficient`    | `static-site-size-in-gb` |`static-site-size-in-mb`,  `coefficient` | `static-site-size-in-gb` |
-| Calculate networking energy to load site per visit | `Multiply`    | `network-energy-serving-static-site-per-view` |`static-site-size-in-gb`, `kwh-per-gb-network` | `network-energy-serving-static-site-per-view-kwh` |
-| Multiply energy per visit by number of visits | `Multiply`    | `network-energy-serving-static-site-total-kwh` |`network-energy-kwh-serving-static-site-per-view-kwh`, `site-visits` | `network-energy-serving-static-site-per-view-total` |
-| Convert energy to carbon                                | `Multiply`    | `energy-to-carbon`          | `storage-kwh`, `grid-carbon-intensity`                | `carbon` 
+| Action                                             | Plugin type   | Instance name                                  | Inputs                                                               | Outputs                                             |
+| -------------------------------------------------- | ------------- | ---------------------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------- |
+| Convert static site size from Mb to GB             | `Coefficient` | `static-site-size-in-gb`                       | `static-site-size-in-mb`,  `coefficient`                             | `static-site-size-in-gb`                            |
+| Calculate networking energy to load site per visit | `Multiply`    | `network-energy-serving-static-site-per-view`  | `static-site-size-in-gb`, `kwh-per-gb-network`                       | `network-energy-serving-static-site-per-view-kwh`   |
+| Multiply energy per visit by number of visits      | `Multiply`    | `network-energy-serving-static-site-total-kwh` | `network-energy-kwh-serving-static-site-per-view-kwh`, `site-visits` | `network-energy-serving-static-site-per-view-total` |
+| Convert energy to carbon                           | `Multiply`    | `energy-to-carbon`                             | `storage-kwh`, `grid-carbon-intensity`                               | `carbon`                                            |
 
 In manifest format, this pipeline looks as follows:
 
@@ -303,11 +303,193 @@ In manifest format, this pipeline looks as follows:
 #### Coefficients
 
 - `grid-carbon-intensity`: 765.5
+- `kwh-per-gb-network`: 0.001
 - `denominator`:
   - `storage-energy-static-site-at-cdn-node-kwh`: 10
-
 - `coefficient`:
   - `static-site-size-mb-to-gb`: 0.001
+
+
+
+## SaaS
+
+
+### Conference calls
+
+We assume some standard config for a conference call. The variable that changes is the numbner of participants. These calls are all assumed to be 30 minutes long.
+
+Standups typically have 4 participants.
+Monthly IF call now typically has ~8 participants.
+Weekly office hours have one average 3 participants.
+Weekly 1-1s between R&D lead and ED. 2 participants.
+Weekly 1-1s between R&D lead and PM. 2 participants.
+Ad-hoc calls between devs: 3 participants.
+
+Instead of massively lengthening the manifest by including components for each type of call, we bundle them all together by summing the number of participants across the different calls and pretending they are all the same call in each week. This leads to the same final carbon value, but we just communicate it as "call carbon" rather than breaking it down further into individual call types. We can always copme back and decompose this later if we decide we want to be more granular. Therefore, `n-participants` will be equal to 12 and there will be one 30 min call with 12 participants each week.
+
+The method used to calculate the carbon emissions for the call is as follows:
+
+**Network**
+
+We use a coefficient (0.07 kWh/GB) to convert the amount of data transferred over the network to energy in kWh. This coefficient was taken from Orbinger et al 2021.
+
+The amount of energy transferred was assumed to be constant throughout the call. We used data from this report, selecting the transfer rate for group calls streaming at 720p resolution (1.35 GB/hr). this was scaled down to per minute by dividing by 60 (0.0225 GB/min).
+
+Therefore, in each minute of the call, the energy used is:
+
+`energy = 0.07 * 0.0225`
+
+Then we convert this energy to carbon by multiplying by the grid carbon intensity.
+
+Since the coefficient, grid carbon intensity and the data transfer rate are constant across all timesteps, the carbon emissions are uniform across the time series. Adding real observations of data transfer rates would be a very useful improvement to the manifest!
+
+**Server**
+
+This blog describes an investigation into the server config and CPU load for conference calls. They actually looked into Jitsi, which they assume to be an analog for Zoom.
+
+Jitsi engineers did performance testing of Jitsi Meet. They showed that a quad-core Intel ® Xeon® E5-1620 v2 @ 3.70GHz CPU easily accommodates a 33 participant call using just 20% of the CPU capacity. This processor has a TDP of 130 W.
+
+This is enough information to use the Teads power curve method to estimate energy used by the CPU in kWh. We can also look for a cloud instance that uses that processor and has some fairly substantial memory available - such as the AWS c5.2xlarge - let's assume that's what Zoom uses and look up the manufacturer's value for embodied carbon (0.0043 kgCO2/hour).
+
+**Operational carbon**
+
+The well-known Teads power curve pipeline was used to estimate energy from CPU utilization. This involves the following steps:
+
+interpolate the power curve for the CPU utilization at each timestep, yielding the "cpu-factor"
+multiply the processor TDP by the cpu-factor to yield power
+apply time and unit conversions to yield energy in kWh
+multiply by grid carbon intensity to yield carbon emissions per timestep
+
+**Embodied carbon**
+
+We use the manufacturer's embodied carbon value for a cloud instance we think is a decent analog for the Zoom server that serves the call. We then scale it for the proportion of the server lifespan accounted by the call (30 mins out of 4 years).
+
+Climatiq estimates `0.0043 kg/Co2e/hr == 4.3g/hr` for this instance `4.3g/hr = 0.0716g/min`
+
+assume zoom use their servers effectively and would not have a dedicated server for this call that only uses 20% of the cpu/mem.
+
+`== 0.0716/5 gCO2/min == 0.00352 gCO2/min`
+
+So this can be hardcoded as a default in the time series.
+
+**User**
+
+Embodied carbon
+
+Each user is assumed to be using a Macbook Pro 13 (15"). It's embodied carbon is 159 kg CO2e according to the manufacturer. We scale this value by the proportion of the device lifespan (4 years) accounted for by the call (30 mins). We add one-minutes' worth of this embodied carbon to each timestep.
+
+The calculated value is multiplied by the number of participants.
+
+Operational carbon:
+
+The well-known Teads power curve pipeline was used to estimate energy from CPU utilization. This involves the following steps:
+
+interpolate the power curve for the CPU utilization at each timestep, yielding the "cpu-factor"
+multiply the processor TDP by the cpu-factor to yield power
+apply time and unit conversions to yield energy in kWh
+multiply by grid carbon intensity to yield carbon emissions per timestep
+The calculated value is multiplied by the number of participants.
+
+
+#### Pipeline
+
+**Network energy to transfer call data**
+
+| Action                                              | Plugin type | Instance name                                                 | Inputs                                     | Outputs                  |
+| --------------------------------------------------- | ----------- | ------------------------------------------------------------- | ------------------------------------------ | ------------------------ |
+| Calculate energy from data transferred              | `Multiply`  | `networking-energy-to-transfer-call-data-to-each-participant` | `data-transferred`, `kwh-per-gb-network`   | `energy-per-participant` |
+| Multiply data transferred by number of participants | `Multiply`  | `energy-for-data-transfer-to-all-call-participants`           | `energy-per-participant`, `n-participants` | `energy`                 |
+| Convert energy to carbon                            | `Multiply`  | `energy-to-carbon`                                            | `energy`, `grid-carbon-intensity`          | `carbon`                 |
+
+In manifest format, this pipeline looks as follows:
+
+```yaml
+- network-energy-to-transfer-call-data
+- multiply-energy-by-participants
+- energy-to-carbon
+```
+
+
+**Operational carbon of the remote server**
+
+
+| Action                                                     | Plugin type   | Instance name                   | Inputs                                 | Outputs              |
+| ---------------------------------------------------------- | ------------- | ------------------------------- | -------------------------------------- | -------------------- |
+| Interpolate CPOU power curve                               | `Interpolate` | `interpolate-power-curve`       | `cpu-util`                             | `cpu-factor`         |
+| Apply cpu-factor to processor TDP                          | `Multiply`    | `cpu-factor-to-power-w`         | `cpu-factor`, `thermal-design-power`   | `cpu-power-w`        |
+| Convert power to energy                                    | `Multiply`    | `cpu-power-to-energy-ws`        | `cpu-power-w`, `duration`              | `cpu-energy-ws`      |
+| Convert energy to unit of kWh                              | `Divide`      | `cpu-energy-to-kwh`             | `cpu-power-Ws`, `denominator`          | `cpu-energy-kwh`     |
+| Convert memory coefficient from CCF to unit of GB/duration | `Coefficient` | `memory-coefficient-correction` | `duration`, `coefficient`              | `memory-coefficient` |
+| Apply memory coefficient to memory utilization             | `Multiply`    | `memory-util-to-energy-kwh`     | `memory-gb`, `memory-coefficient`      | `memory-energy-kwh`  |
+| Sum energy components                                      | `Sum`         | `sum-energy-components-calls`   | `memory-energy-kwh`, `cpu-energy-kwh`  | `energy`             |
+| Convert energy to carbon                                   | `Multiply`    | `energy-to-carbon`              | `storage-kwh`, `grid-carbon-intensity` | `carbon`             |
+
+In manifest format, this pipeline looks as follows:
+
+```yaml
+- interpolate-power-curve
+- cpu-factor-to-power-w
+- cpu-power-to-energy-ws
+- cpu-energy-to-kwh
+- memory-coefficient-correction
+- memory-energy
+- sum-energy-components
+- energy-to-carbon
+```
+
+
+#### Coefficients
+
+**Network energy to transfer call data**
+
+- `grid-carbon-intensity`: 765.5
+- `kwh-per-gb-network`: 0.001
+- `n-participants`: 5
+  
+
+**Operational carbon of the remote server**
+
+- `denominator`:
+  - `cpu-energy-to-kwh`: 3600000
+- `coefficient`:
+  - `memory-coefficient-correction`: 0.000006533333
+  
+
+#### Data
+
+This requires daily-interval time series data. Not all days will have calls. The manifest aggregation feature will handle aggregating calls over the month.
+
+
+### Slack
+
+Slack is constantly performing operations in the background if the app is running, even if it is not actively being used. we use Slack for our day-to-day communications. We estimate that each user sends around 20 slack messages per day,a nd hasd the application running in the background throughout the working day.
+
+We borrow data from the [Greenspector messaging app carbon estimate](https://greenspector.com/en/direct-messaging-business-apps/#methodology) in this LCA. Note that these values were measured using a Samsung S7 mobile - we are simply assuming that the devices being used by our developers to run Slack are the same. Specifically, we account for:
+
+```
+Launching the app: 0.039 gCO2e
+Opening a chat: 0.01 gCO2e
+Sending a text message: 0.058 g CO2e
+Sending an image: 0.051 g CO2e
+Sending attachment: 0.057 gCO2e
+```
+
+We assume that each developer does the following each day:
+
+```
+Launch app
+Open a chat
+Send 20 text messages
+Send one attachment
+Send one image
+```
+
+We also assume that the app is running for 7 working hours each day, "idling" in the background. [Greenspector](https://greenspector.com/en/direct-messaging-business-apps/#methodology) observed that Slack used 26 gCO2e/day in the background.
+
+
+We'll simply add these values to each daily timestep for each developer on the team.
+
+
 
 
 
