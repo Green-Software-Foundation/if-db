@@ -1,0 +1,415 @@
+name: if LCA
+tags:
+initialize:
+
+  ## source code repositories
+  plugins:
+
+    duration-to-hours:
+      method: Divide
+      path: "builtin"
+      config:
+        numerator: duration
+        denominator: 3600 # s to hr
+        output: duration-in-hours
+
+    get-github-repo-size-if:
+      method: Github
+      path: if-github-plugin
+      config:
+        repo: Green-Software-Foundation/if
+        time: 'month' # api can only serve within past 4 weeks
+      mapping:
+        'size': 'repo-size-gb'
+        'clones': 'repo-clones'
+
+    get-github-repo-size-if-data:
+      method: Github
+      path: if-github-plugin
+      config:
+        repo: Green-Software-Foundation/if-data
+        time: 'month' # api can only serve within past 4 weeks
+      mapping:
+        'size': 'repo-size-gb'
+        'clones': 'repo-clones'
+
+    get-github-repo-size-if-docs:
+      method: Github
+      path: if-github-plugin
+      config:
+        repo: Green-Software-Foundation/if-docs
+        time: 'month' # api can only serve within past 4 weeks
+      mapping:
+        'size': 'repo-size-gb'
+        'clones': 'repo-clones'
+
+    repo-size-unit-gb-to-tb:
+      method: Coefficient
+      path: builtin
+      config:
+        input-parameter: repo-size-gb # size comes from github api and represents repo size in gb
+        coefficient: 0.001 # convert size to tb
+        output-parameter: repo-size-tb
+        
+    storage-to-energy-in-watts:
+      method: Multiply
+      path: builtin
+      config:
+        input-parameters: ["repo-size-tb", "watt-hours-per-tbh"]
+        output-parameter: "storage-power-w"
+
+    storage-energy-w-to-wh:
+      method: Multiply
+      path: builtin
+      config:
+        input-parameters: ["storage-power-w", "duration-in-hours"]
+        output-parameter: "storage-energy-wh"
+
+    storage-energy-wh-to-kwh:
+      path: "builtin"
+      method: Coefficient
+      config:
+        input-parameter: storage-energy-wh
+        coefficient: 0.001
+        output-parameter: energy
+
+    # total-data-downloaded-from-repo:
+    #   method: Multiply
+    #   path: 'builtin'
+    #   config:
+    #     input-parameters: ["size", "clones"]
+    #     output-parameter: "total-data-egress" # data transferred in GB
+    # traffic-to-energy:
+    #   method: Coefficient
+    #   path: 'builtin'
+    #   config:
+    #     input-parameter: total-data-egress
+    #     coefficient: 0.001 # from https://www.cloudcarbonfootprint.org/docs/methodology/#networking
+    #     output-parameter: networking-kwh
+    # sum-energy-components:
+    #   method: sum
+    #   path: builtin
+    #   config:
+    #     input-parameters: ['storage-kwh','networking-kwh']
+    #     output-parameter: 'energy'
+
+    energy-to-carbon:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: ["energy", "grid-intensity"]
+        output-parameter: "carbon"
+    # eco-ci-github-actions-if-main:
+    #   method: EcoCI
+    #   path: "eco-ci"
+    #   config:
+    #     start: '2024-07-05T13:45:48.398Z'
+    #     stop: '2024-07-05T13:45:48.398Z'
+    #     repo: 'https://github.com/Green-Software-Foundation/if'
+    #     branch: 'main'
+    #     workflow: 'nodejs-ci.yml'
+    # eco-ci-github-actions-if-release:
+    #   method: EcoCI
+    #   path: "eco-ci"
+    #   config:
+    #     start: '2024-07-05T13:45:48.398Z'
+    #     stop: '2024-07-05T13:45:48.398Z'
+    #     repo: 'https://github.com/Green-Software-Foundation/if'
+    #     branch: 'release'
+    #     workflow: 'nodejs-ci.yml'
+    # eco-ci-github-actions-if-data-main:
+    #   method: EcoCI
+    #   path: "eco-ci"
+    #   config:
+    #     start: '2024-07-05T13:45:48.398Z'
+    #     stop: '2024-07-05T13:45:48.398Z'
+    #     repo: 'https://github.com/Green-Software-Foundation/if'
+    #     branch: 'main'
+    #     workflow: 'nodejs-ci.yml'
+    # eco-ci-github-actions-if-data-release:
+    #   method: EcoCI
+    #   path: "eco-ci"
+    #   config:
+    #     start: '2024-07-05T13:45:48.398Z'
+    #     stop: '2024-07-05T13:45:48.398Z'
+    #     repo: 'https://github.com/Green-Software-Foundation/if'
+    #     branch: 'release'
+    #     workflow: 'nodejs-ci.yml'
+
+
+    # ## developers
+    # ##############
+
+    # sum-wfh-energy-components:
+    #   method: sum
+    #   path: builtin
+    #   config:
+    #     input-parameters: ['wfh-lighting','wfh-heating', 'wfh-laptop-usage', wfh-additional-screen-energy`]
+    #     output-parameter: 'wfh-energy'
+    # wfh-energy-to-carbon:
+    #   method: Multiply
+    #   path: "builtin"
+    #   config:
+    #     input-parameters: ["wfh-energy", "grid-intensity"]
+    #     output-parameter: "wfh-operational-carbon"
+    # sum-wfh-carbon-components:
+    #   method: sum
+    #   path: builtin
+    #   config:
+    #     input-parameters: ['wfh-operational-carbon','wfh-laptop-embodied-carbon', 'wfh-additional-screen-embodied-carbon']
+    #     output-parameter: 'carbon'
+    # travel-distance-to-carbon:
+    #   method: Multiply
+    #   path: "builtin"
+    #   config:
+    #     input-parameters: ["km-travelled", "travel-carbon-intensity"]
+    #     output-parameter: 'carbon'
+tree:
+  children:
+    code-storage:
+      children:
+        gh-storage-if:
+          children:
+            if:
+              pipeline:
+                compute:
+                  - duration-to-hours
+                  - get-github-repo-size-if
+                  - repo-size-unit-gb-to-tb
+                  - storage-to-energy-in-watts
+                  - storage-energy-w-to-wh
+                  - storage-energy-wh-to-kwh
+                  - energy-to-carbon
+              defaults:
+                watt-hours-per-tbh: 1.2 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
+                grid-intensity: 765.49 # US average
+              inputs:
+                - timestamp: '2024-07-05T13:45:48.398Z'
+                  duration: 3600
+            if-data:
+              pipeline:
+                compute:
+                  - duration-to-hours
+                  - get-github-repo-size-if-data
+                  - repo-size-unit-gb-to-tb
+                  - storage-to-energy-in-watts
+                  - storage-energy-w-to-wh
+                  - storage-energy-wh-to-kwh
+                  - energy-to-carbon
+              defaults:
+                watt-hours-per-tbh: 1.2 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
+                grid-intensity: 765.49 # US average
+              inputs:
+                - timestamp: '2024-07-05T13:45:48.398Z'
+                  duration: 3600
+            if-docs:
+              pipeline:
+                compute:
+                  - duration-to-hours
+                  - get-github-repo-size-if-docs
+                  - repo-size-unit-gb-to-tb
+                  - storage-to-energy-in-watts
+                  - storage-energy-w-to-wh
+                  - storage-energy-wh-to-kwh
+                  - energy-to-carbon
+              defaults:
+                watt-hours-per-tbh: 1.2 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
+                grid-intensity: 765.49 # US average
+              inputs:
+                - timestamp: '2024-07-05T13:45:48.398Z'
+                  duration: 3600
+
+
+
+    #         pipeline:
+    #           - storage-and-traffic-from-github-if-data
+    #           - storage-energy-in-watts
+    #           - duration-in-hours
+    #           - energy-in-wh
+    #           - storage-energy-to-kwh
+    #           - total-data-downloaded-from-repo
+    #           - traffic-to-energy
+    #           - sum-energy-components
+    #           - energy-to-carbon
+    #         defaults:
+    #           watts-per-tb: 0.65 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
+    #           grid-intensity: 450 # US average
+    #         inputs:
+    #           - timestamp: '2024-07-05T13:45:48.398Z'
+    #             duration: 3600
+    #             storage-tb: 0.0002 # size of if repo in GB
+
+
+
+
+
+    #   gh-actions-if:
+    #   children:
+    #     if:
+    #       children:
+    #         prs:
+    #           pipeline:
+    #             - eco-ci-github-actions-if-main
+    #           defaults:
+    #           inputs:
+    #             - timestamp: '2024-07-05T13:45:48.398Z'
+    #               duration: 3600
+    #         releases:
+    #           pipeline:
+    #             - eco-ci-github-actions-if-release
+    #           defaults:
+    #           inputs:
+    #             - timestamp: '2024-07-05T13:45:48.398Z'
+    #               duration: 3600  
+    #     if-data:
+    #       children:
+    #         prs:
+    #           pipeline:
+    #             - eco-ci-github-actions-if-data-main
+    #           defaults:
+    #           inputs:
+    #             - timestamp: '2024-07-05T13:45:48.398Z'
+    #               duration: 3600
+    #         releases:
+    #           pipeline:
+    #             - eco-ci-github-actions-if-data-release
+    #           defaults:
+    #           inputs:
+    #             - timestamp: '2024-07-05T13:45:48.398Z'
+    #               duration: 3600        
+
+    # servers:
+    #   children:
+    #     if-docs-website:
+    #       origin-server:
+    #       cdn-nodes:
+    #       gh-pages-web-hosting:
+    #     gh-clones-if:
+    #     gh-clones-if-docs:
+    #     gh-clones-if-data:
+
+    # saas:
+    #   children:
+    #     zoom:
+    #       children:
+    #         standup:
+    #         if-members-call:
+    #         if-office-hours:
+    #         core-121s:
+    #     slack:
+
+    # developers:
+    #   children:
+    #     core-dev1:
+    #       lighting:
+    #       heating:
+    #       monitor-embodied:
+    #       monitor-operational:
+    #       mouse-embodied:
+    #       laptop-embodied:
+    #       laptop-operational:
+    #       travel:
+    #         train:
+    #         car:
+    #         flight:
+    #       end-user-internet-infra:
+    #         children:
+    #           router:
+    #           modem:
+    #           wifi:        
+    #     open-source-devs:
+
+    # users:
+    #   children:
+    #     end-user-laptop-embodied:
+    #     end-user-laptop-operational:
+    #     end-user-browsing-website:
+    #     end-user-running-if:
+    #     end-user-internet-infra:
+    #       children:
+    #         router:
+    #         modem:
+    #         wifi:
+
+
+
+
+
+
+
+    #     developer-1: # no driving or flying required for remote work
+    #       wfh:
+    #         defaults: 
+    #           - wfh-lighting: 0.32 #kWh/day
+    #           - wfh-heating: 2.1 # kWh/day from natural gas
+    #           - wfh-laptop-usage: 0.05 #kWh for a working day
+    #           - wfh-laptop-embodied-carbon: 183.54 # g/day
+    #           - grid-intensity: 87 # EDF carbon intensity for UK 2024
+    #           - carbon-intensity-of-natural-gas: 201
+    #           - wfh-additional-screen-embodied-carbon: 160 #g/day for Dell P-series with 6 year assumed lifespan
+    #           - wfh-additional-screen-energy: 0.52 # kWh/day
+    #         pipeline:
+    #           - sum-wfh-components
+    #           - wfh-energy-to-carbon
+    #           - sum-wfh-carbon-components
+    #         inputs:
+    #           - timestamp: '2024-07-05T09:00:00.000Z' # start day at 0900
+    #             duration: 28800 # one working day in seconds - runs to 1700
+    #       travel:
+    #         children:
+    #           train:
+    #             defaults:
+    #               travel-carbon-intensity: 0.037 # gCO2/km
+    #             inputs:
+    #               - timestamp: '2024-07-05T09:00:00.000Z' # start day at 0900
+    #                 duration: 28800 #one working day in seconds - runs to 1700
+    #                 km-travelled: 100           
+    #     developer-2: # no driving or flying required for remote work
+    #       wfh:
+    #         defaults: 
+    #           - wfh-lighting: 0.32 #kWh/day
+    #           - wfh-heating: 2.1 # kWh/day from natural gas
+    #           - wfh-laptop-usage: 0.05 #kWh for a working day
+    #           - wfh-laptop-embodied-carbon: 183.54 # g/day
+    #           - grid-intensity: 87 # EDF carbon intensity for UK 2024
+    #           - carbon-intensity-of-natural-gas: 201
+    #           - wfh-additional-screen-embodied-carbon: 160 #g/day for Dell P-series with 6 year assumed lifespan
+    #           - wfh-additional-screen-energy: 0.52 # kWh/day
+    #         pipeline:
+    #           - sum-wfh-components
+    #           - wfh-energy-to-carbon
+    #           - sum-wfh-carbon-components
+    #         inputs:
+    #           - timestamp: '2024-07-05T09:00:00.000Z' # start day at 0900
+    #             duration: 28800 #one working day in seconds - runs to 1700
+    #       travel:
+    #         children:
+    #           train:
+    #             defaults:
+    #               travel-carbon-intensity: 0.037 # gCO2/km
+    #             inputs:
+    #               - timestamp: '2024-07-05T09:00:00.000Z' # start day at 0900
+    #                 duration: 28800 #one working day in seconds - runs to 1700
+    #                 km-travelled: 100
+
+    #         # add more days to fill desired time span
+    #         # use time-conversion plugin to upscale to desired time range
+    #         # add more developers with custom values
+    # if-docs:
+    #   children:
+        
+
+    # #      downloads:
+    # #        n-downloads: //count
+    # #       data-transferred-per-download:
+    # #   if-data:
+    # #     hosting:
+    # #     ci/cd:
+    # #     downloads:
+    # #   if-docs:
+    # #     hosting:
+    # #     ci/cd:
+    # #     downloads:
+    # # testing:
+    # # if-usage:
+    # #  assume IF is run on a macbook - calculate small fraction of embodied carbon and use measured stats for cpu util during installation and run phases for a benchmark manifest
