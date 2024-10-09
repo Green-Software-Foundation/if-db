@@ -11,7 +11,7 @@ initialize:
 
     duration-to-hours:
       method: Divide
-      path: "builtin"
+      path: builtin
       config:
         numerator: duration
         denominator: 3600 # s to hr
@@ -22,20 +22,20 @@ initialize:
       path: if-github-plugin
       config:
         repo: Green-Software-Foundation/if
-        time: 'month' # api can only serve within past 4 weeks
+        time: month # api can only serve within past 4 weeks
       mapping:
-        'size': 'repo-size-gb'
-        'clones': 'repo-clones'
+        'size': repo-size-gb
+        'clones': repo-clones
 
     get-github-repo-size-if-data:
       method: Github
       path: if-github-plugin
       config:
         repo: Green-Software-Foundation/if-data
-        time: 'month' # api can only serve within past 4 weeks
+        time: month # api can only serve within past 4 weeks
       mapping:
-        'size': 'repo-size-gb'
-        'clones': 'repo-clones'
+        'size': repo-size-gb
+        'clones': repo-clones
 
     get-github-repo-size-if-docs:
       method: Github
@@ -44,8 +44,8 @@ initialize:
         repo: Green-Software-Foundation/if-docs
         time: 'month' # api can only serve within past 4 weeks
       mapping:
-        'size': 'repo-size-gb'
-        'clones': 'repo-clones'
+        'size': repo-size-gb
+        'clones': repo-clones
 
     repo-size-unit-gb-to-tb:
       method: Coefficient
@@ -59,15 +59,15 @@ initialize:
       method: Multiply
       path: builtin
       config:
-        input-parameters: ["repo-size-tb", "watt-hours-per-tbh"]
-        output-parameter: "storage-power-w"
+        input-parameters: [repo-size-tb, watt-hours-per-tbh]
+        output-parameter: storage-power-w
 
     storage-energy-w-to-wh:
       method: Multiply
       path: builtin
       config:
-        input-parameters: ["storage-power-w", "duration-in-hours"]
-        output-parameter: "storage-energy-wh"
+        input-parameters: [storage-power-w, duration-in-hours]
+        output-parameter: storage-energy-wh
 
     storage-energy-wh-to-kwh:
       path: "builtin"
@@ -77,25 +77,172 @@ initialize:
         coefficient: 0.001
         output-parameter: energy
 
-    # total-data-downloaded-from-repo:
-    #   method: Multiply
-    #   path: 'builtin'
-    #   config:
-    #     input-parameters: ["size", "clones"]
-    #     output-parameter: "total-data-egress" # data transferred in GB
-    # traffic-to-energy:
-    #   method: Coefficient
-    #   path: 'builtin'
-    #   config:
-    #     input-parameter: total-data-egress
-    #     coefficient: 0.001 # from https://www.cloudcarbonfootprint.org/docs/methodology/#networking
-    #     output-parameter: networking-kwh
-    # sum-energy-components:
-    #   method: sum
-    #   path: builtin
-    #   config:
-    #     input-parameters: ['storage-kwh','networking-kwh']
-    #     output-parameter: 'energy'
+    total-data-transferred-gb:
+      method: Multiply
+      path: builtin
+      config:
+        input-parameters: [repo-size-gb, repo-clones]
+        output-parameter: total-data-transferred-in-gb
+
+    network-energy-kwh:
+      path: "builtin"
+      method: Multiply
+      config:
+        input-parameters: [total-data-transferred-in-gb, kwh-per-gb-transferred]
+        output-parameter: energy
+    
+    ## Storing static site data on servers
+    ######################################
+
+    static-site-size-mb-to-tb:
+      method: Divide
+      path: "builtin"
+      config:
+        numerator: static-site-size-in-mb
+        denominator: 1000000 # s to hr
+        output: static-site-size-in-tb
+      
+    storage-energy-static-site-at-origin-in-watts:
+      method: Multiply
+      path: builtin
+      config:
+        input-parameters: [static-site-size-in-tb, watt-hours-per-tb-hour]
+        output-parameter: storage-energy-static-site-at-origin-watts
+
+    storage-energy-static-site-at-origin-to-wh:
+      method: Multiply
+      path: builtin
+      config:
+        input-parameters: [storage-energy-static-site-at-origin-watts, duration-in-hours]
+        output-parameter: storage-energy-static-site-at-origin-kwh
+
+    storage-energy-static-site-at-origin-to-kwh:
+      path: "builtin"
+      method: Coefficient
+      config:
+        input-parameter: storage-energy-static-site-at-origin-kwh
+        coefficient: 0.001
+        output-parameter: storage-energy-kwh-static-site-at-origin-kwh
+
+
+    # # CDN
+    # ######
+
+    storage-energy-static-site-at-cdn-node-kwh:
+      method: Divide
+      path: "builtin"
+      config:
+        numerator: storage-energy-kwh-static-site-at-origin-kwh
+        denominator: 10 # s to hr
+        output: storage-energy-static-site-at-cdn-node-kwh
+
+    storage-energy-static-site-whole-cdn-kwh:
+      method: Coefficient
+      path: "builtin"
+      config:
+        input-parameter: storage-energy-static-site-at-cdn-node-kwh
+        coefficient: 46 # there are 46 PoPs on Fastly, which we think GH uses for CDN
+        output-parameter: storage-energy-static-site-whole-cdn-kwh
+
+    sum-static-site-server-energy-components:
+      method: Sum
+      path: builtin
+      config:
+        input-parameters: [storage-energy-static-site-at-cdn-node-kwh,storage-energy-static-site-whole-cdn-kwh]
+        output-parameter: energy
+
+
+    ## Networking energy to serve site over internet
+
+    static-site-size-in-mb-to-gb:
+      method: Coefficient
+      path: "builtin"
+      config:
+        input-parameter: static-site-size-mb
+        coefficient: 0.001 # there are 46 PoPs on Fastly, which we think GH uses for CDN
+        output-parameter: static-site-size-gb
+
+    network-energy-serving-static-site-per-view:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [static-site-size-gb, kwh-per-gb-network]
+        output-parameter: network-energy-serving-static-site-per-view-kwh
+
+    network-energy-serving-static-site-total-kwh:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [network-energy-serving-static-site-per-view-kwh, site-visits]
+        output-parameter: energy
+
+    ## Building site using gh pages
+    ###############################
+
+    interpolate-power-curve:
+      method: Interpolation
+      path: 'builtin'
+      config:
+        method: linear
+        x: [0, 10, 50, 100]
+        y: [0.12, 0.32, 0.75, 1.02]
+        input-parameter: 'cpu-utilization-during-build'
+        output-parameter: 'cpu-factor'
+
+    build-stage-cpu-factor-to-wattage:
+      method: Multiply
+      path: builtin
+      config:
+        input-parameters: ["cpu-factor", "thermal-design-power"]
+        output-parameter: "cpu-wattage"
+
+    build-stage-cpu-wattage-times-build-duration:
+      method: Multiply
+      path: builtin
+      config:
+        input-parameters: ["cpu-wattage", "build-duration"]
+        output-parameter: "cpu-wattage-times-duration"
+
+    build-stage-cpu-wattage-to-energy-kwh:
+      method: Divide
+      path: "builtin"
+      config:
+        numerator: cpu-wattage-times-duration
+        denominator: 3600000
+        output: build-energy-cpu-kwh
+
+    memory-coefficient-correction: # memory coefficient in CCF is given /GB/hr - we want to convert to /GB/run-time-duration then x by run duration in s
+      path: builtin
+      method: Coefficient
+      config:
+        input-parameter: build-duration
+        coefficient: 0.000006533333 # this is 0.000392/60 = KW/GB/H -> KW/GB/s
+        output-parameter: memory-coefficient
+
+    memory-energy-per-build:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters: [build-memory-gb, memory-coefficient]
+        output-parameter: build-energy-memory-kwh
+
+    sum-build-energy-components:
+      method: Sum
+      path: builtin
+      config:
+        input-parameters: ['build-energy-cpu-kwh','build-energy-memory-kwh']
+        output-parameter: 'build-energy-kwh-per-build'
+
+    build-energy-total:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters: [build-energy-kwh-per-build, builds-per-month]
+        output-parameter: energy    
+
+
+
+
 
     energy-to-carbon:
       method: Multiply
@@ -124,6 +271,9 @@ initialize:
             aggregation-method:
               time: sum
               component: sum   
+
+
+
     # eco-ci-github-actions-if-main:
     #   method: EcoCI
     #   path: "eco-ci"
@@ -416,31 +566,375 @@ tree:
             - timestamp: '2024-09-30T00:00:00.000Z'
               duration: 3600
 
+    servers:
+      children:
+        serving-source-code-on-github:
+          pipeline:
+            compute:
+              - get-github-repo-size-if
+              - total-data-transferred-gb
+              - network-energy-kwh
+              - energy-to-carbon
+          defaults:
+            kwh-per-gb-transferred: 0.001 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
+            grid-intensity: 765.49 # US average
+          inputs:
+            - timestamp: '2024-09-01T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-02T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-03T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-04T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-05T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-06T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-07T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-08T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-09T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-10T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-11T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-12T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-13T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-14T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-15T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-16T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-17T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-18T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-19T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-20T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-21T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-22T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-23T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-24T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-25T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-26T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-27T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-28T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-29T00:00:00.000Z'
+              duration: 3600
+            - timestamp: '2024-09-30T00:00:00.000Z'
+              duration: 3600
+        
+        serving-if-website:
+          children:
+            storing-static-site-data-on-gh-pages:
+              pipeline:
+                compute:
+                  - duration-to-hours
+                  - static-site-size-mb-to-tb
+                  - storage-energy-static-site-at-origin-in-watts
+                  - storage-energy-static-site-at-origin-to-wh
+                  - storage-energy-static-site-at-origin-to-kwh
+                  - storage-energy-static-site-at-cdn-node-kwh
+                  - storage-energy-static-site-whole-cdn-kwh
+                  - sum-static-site-server-energy-components
+                  - energy-to-carbon
+              defaults:
+                grid-intensity: 765.5
+                watt-hours-per-tb-hour: 1.2
+                static-site-size-in-mb: 1.4
+              inputs:
+                - timestamp: '2024-09-01T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-02T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-03T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-04T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-05T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-06T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-07T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-08T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-09T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-10T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-11T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-12T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-13T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-14T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-15T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-16T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-17T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-18T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-19T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-20T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-21T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-22T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-23T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-24T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-25T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-26T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-27T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-28T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-29T00:00:00.000Z'
+                  duration: 3600
+                - timestamp: '2024-09-30T00:00:00.000Z'
+                  duration: 3600
+            networking-energy-to-serve-static-site-over-internet:
+              pipeline:
+                compute:
+                  - static-site-size-in-mb-to-gb
+                  - network-energy-serving-static-site-per-view
+                  - network-energy-serving-static-site-total-kwh
+                  - energy-to-carbon
+              defaults:
+                grid-intensity: 765.5
+                kwh-per-gb-network: 0.001
+                static-site-size-mb: 0.84
+              inputs:
+                - timestamp: '2024-09-01T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-02T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-03T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-04T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-05T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-06T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-07T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-08T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-09T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-10T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-11T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-12T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-13T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-14T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-15T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-16T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-17T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-18T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-19T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-20T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-21T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-22T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-23T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-24T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-25T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-26T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-27T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-28T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-29T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-30T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
 
-
-
-
-
-    #         pipeline:
-    #           - storage-and-traffic-from-github-if-data
-    #           - storage-energy-in-watts
-    #           - duration-in-hours
-    #           - energy-in-wh
-    #           - storage-energy-to-kwh
-    #           - total-data-downloaded-from-repo
-    #           - traffic-to-energy
-    #           - sum-energy-components
-    #           - energy-to-carbon
-    #         defaults:
-    #           watts-per-tb: 0.65 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
-    #           grid-intensity: 450 # US average
-    #         inputs:
-    #           - timestamp: '2024-07-05T13:45:48.398Z'
-    #             duration: 3600
-    #             storage-tb: 0.0002 # size of if repo in GB
-
-
-
+            gh-pages-builds:
+              pipeline:
+                compute:
+                  - interpolate-power-curve
+                  - build-stage-cpu-factor-to-wattage
+                  - build-stage-cpu-wattage-times-build-duration
+                  - build-stage-cpu-wattage-to-energy-kwh
+                  - memory-coefficient-correction # memory coefficient in CCF is given /GB/hr - we want to convert to /GB/run-time-duration then x by run duration in s
+                  - memory-energy-per-build
+                  - sum-build-energy-components
+                  - build-energy-total
+                  - energy-to-carbon
+              defaults:
+                end-user-energy-coefficient: 0.080 # https://sustainablewebdesign.org/estimating-digital-emissions/
+                static-site-size-in-mb: 0.809473 # from google pagespeed api
+                kwh-per-gb-network: 0.001 # https://www.cloudcarbonfootprint.org/docs/methodology/#networking
+                grid-intensity: 765.49 # US average
+                build-duration: 5
+                build-memory-gb: 0.34
+                builds-per-month: 3
+                thermal-design-power: 205 # from our if-data
+                cpu-utilization-during-build: 100
+              inputs:
+                - timestamp: '2024-09-01T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-02T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-03T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-04T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-05T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-06T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-07T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-08T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-09T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-10T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-11T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-12T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-13T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-14T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-15T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-16T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-17T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-18T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-19T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-20T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-21T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-22T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-23T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-24T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-25T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-26T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-27T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-28T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-29T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
+                - timestamp: '2024-09-30T00:00:00.000Z'
+                  duration: 3600
+                  site-visits: 10
 
 
     #   gh-actions-if:

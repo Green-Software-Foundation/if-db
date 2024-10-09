@@ -74,7 +74,6 @@ The following tree diagram shows the components that will be considered in this 
   - heating
   - monitor embodied
   - monitors operational
-  - mouse embodied
   - laptops embodied
   - laptops operational
   - travel
@@ -114,10 +113,10 @@ The size of the repository can be accessed using a github plugin that hits the `
 | Action                                             | Plugin type   | Instance name                | Inputs                                 | Outputs             |
 | -------------------------------------------------- | ------------- | ---------------------------- | -------------------------------------- | ------------------- |
 | Convert duration unit from seconds to hours        | `Coefficient` | `duration-to-hours`          | `duration`, `coefficient`              | `duration-in-hours` |
-| Retrieve repo size from Github API                 | `Github`      | `get-github-repo-size-if`    | `repo-name`, `time`                    | `size`, `clones`    |
-| Convert repo size unit from GB to TB               | `Coefficient` | `repo-size-unit-gb-to-tb`    | `repo-size`, `coefficient`             | `repo-size-tb`      |
-| Multiply storage in TB by coefficient in Watts/TBh | `Multiply`    | `storage-to-energy-in-watts` | `storage-tb`, `watt-hours-per-tb-hour` | `storage-watts`     |
-| Convert energy in W to Wh                          | `Multiply`    | `energy-w-to-wh`             | `storage-watts`, `duration-in-hours`   | `storage-wh`        |
+| Retrieve repo size from Github API                 | `Github`      | `get-github-repo-size-if`    | `repo-name`, `time`                    | `repo-size-gb`, `clones`    |
+| Convert repo size unit from GB to TB               | `Coefficient` | `repo-size-unit-gb-to-tb`    | `repo-size-gb`, `coefficient`             | `repo-size-tb`      |
+| Multiply storage in TB by coefficient in Watts/TBh | `Multiply`    | `storage-to-energy-in-watts` | `storage-tb`, `watt-hours-per-tb-hour` | `storage-power-w`     |
+| Convert energy in W to Wh                          | `Multiply`    | `energy-w-to-wh`             | `storage-power-w`, `duration-in-hours`   | `storage-wh`        |
 | Convert energy in Wh to kWh                        | `Coefficient` | `energy-wh-to-kwh`           | `storage-wh`, `coefficient`            | `storage-kwh`       |
 | Convert energy to carbon                           | `Multiply`    | `energy-to-carbon`           | `storage-kwh`, `grid-carbon-intensity` | `carbon`            |
 
@@ -272,6 +271,7 @@ In manifest format, this pipeline looks as follows:
 
 - `grid-carbon-intensity`: 765.5
 - `watt-hours-per-tb-hour`: 1.2
+- `static-site-size-in-mb`: 1.4
 - `denominator`:
   - `storage-energy-static-site-at-cdn-node-kwh`: 10
   - `static-site-size-mb-to-tb`: 1000000
@@ -288,7 +288,7 @@ In manifest format, this pipeline looks as follows:
 | -------------------------------------------------- | ------------- | ---------------------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------- |
 | Convert static site size from Mb to GB             | `Coefficient` | `static-site-size-in-gb`                       | `static-site-size-in-mb`,  `coefficient`                             | `static-site-size-in-gb`                            |
 | Calculate networking energy to load site per visit | `Multiply`    | `network-energy-serving-static-site-per-view`  | `static-site-size-in-gb`, `kwh-per-gb-network`                       | `network-energy-serving-static-site-per-view-kwh`   |
-| Multiply energy per visit by number of visits      | `Multiply`    | `network-energy-serving-static-site-total-kwh` | `network-energy-kwh-serving-static-site-per-view-kwh`, `site-visits` | `network-energy-serving-static-site-per-view-total` |
+| Multiply energy per visit by number of visits      | `Multiply`    | `network-energy-serving-static-site-total-kwh` | `network-energy-kwh-serving-static-site-per-view-kwh`, `site-visits` | `energy` |
 | Convert energy to carbon                           | `Multiply`    | `energy-to-carbon`                             | `storage-kwh`, `grid-carbon-intensity`                               | `carbon`                                            |
 
 In manifest format, this pipeline looks as follows:
@@ -308,6 +308,13 @@ In manifest format, this pipeline looks as follows:
   - `storage-energy-static-site-at-cdn-node-kwh`: 10
 - `coefficient`:
   - `static-site-size-mb-to-gb`: 0.001
+
+
+
+### gh-pages-builds
+
+
+
 
 
 
@@ -598,10 +605,6 @@ embodied carbon for laptops is from https://github.com/rarecoil/laptop-co2e
 
 for a Macbook Pro 14" the embodied carbon is 196.56 kg CO2 eq (i.e. 196560 g) covering a 4 year lifespan. This equates to 0.006210865211549674 g/s.
 Say work accoutns for 8 hours a day, 5 days a week, the embodied carbon allocated to work per day is 178.87g/day or 894g /working week.
-
-`embodied + heating + laptop + lighting = total`
-
-`178.87 + 424  + 4.35 + 0.32 = 607.54 g/day`
 
 We add this for each developer for each day.
 
