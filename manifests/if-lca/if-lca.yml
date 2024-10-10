@@ -379,6 +379,43 @@ initialize:
         coefficient: 0.00016453 # 1.03 kgCO2/10km  --> 0.000103 gCO2/km per passenger
         output-parameter: car-carbon
 
+    ## End user browsing site
+    #########################
+    end-user-energy:
+      method: Multiply
+      path: builtin
+      config:
+        input-parameters: [site-visits, static-site-size-gb, end-user-energy-coefficient]
+        output-parameter: energy
+      parameter-metadata:
+        inputs:
+          site-visits:
+            unit: visits
+            description: Number of times the site was visited in this timestep, from Google Analytics
+            aggregation-method:
+              time: sum
+              component: sum  
+          static-site-size-in-gb:
+            unit: GB
+            description: Size of static site as reported by Github API, converted to GB.
+            aggregation-method:
+              time: copy
+              component: copy  
+          end-user-energy-coefficient:
+            unit: kWh
+            description: Coefficient for end user energy expended viewing site in browser, from Sustainable Web Design model.
+            aggregation-method:
+              time: copy
+              component: copy            
+        outputs:
+          energy:
+            unit: kWh
+            description: Energy consumed by all users viewing the site in their browser, in timestep.
+            aggregation-method:
+              time: sum
+              component: sum  
+
+
     echo:
       path: builtin
       method: Coefficient
@@ -708,7 +745,6 @@ tree:
               duration: 86400
             - timestamp: '2024-09-30T00:00:00.000Z'
               duration: 86400
-
     servers:
       children:
         serving-source-code-on-github:
@@ -2465,7 +2501,6 @@ tree:
                 - timestamp: '2024-09-30T00:00:00.000Z'
                   duration: 86400
                   energy: 2.1
-
             additional-monitor-operational:
               pipeline:
                 compute:
@@ -6181,89 +6216,499 @@ tree:
                     - timestamp: '2024-09-30T00:00:00.000Z'
                       duration: 86400
                       carbon: 31.36                 
-    #   children:
-    #     if:
-    #       children:
-    #         prs:
-    #           pipeline:
-    #             - eco-ci-github-actions-if-main
-    #           defaults:
-    #           inputs:
-    #             - timestamp: '2024-07-05T13:45:48.398Z'
-    #               duration: 86400
-    #         releases:
-    #           pipeline:
-    #             - eco-ci-github-actions-if-release
-    #           defaults:
-    #           inputs:
-    #             - timestamp: '2024-07-05T13:45:48.398Z'
-    #               duration: 86400  
-    #     if-data:
-    #       children:
-    #         prs:
-    #           pipeline:
-    #             - eco-ci-github-actions-if-data-main
-    #           defaults:
-    #           inputs:
-    #             - timestamp: '2024-07-05T13:45:48.398Z'
-    #               duration: 86400
-    #         releases:
-    #           pipeline:
-    #             - eco-ci-github-actions-if-data-release
-    #           defaults:
-    #           inputs:
-    #             - timestamp: '2024-07-05T13:45:48.398Z'
-    #               duration: 86400        
-
-    # servers:
-    #   children:
-    #     if-docs-website:
-    #       origin-server:
-    #       cdn-nodes:
-    #       gh-pages-web-hosting:
-    #     gh-clones-if:
-    #     gh-clones-if-docs:
-    #     gh-clones-if-data:
-
-    # saas:
-    #   children:
-    #     zoom:
-    #       children:
-    #         standup:
-    #         if-members-call:
-    #         if-office-hours:
-    #         core-121s:
-    #     slack:
-
-    # developers:
-    #   children:
-    #     core-dev1:
-    #       lighting:
-    #       heating:
-    #       monitor-embodied:
-    #       monitor-operational:
-    #       mouse-embodied:
-    #       laptop-embodied:
-    #       laptop-operational:
-    #       travel:
-    #         train:
-    #         car:
-    #         flight:
-    #       end-user-internet-infra:
-    #         children:
-    #           router:
-    #           modem:
-    #           wifi:        
-    #     open-source-devs:
-
-    # users:
-    #   children:
-    #     end-user-laptop-embodied:
-    #     end-user-laptop-operational:
-    #     end-user-browsing-website:
-    #     end-user-running-if:
-    #     end-user-internet-infra:
-    #       children:
-    #         router:
-    #         modem:
-    #         wifi:
+    end-users:
+      children:
+        end-user-laptop-operational:
+          defaults:
+            n-participants: 20
+            grid-intensity: 87
+          pipeline:
+            compute:
+              - energy-to-carbon
+              - multiply-carbon-by-participants
+          inputs:
+            - timestamp: '2024-09-01T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-02T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-03T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-04T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-05T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-06T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-07T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-08T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-09T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-10T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-11T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-12T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-13T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-14T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-15T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-16T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-17T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-18T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-19T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-20T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-21T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-22T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-23T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-24T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-25T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-26T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-27T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-28T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-29T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+            - timestamp: '2024-09-30T00:00:00.000Z'
+              duration: 86400
+              energy: 0.00104
+        end-user-laptop-embodied:
+          defaults:
+            n-participants: 20
+          pipeline:
+            compute:
+              - multiply-carbon-by-participants
+          inputs:
+            - timestamp: '2024-09-01T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-02T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-03T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-04T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-05T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-06T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-07T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-08T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-09T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-10T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-11T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-12T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-13T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-14T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-15T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-16T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-17T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-18T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-19T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-20T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-21T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-22T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-23T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-24T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-25T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-26T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-27T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-28T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-29T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+            - timestamp: '2024-09-30T00:00:00.000Z'
+              duration: 86400
+              carbon: 11.179
+        end-user-browsing-website:
+          pipeline:
+            compute:
+              - static-site-size-in-mb-to-gb
+              - end-user-energy
+              - energy-to-carbon
+          defaults:
+            time: 40
+            end-user-energy-coefficient: 0.08
+            static-site-size-mb: 0.809473
+            kwh-per-gb-network: 0.001
+            grid-intensity: 765.49
+          inputs:
+            - timestamp: '2024-09-01T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-02T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-03T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-04T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-05T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-06T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-07T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-08T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-09T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-10T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-11T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-12T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-13T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-14T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-15T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-16T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-17T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-18T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-19T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-20T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-21T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-22T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-23T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-24T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-25T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-26T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-27T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-28T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-29T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+            - timestamp: '2024-09-30T00:00:00.000Z'
+              duration: 86400
+              site-visits: 10
+        end-user-internet-infra:
+          children:
+            end-user-router-operational:
+              defaults:
+                grid-intensity: 87
+              pipeline:
+                compute:
+                  - energy-to-carbon 
+              inputs:
+                - timestamp: '2024-09-01T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-02T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-03T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-04T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-05T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-06T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-07T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-08T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-09T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-10T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-11T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-12T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-13T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-14T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-15T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-16T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-17T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-18T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-19T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-20T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-21T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-22T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-23T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-24T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-25T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-26T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-27T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-28T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-29T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+                - timestamp: '2024-09-30T00:00:00.000Z'
+                  duration: 86400
+                  energy: 0.0504
+            end-user-networking-hardware-embodied:
+              defaults:
+              pipeline:
+                compute:
+                  - echo
+              inputs:
+                - timestamp: '2024-09-01T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-02T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-03T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-04T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-05T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-06T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-07T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-08T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-09T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-10T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-11T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-12T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-13T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-14T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-15T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-16T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-17T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-18T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-19T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-20T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-21T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-22T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-23T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-24T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-25T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-26T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-27T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-28T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-29T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96
+                - timestamp: '2024-09-30T00:00:00.000Z'
+                  duration: 86400
+                  carbon: 1.96                 

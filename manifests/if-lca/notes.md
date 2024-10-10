@@ -629,7 +629,7 @@ There is no pipeline to execute for this component, as we calculated the `carbon
 embodied carbon for laptops is from https://github.com/rarecoil/laptop-co2e
 
 for a Macbook Pro 14" the embodied carbon is 196.56 kg CO2 eq (i.e. 196560 g) covering a 4 year lifespan. This equates to 0.006210865211549674 g/s.
-Say work accoutns for 8 hours a day, 5 days a week, the embodied carbon allocated to work per day is 178.87g/day or 894g /working week.
+Say work accounts for 8 hours a day, 5 days a week, the embodied carbon allocated to work per day is 178.87g/day or 894g /working week.
 
 We add this for each developer for each day.
 
@@ -673,14 +673,14 @@ We will add conference travel for each developer using these coefficients.
 
 There is no pipeline to execute for this component, as we calculated the `carbon` offline and simply add it to the time series for the days the calls happened.
 
-## Internet (develoeprs)
+## Internet (developers)
 
 ### Operational carbon of routers
 
 Assume 0.108 kWh as per https://www.techcarbonstandard.org/case-studies/green-web-foundation/operational#employee-devices
 scale this to 8 hours per working day
 
-`0.108 * 8 = 0.0864 kWh per timestep`
+`0.108 * 8 = 0.864 kWh per timestep`
 
 
 ## Embodied carbon of routers
@@ -699,6 +699,62 @@ or 31.36 g per 8 hour work day
 We add this to 5/7 daily timesteps
 
 
+## End users
+
+### End user laptops operational carbon
+
+A laptop uses approximately 0.05kWh per working day (https://www.ovoenergy.com/guides/energy-guides/how-much-electricity-does-a-home-use).
+EDF electricity has grid intensity of 87 gCO2/kWh (2024) (https://www.edfenergy.com/fuel-mix)
+So a developer working a normal day will emit `0.05 * 87 =  4.35 gCO2`
+
+We'll scale this down for our open source developers, assuming that they spend 30 minutes per day on average working on IF. In reality, they probably work on the project in bursts - we don't have accurate data for this, it's just an educated guess. We could survey our users later on and improve this value.
+
+`0.05/48 = 0.0010416666666666667 kWh/day assuming 30 mins of development time`
+
+This can also include the time spent running **IF** as well as developing on it. We will multiply the value by 20 to account for an estimate of the numebr of users/developers working with IF on a  given day. Again, we don't have good numbers for this, so we've taken a best guess.
+
+
+### End users laptops embodied carbon
+
+Taking the same assumptions as for operational carbon (20 users devloping or running IF for 30 mins per day), we can scale down the embodied carbon for a Macbook Pro 14" (196.56 kg CO2 eq).
+We scale down as follows:
+
+```
+196560g per 4 years is This equates to 0.006210865211549674 g/s
+multiply up to 30 mins == 0.006210865211549674 * 60 * 30 == 11.179g/day
+```
+
+We then multiply this by the number of developers.
+
+### End users browsing website
+
+We were not able to devise a better approach than using the SWD coefficient provided here: https://sustainablewebdesign.org/estimating-digital-emissions/#toc-2
+
+The coefficient we used was 0.081 kWh/GB. We multiplied this by the size of the static site and the number of visits in the most recent month to yield an estimate of the total energy used to view the site in the browser.
+
+
+### Operational carbon of routers (end users)
+
+Assume 0.108 kWh as per https://www.techcarbonstandard.org/case-studies/green-web-foundation/operational#employee-devices
+scale this to 0.5 hours per working day
+
+`0.108 * 0.5 = 0.0504 kWh per timestep`
+
+
+### Embodied carbon of routers (end users)
+
+We take the value for total embodied carbon of routers as 171.7kg CO2e from here: https://www.techcarbonstandard.org/case-studies/green-web-foundation/upstream#networking-and-infrastructure-hardware
+I had a pretty good search for better data, but came up short, so we'll use this for now.
+
+We scale this down to the time developers are using it for GSF work, which is 8 hours per day, 5 days per week. We assume a 5 year intendd lifespan for the device.
+
+1 day out of 5 years = 0.000547945205479452
+
+171700 g * 0.000547945205479452 = 94.08g/day
+
+or 1.96 g per 0.5 hour work day
+
+We add this to each daily timesteps
 
 ## Product disposal
 
