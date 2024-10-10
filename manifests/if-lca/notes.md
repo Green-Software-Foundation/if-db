@@ -110,15 +110,15 @@ The size of the repository can be accessed using a github plugin that hits the `
 
 #### Pipeline
 
-| Action                                             | Plugin type   | Instance name                | Inputs                                 | Outputs             |
-| -------------------------------------------------- | ------------- | ---------------------------- | -------------------------------------- | ------------------- |
-| Convert duration unit from seconds to hours        | `Coefficient` | `duration-to-hours`          | `duration`, `coefficient`              | `duration-in-hours` |
-| Retrieve repo size from Github API                 | `Github`      | `get-github-repo-size-if`    | `repo-name`, `time`                    | `repo-size-gb`, `clones`    |
-| Convert repo size unit from GB to TB               | `Coefficient` | `repo-size-unit-gb-to-tb`    | `repo-size-gb`, `coefficient`             | `repo-size-tb`      |
-| Multiply storage in TB by coefficient in Watts/TBh | `Multiply`    | `storage-to-energy-in-watts` | `storage-tb`, `watt-hours-per-tb-hour` | `storage-power-w`     |
-| Convert energy in W to Wh                          | `Multiply`    | `energy-w-to-wh`             | `storage-power-w`, `duration-in-hours`   | `storage-wh`        |
-| Convert energy in Wh to kWh                        | `Coefficient` | `energy-wh-to-kwh`           | `storage-wh`, `coefficient`            | `storage-kwh`       |
-| Convert energy to carbon                           | `Multiply`    | `energy-to-carbon`           | `storage-kwh`, `grid-carbon-intensity` | `carbon`            |
+| Action                                             | Plugin type   | Instance name                | Inputs                                 | Outputs                  |
+| -------------------------------------------------- | ------------- | ---------------------------- | -------------------------------------- | ------------------------ |
+| Convert duration unit from seconds to hours        | `Coefficient` | `duration-to-hours`          | `duration`, `coefficient`              | `duration-in-hours`      |
+| Retrieve repo size from Github API                 | `Github`      | `get-github-repo-size-if`    | `repo-name`, `time`                    | `repo-size-gb`, `clones` |
+| Convert repo size unit from GB to TB               | `Coefficient` | `repo-size-unit-gb-to-tb`    | `repo-size-gb`, `coefficient`          | `repo-size-tb`           |
+| Multiply storage in TB by coefficient in Watts/TBh | `Multiply`    | `storage-to-energy-in-watts` | `storage-tb`, `watt-hours-per-tb-hour` | `storage-power-w`        |
+| Convert energy in W to Wh                          | `Multiply`    | `energy-w-to-wh`             | `storage-power-w`, `duration-in-hours` | `storage-wh`             |
+| Convert energy in Wh to kWh                        | `Coefficient` | `energy-wh-to-kwh`           | `storage-wh`, `coefficient`            | `storage-kwh`            |
+| Convert energy to carbon                           | `Multiply`    | `energy-to-carbon`           | `storage-kwh`, `grid-carbon-intensity` | `carbon`                 |
 
 In manifest format, this pipeline looks as follows:
 
@@ -284,12 +284,12 @@ In manifest format, this pipeline looks as follows:
 
 #### Pipeline
 
-| Action                                             | Plugin type   | Instance name                                  | Inputs                                                               | Outputs                                             |
-| -------------------------------------------------- | ------------- | ---------------------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------- |
-| Convert static site size from Mb to GB             | `Coefficient` | `static-site-size-in-gb`                       | `static-site-size-in-mb`,  `coefficient`                             | `static-site-size-in-gb`                            |
-| Calculate networking energy to load site per visit | `Multiply`    | `network-energy-serving-static-site-per-view`  | `static-site-size-in-gb`, `kwh-per-gb-network`                       | `network-energy-serving-static-site-per-view-kwh`   |
-| Multiply energy per visit by number of visits      | `Multiply`    | `network-energy-serving-static-site-total-kwh` | `network-energy-kwh-serving-static-site-per-view-kwh`, `site-visits` | `energy` |
-| Convert energy to carbon                           | `Multiply`    | `energy-to-carbon`                             | `storage-kwh`, `grid-carbon-intensity`                               | `carbon`                                            |
+| Action                                             | Plugin type   | Instance name                                  | Inputs                                                               | Outputs                                           |
+| -------------------------------------------------- | ------------- | ---------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------- |
+| Convert static site size from Mb to GB             | `Coefficient` | `static-site-size-in-gb`                       | `static-site-size-in-mb`,  `coefficient`                             | `static-site-size-in-gb`                          |
+| Calculate networking energy to load site per visit | `Multiply`    | `network-energy-serving-static-site-per-view`  | `static-site-size-in-gb`, `kwh-per-gb-network`                       | `network-energy-serving-static-site-per-view-kwh` |
+| Multiply energy per visit by number of visits      | `Multiply`    | `network-energy-serving-static-site-total-kwh` | `network-energy-kwh-serving-static-site-per-view-kwh`, `site-visits` | `energy`                                          |
+| Convert energy to carbon                           | `Multiply`    | `energy-to-carbon`                             | `storage-kwh`, `grid-carbon-intensity`                               | `carbon`                                          |
 
 In manifest format, this pipeline looks as follows:
 
@@ -313,9 +313,32 @@ In manifest format, this pipeline looks as follows:
 
 ### gh-pages-builds
 
+#### Pipeline
+
+```yaml
+- interpolate-power-curve
+- build-stage-cpu-factor-to-wattage
+- build-stage-cpu-wattage-times-build-duration
+- build-stage-cpu-wattage-to-energy-kwh
+- memory-coefficient-correction # memory coefficient in CCF is given /GB/hr - we want to convert to /GB/run-time-duration then x by run duration in s
+- memory-energy-per-build
+- sum-build-energy-components
+- build-energy-total
+- energy-to-carbon
+```
+
+#### Coefficients
+tbc
 
 
+### embodied-carbon-for-web-server
+tbc
 
+### embodied-carbon-for-cdn
+tbc
+
+### embodied-carbon-for-github-server
+tbc
 
 
 ## SaaS
@@ -409,8 +432,8 @@ The calculated value is multiplied by the number of participants.
 In manifest format, this pipeline looks as follows:
 
 ```yaml
-- network-energy-to-transfer-call-data
-- multiply-energy-by-participants
+- network-energy-to-transfer-call-data-to-each-participant
+- energy-for-data-transfer-to-all-call-participants
 - energy-to-carbon
 ```
 
@@ -418,16 +441,16 @@ In manifest format, this pipeline looks as follows:
 **Operational carbon of the remote server**
 
 
-| Action                                                     | Plugin type   | Instance name                   | Inputs                                 | Outputs              |
-| ---------------------------------------------------------- | ------------- | ------------------------------- | -------------------------------------- | -------------------- |
-| Interpolate CPU power curve                                | `Interpolate` | `interpolate-power-curve`       | `cpu-util`                             | `cpu-factor`         |
-| Apply cpu-factor to processor TDP                          | `Multiply`    | `cpu-factor-to-power-w`         | `cpu-factor`, `thermal-design-power`   | `cpu-power-w`        |
-| Convert power to energy                                    | `Multiply`    | `cpu-power-to-energy-ws`        | `cpu-power-w`, `duration`              | `cpu-energy-ws`      |
-| Convert energy to unit of kWh                              | `Divide`      | `cpu-energy-to-kwh`             | `cpu-power-Ws`, `denominator`          | `cpu-energy-kwh`     |
-| Convert memory coefficient from CCF to unit of GB/duration | `Coefficient` | `memory-coefficient-correction` | `duration`, `coefficient`              | `memory-coefficient` |
-| Apply memory coefficient to memory utilization             | `Multiply`    | `memory-util-to-energy-kwh`     | `memory-gb`, `memory-coefficient`      | `memory-energy-kwh`  |
-| Sum energy components                                      | `Sum`         | `sum-energy-components-calls`   | `memory-energy-kwh`, `cpu-energy-kwh`  | `energy`             |
-| Convert energy to carbon                                   | `Multiply`    | `energy-to-carbon`              | `storage-kwh`, `grid-carbon-intensity` | `carbon`             |
+| Action                                                     | Plugin type   | Instance name                                   | Inputs                                 | Outputs              |
+| ---------------------------------------------------------- | ------------- | ----------------------------------------------- | -------------------------------------- | -------------------- |
+| Interpolate CPU power curve                                | `Interpolate` | `interpolate-power-curve`                       | `cpu-util`                             | `cpu-factor`         |
+| Apply cpu-factor to processor TDP                          | `Multiply`    | `cpu-factor-to-power-w`                         | `cpu-factor`, `thermal-design-power`   | `cpu-power-w`        |
+| Convert power to energy                                    | `Multiply`    | `cpu-power-to-energy-ws`                        | `cpu-power-w`, `duration`              | `cpu-energy-ws`      |
+| Convert energy to unit of kWh                              | `Divide`      | `cpu-energy-to-kwh`                             | `cpu-power-Ws`, `denominator`          | `cpu-energy-kwh`     |
+| Convert memory coefficient from CCF to unit of GB/duration | `Coefficient` | `memory-coefficient-correction`                 | `duration`, `coefficient`              | `memory-coefficient` |
+| Apply memory coefficient to memory utilization             | `Multiply`    | `memory-util-to-energy-kwh`                     | `memory-gb`, `memory-coefficient`      | `memory-energy-kwh`  |
+| Sum energy components                                      | `Sum`         | `sum-conf-call-remote-server-energy-components` | `memory-energy-kwh`, `cpu-energy-kwh`  | `energy`             |
+| Convert energy to carbon                                   | `Multiply`    | `energy-to-carbon`                              | `storage-kwh`, `grid-carbon-intensity` | `carbon`             |
 
 In manifest format, this pipeline looks as follows:
 
@@ -569,6 +592,8 @@ Average UK household uses 3941kWh electricity per year, of which 15% is due to l
 
 We assume 1/5 of all the rooms in the house are used for WFH purposes, giving `(3941 x 0.15) x 0.2 = 118.29 kWh/yr` for a remote working developer on lighting alone. Scaling to a working day gives `118.29/365 = 0.32 kWh`
 
+### laptop
+
 A laptop uses approximately 0.05kWh per working day (https://www.ovoenergy.com/guides/energy-guides/how-much-electricity-does-a-home-use).
 EDF electricity has grid intensity of 87 gCO2/kWh (2024) (https://www.edfenergy.com/fuel-mix)
 So a developer working a normal day will emit `0.05 * 87 =  4.35 gCO2`
@@ -640,11 +665,39 @@ Motorbike is 1.13 kg per passenger per 10 km (https://www.gov.uk/government/publ
 Bus is 1.03 kg per passenger per 10 km (https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2020)
 Bike is 0 kg Co2eq (https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2020)
 
+For cars, we assume a "medium petrol car" by the Uk gov conversion factor definition, which has a kgCO2e value of 0.16453 per km. (https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2020)
+
 We will add conference travel for each developer using these coefficients.
 
 #### Pipeline
 
 There is no pipeline to execute for this component, as we calculated the `carbon` offline and simply add it to the time series for the days the calls happened.
+
+## Internet (develoeprs)
+
+### Operational carbon of routers
+
+Assume 0.108 kWh as per https://www.techcarbonstandard.org/case-studies/green-web-foundation/operational#employee-devices
+scale this to 8 hours per working day
+
+`0.108 * 8 = 0.0864 kWh per timestep`
+
+
+## Embodied carbon of routers
+
+We take the value for total embodied carbon of routers as 171.7kg CO2e from here: https://www.techcarbonstandard.org/case-studies/green-web-foundation/upstream#networking-and-infrastructure-hardware
+I had a pretty good search for better data, but came up short, so we'll use this for now.
+
+We scale this down to the time developers are using it for GSF work, which is 8 hours per day, 5 days per week. We assume a 5 year intendd lifespan for the device.
+
+1 day out of 5 years = 0.000547945205479452
+
+171700 g * 0.000547945205479452 = 94.08g/day
+
+or 31.36 g per 8 hour work day
+
+We add this to 5/7 daily timesteps
+
 
 
 ## Product disposal
