@@ -1,5 +1,17 @@
 # Impact Framework Life Cycle Assessment
 
+## TODOs
+
+This is currently a complete first draft of trhe IF LCA, but it is missing some important updates. These are:
+
+- We currently fill in the time series for the conefrence call components with `cpu-util` v alues of 0.0000001. This is a placeholder that circumvents the `interpolate` plugin throwing an error on `0` input. There is a PR to fix the `interpolate` plugin, and when it is merged we can update this manifest accordingly.
+- We currently use dummy data for `site-visits` throughout the manifest. Later I will grab real site visit data from google analytics and update the values
+- I need to check I've been consistent with the static-site-size values across the manifest.
+- The grid carbon itnensity feels a bit high - reconsider the default value used
+  
+There are many areas for improvement that aren't considered bugs or omissions, just areas to focus refinement efforts later on. Getting the draft done turned into quite a mammoth task and now I need to put it down for a week and come back with fresh eyes before doing anything else to it!
+
+
 ## Useful links
 
 [GHG spec for IT](https://ghgprotocol.org/sites/default/files/GHGP-ICTSG%20-%20ALL%20Chapters.pdf)
