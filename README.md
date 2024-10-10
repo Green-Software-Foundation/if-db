@@ -13,13 +13,13 @@ Manifest files for real projects. Each subdirectory refers to a given project. E
 
 These are the manifests that we currently have available:
 
-| Name                                                       | Description                                             | SCI                     | Manifest                                                       | Author(s)   | Date Added (ddmmyyyy) |
-| ---------------------------------------------------------- | ------------------------------------------------------- | ----------------------- | -------------------------------------------------------------- | ----------- | --------------------- |
-| [GSF docs website](manifests/if-docs-website)              | Manifest for the Green Software Foundation website      | 0.12 g CO2e/visit       | [manifest](manifests/if-docs-website/gsf-docs-website-sci.yml) | @jmcook1186 | 29/08/2024            |
-| [IF docs website](manifests/if-docs-website)               | Manifest for the Impact framework documentation website | 1.16 g CO2e/visit       | [manifest](manifests/if-docs-website/if-docs-website-sci.yml)  | @jmcook1186 | 2/10/2024            |
-| [Zoom conference call](manifests/zoom-calls/zoom-call.yml) | Manifest for a 30 min Zoom call wityh 5 participants    | 84 g CO2e / participant | [manifest](zoom-calls/zoom-call.yml)                           | @jmcook1186 | 13/09/2024            |
-| [IF project](manifests/if-project/if-project-sci.yml)      | Manifest for overall SCI for entire IF project          | tbc                     | [manifest](manifests/if-project/if-project-sci.yml)            | @jmcook1186 | 29/08/2024            |
-
+| Name                                                       | Description                                             | SCI                     | Manifest                                                       | Author(s)   | Date Added (ddmmyyyy) | Status |
+| ---------------------------------------------------------- | ------------------------------------------------------- | ----------------------- | -------------------------------------------------------------- | ----------- | --------------------- |--|
+| [GSF docs website](manifests/if-docs-website)              | Manifest for the Green Software Foundation website      | 0.12 g CO2e/visit       | [manifest](manifests/if-docs-website/gsf-docs-website-sci.yml) | @jmcook1186 | 29/08/2024            | Good draft |
+| [IF docs website](manifests/if-docs-website)               | Manifest for the Impact framework documentation website | 1.16 g CO2e/visit       | [manifest](manifests/if-docs-website/if-docs-website-sci.yml)  | @jmcook1186 | 2/10/2024            | Good draft |
+| [Zoom conference call](manifests/zoom-calls/zoom-call.yml) | Manifest for a 30 min Zoom call wityh 5 participants    | 84 g CO2e / participant | [manifest](zoom-calls/zoom-call.yml)                           | @jmcook1186 | 13/09/2024            | First draft|
+| [IF project](manifests/if-project/if-project-sci.yml)      | Manifest for overall SCI for entire IF project          | tbc                     | [manifest](manifests/if-project/if-project-sci.yml)            | @jmcook1186 | 29/08/2024            | Unfinished |
+| [IF project LCA](manifests/if-lca/if-lca.yml)      | Manifest for an IF project life cycle assessment          | 160 kg CO2e/month                     | [manifest](manifests/if-lca/if-lca.yml)            | @jmcook1186 | 10/10/2024            | First draft |
 ## How to contribute
 
 You can contribute by adding a new manifest for a project, or by making improvements to those already existing in the `manifests` folder.
