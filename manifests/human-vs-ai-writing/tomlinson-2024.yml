@@ -302,11 +302,6 @@ initialize:
 
 
 
-
-
-
-
-
     ## chat-gpt carbon emissions per page written
     ##########################################
 
@@ -569,11 +564,33 @@ initialize:
               component: sum  
 
 
+    ## human carbon emissions per page written
+    ##########################################
+
+    compute-writing-rate-in-hours-per-page:
+      method: Divide
+      path: "builtin"
+      config:
+        numerator: writing-rate-words-per-page
+        denominator: writing-rate-words-per-hour
+        output: writing-rate-hours-per-page
+
+
+    divide-human-carbon-footprint-by-writing-rate:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [writing-rate-hours-per-page, human-footprint-in-gco2-per-hour]
+        output-parameter: carbon-per-page    
+
+
+
+
 tree:
   children:
     writing:
       children:
-        bloom:
+        bloom-model:
           pipeline:
             compute:
               - divide-training-carbon-by-queries-per-month-bloom
@@ -601,7 +618,7 @@ tree:
             - timestamp: '2024-09-01T10:00:00'
               duration: 86400
 
-        chat-gpt:
+        chat-gpt-model:
           pipeline:
             compute:
               - divide-training-carbon-by-queries-per-month-chat-gpt
@@ -619,9 +636,6 @@ tree:
             queries-per-month-chat-gpt: 300000000 # from https://medium.com/@chrispointon/the-carbon-footprint-of-chatgpt-e1bc14e4cc2a
             operational-carbon-per-day-chat-gpt: 3820000 # from https://medium.com/@chrispointon/the-carbon-footprint-of-chatgpt-e1bc14e4cc2a
             queries-per-day-chat-gpt: 10000000 # from https://medium.com/@chrispointon/the-carbon-footprint-of-chatgpt-e1bc14e4cc2a
-
-            # carbon-per-n-queries-chat-gpt: 340000
-            # n-queries-in-bloom-study: 230768
             chat-gpt-gpu-embodied-carbon: 36974.31507
             fraction-of-gpu-lifetime-used-for-training-chat-gpt: 0.2448630137 # 3217.5 hours out of 1.5 year lifetime
             embodied-energy-of-a100-gpu: 150000
@@ -629,6 +643,33 @@ tree:
             words-per-chat-gpt-response: 412.8
             words-per-page: 250
 
+          inputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+
+        human-usa:
+          pipeline:
+            compute:
+              - compute-writing-rate-in-hours-per-page
+              - divide-human-carbon-footprint-by-writing-rate
+          defaults:
+            writing-rate-words-per-hour: 300 # from https://www.writermag.com/writing-inspiration/the-writing-life/many-words-one-write-per-day/
+            writing-rate-words-per-page: 250 # Common knowledge, or https://wordcounter.net/words-per-page
+            human-footprint-in-gco2-per-hour: 1712.328767123329 
+          inputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+
+        human-india:
+          pipeline:
+            compute:
+              - compute-writing-rate-in-hours-per-page
+              - divide-human-carbon-footprint-by-writing-rate
+          defaults:
+            writing-rate-words-per-hour: 300 # from https://www.writermag.com/writing-inspiration/the-writing-life/many-words-one-write-per-day/
+            writing-rate-words-per-page: 250 # Common knowledge, or https://wordcounter.net/words-per-page
+            human-footprint-in-gco2-per-hour: 216.89497716895
+ 
           inputs:
             - timestamp: '2024-09-01T10:00:00'
               duration: 86400
