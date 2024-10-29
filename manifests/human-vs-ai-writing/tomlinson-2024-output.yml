@@ -643,6 +643,31 @@ initialize:
         numerator: writing-rate-words-per-page
         denominator: writing-rate-words-per-hour
         output: writing-rate-hours-per-page
+      parameter-metadata:
+        inputs:
+          writing-rate-words-per-page:
+            unit: words/page
+            description: >-
+              number of words on a page of writing, per common knowledge, or
+              https://wordcounter.net/words-per-page
+            aggregation-method:
+              time: copy
+              component: copy
+          writing-rate-words-per-hour:
+            unit: words/hour
+            description: number of words a human writes in an hour
+            aggregation-method:
+              time: sum
+              component: sum
+        outputs:
+          writing-rate-hours-per-page:
+            unit: hour/page
+            description: >-
+              How long it takes a human to write a page of text. Int he paper
+              supp info sheet it is cell B20.
+            aggregation-method:
+              time: copy
+              component: copy
     divide-human-carbon-footprint-by-writing-rate:
       path: builtin
       method: Multiply
@@ -651,17 +676,117 @@ initialize:
           - writing-rate-hours-per-page
           - human-footprint-in-gco2-per-hour
         output-parameter: carbon-per-page
+      parameter-metadata:
+        inputs:
+          writing-rate-hours-per-page:
+            unit: words/page
+            description: >-
+              How long it takes a human to write a page of text. Int he paper
+              supp info sheet it is cell B20.
+            aggregation-method:
+              time: copy
+              component: copy
+          human-footprint-in-gco2-per-hour:
+            unit: gCO2e/hour
+            description: >-
+              ow much carbon a human emits per hour for a given country, from
+              https://ourworldindata.org/co2-and-other-greenhouse-gas-emissions
+              and scaled to per hour.In the paper supp info sheet it is cell B21
+              or B22 (USA or India).
+            aggregation-method:
+              time: sum
+              component: sum
+        outputs:
+          carbon-per-page:
+            unit: gCO2e/page
+            description: >-
+              Ho wmuch carbon is emitted when a person writes a page of text. in
+              the paper it is cell B72 (USA) or B73 (India)
+            aggregation-method:
+              time: copy
+              component: copy
+    multiply-laptop-footprint-by-writing-rate:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters:
+          - laptop-footprint-in-gco2-per-hour
+          - writing-rate-hours-per-page
+        output-parameter: carbon-per-page
+      parameter-metadata:
+        inputs:
+          laptop-footprint-in-gco2-per-hour:
+            unit: gCO2/hour
+            description: >-
+              carbon footprint of a laptop per hour of usage, per
+              https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator#results.
+            aggregation-method:
+              time: copy
+              component: copy
+          writing-rate-hours-per-page:
+            unit: hours/page
+            description: >-
+              How long it takes a human to write a page of text. Int he paper
+              supp info sheet it is cell B20.
+            aggregation-method:
+              time: sum
+              component: sum
+        outputs:
+          carbon-per-page:
+            unit: gCO2e/page
+            description: >-
+              How much carbon is emitted when a laptop is used to generate a
+              page of text. In the paper it is cell B70
+            aggregation-method:
+              time: copy
+              component: copy
+    multiply-desktop-footprint-by-writing-rate:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters:
+          - desktop-footprint-in-gco2-per-hour
+          - writing-rate-hours-per-page
+        output-parameter: carbon-per-page
+      parameter-metadata:
+        inputs:
+          desktop-footprint-in-gco2-per-hour:
+            unit: gCO2/hour
+            description: >-
+              carbon footprint of a desktop per hour of usage, per
+              https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator#results.
+            aggregation-method:
+              time: copy
+              component: copy
+          writing-rate-hours-per-page:
+            unit: hours/page
+            description: >-
+              How long it takes a human to write a page of text. Int he paper
+              supp info sheet it is cell B20.
+            aggregation-method:
+              time: sum
+              component: sum
+        outputs:
+          carbon-per-page:
+            unit: gCO2e/page
+            description: >-
+              How much carbon is emitted when a desktop is used to generate a
+              page of text. In the paper it is cell B71
+            aggregation-method:
+              time: copy
+              component: copy
 execution:
   command: >-
     /home/joe/.npm/_npx/1bf7c3c15bf47d04/node_modules/.bin/ts-node
     /home/joe/Code/if/src/if-run/index.ts -m
-    manifests/examples/sci-rep-paper.yml -o tomlinson-2024-output.yml
+    manifests/examples/sci-rep-paper.yml -o
+    manifests/outputs/tomlinson-2024-output.yml
   environment:
     if-version: 0.7.1
     os: linux
     os-version: 5.15.0-124-generic
     node-version: 21.4.0
-    date-time: 2024-10-29T15:34:20.991Z (UTC)
+    date-time: 2024-10-29T15:57:39.366Z (UTC)
     dependencies:
       - '@babel/core@7.22.10'
       - '@babel/preset-typescript@7.23.3'
@@ -836,3 +961,43 @@ tree:
               human-footprint-in-gco2-per-hour: 216.89497716895
               writing-rate-hours-per-page: 0.8333333333333334
               carbon-per-page: 180.74581430745835
+        laptop:
+          pipeline:
+            compute:
+              - compute-writing-rate-in-hours-per-page
+              - multiply-laptop-footprint-by-writing-rate
+          defaults:
+            writing-rate-words-per-hour: 300
+            writing-rate-words-per-page: 250
+            laptop-footprint-in-gco2-per-hour: 32.4
+          inputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+          outputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+              writing-rate-words-per-hour: 300
+              writing-rate-words-per-page: 250
+              laptop-footprint-in-gco2-per-hour: 32.4
+              writing-rate-hours-per-page: 0.8333333333333334
+              carbon-per-page: 27
+        desktop:
+          pipeline:
+            compute:
+              - compute-writing-rate-in-hours-per-page
+              - multiply-desktop-footprint-by-writing-rate
+          defaults:
+            writing-rate-words-per-hour: 300
+            writing-rate-words-per-page: 250
+            desktop-footprint-in-gco2-per-hour: 72.08
+          inputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+          outputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+              writing-rate-words-per-hour: 300
+              writing-rate-words-per-page: 250
+              desktop-footprint-in-gco2-per-hour: 72.08
+              writing-rate-hours-per-page: 0.8333333333333334
+              carbon-per-page: 60.06666666666667
