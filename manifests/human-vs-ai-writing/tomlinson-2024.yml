@@ -5,7 +5,7 @@ tags:
 #   metrics:
 #     - carbon
 #   type: component
-
+explainer: true
 initialize:
   plugins:
 
@@ -35,7 +35,7 @@ initialize:
               component: sum  
         outputs:
           carbon-per-query-bloom:
-            unit: gCO2e
+            unit: gCO2e/query
             description: Carbon emitted during bloom model training normalized per query. In paper supp info sheet it is cell B13.
             aggregation-method:
               time: sum
@@ -65,7 +65,7 @@ initialize:
               component: sum  
         outputs:
           carbon-per-query-bloom-inference:
-            unit: gCO2e
+            unit: gCO2e/query
             description: Carbon emitted per query for model inference. In the paper's supp info sheet it is cell B6.
             aggregation-method:
               time: sum
@@ -95,7 +95,7 @@ initialize:
               component: sum  
         outputs:
           embodied-carbon-per-query-bloom:
-            unit: gCO2e
+            unit: gCO2e/query
             description: Embodied carbon attributed to GPUs used to train bloom model.
             aggregation-method:
               time: sum
@@ -181,7 +181,7 @@ initialize:
               component: sum  
         outputs:
           embodied-carbon-per-query-bloom:
-            unit: gCO2e
+            unit: gCO2e/query
             description: Embodied carbon of bloom training scaled by the ratio of training time to hardware lifespan and queries per month.
             aggregation-method:
               time: sum
@@ -197,7 +197,7 @@ initialize:
       parameter-metadata:
         inputs:
           carbon-per-query-bloom:
-            unit: gCO2e
+            unit: gCO2e/query
             description: Carbon per query for bloom model.
             aggregation-method:
               time: sum
@@ -210,7 +210,7 @@ initialize:
               component: sum  
         outputs:
           carbon-per-word-bloom:
-            unit: gCO2e
+            unit: gCO2e/word
             description: Carbon emitted per word in a 250-word page of writing. In paper supp info sheet it is cell B15 * B19, a component of cell B69.
             aggregation-method:
               time: sum
@@ -258,14 +258,14 @@ initialize:
               time: sum
               component: sum 
           embodied-carbon-per-query-bloom:
-            unit: gCO2e
+            unit: gCO2e/query
             description: Embodied carbon of bloom training scaled by the ratio of training time to hardware lifespan and queries per month.
             aggregation-method:
               time: sum
               component: sum  
         outputs:
           intermediate-value-summing-words-per-response-and-carbon-per-response:
-            unit: not sure!
+            unit: Not sure!
             description: A summation of words per response and carbon per response. Not currently understanding this step in the pipeline. I think maybe they should have multiplied not added.
             aggregation-method:
               time: sum
@@ -294,7 +294,7 @@ initialize:
               component: sum  
         outputs:
           carbon-per-page:
-            unit: gCO2/page!
+            unit: gCO2e/page
             description: Carbon emitted per page of writing done using bloom model. In paper supp info sheet it is cell B69.
             aggregation-method:
               time: sum
@@ -500,7 +500,7 @@ initialize:
               component: sum  
         outputs:
           carbon-per-word-chat-gpt:
-            unit: gCO2e
+            unit: gCO2e/word
             description: Carbon emitted per word in a 250-word page of writing. In paper supp info sheet it is cell B14 * B19, a component of cell B69.
             aggregation-method:
               time: sum
@@ -528,7 +528,7 @@ initialize:
               component: sum  
         outputs:
           intermediate-value-summing-words-per-response-and-carbon-per-response:
-            unit: not sure!
+            unit: Not sure!
             description: A summation of words per response and carbon per response. Not currently understanding this step in the pipeline. I think maybe they should have multiplied not added.
             aggregation-method:
               time: sum
@@ -557,7 +557,7 @@ initialize:
               component: sum  
         outputs:
           carbon-per-page:
-            unit: gCO2/page!
+            unit: gCO2e/page
             description: Carbon emitted per page of writing done using chat-gpt model. In paper supp info it is cell B68.
             aggregation-method:
               time: sum
@@ -590,7 +590,7 @@ initialize:
               component: sum  
         outputs:
           writing-rate-hours-per-page:
-            unit: hour/page
+            unit: hours/page
             description: How long it takes a human to write a page of text. Int he paper supp info sheet it is cell B20.
             aggregation-method:
               time: copy
@@ -606,7 +606,7 @@ initialize:
       parameter-metadata:
         inputs:
           writing-rate-hours-per-page:
-            unit: words/page
+            unit: hours/page
             description: How long it takes a human to write a page of text. Int he paper supp info sheet it is cell B20.
             aggregation-method:
               time: copy
@@ -622,8 +622,8 @@ initialize:
             unit: gCO2e/page
             description: Ho wmuch carbon is emitted when a person writes a page of text. in the paper it is cell B72 (USA) or B73 (India)
             aggregation-method:
-              time: copy
-              component: copy  
+              time: sum
+              component: sum  
 
 
     ## laptop carbon emissions per page written
@@ -647,15 +647,15 @@ initialize:
             unit: hours/page
             description: How long it takes a human to write a page of text. Int he paper supp info sheet it is cell B20.
             aggregation-method:
-              time: sum
-              component: sum  
+              time: copy
+              component: copy  
         outputs:
           carbon-per-page:
             unit: gCO2e/page
             description: How much carbon is emitted when a laptop is used to generate a page of text. In the paper it is cell B70
             aggregation-method:
-              time: copy
-              component: copy  
+              time: sum
+              component: sum  
 
     ## desktop carbon emissions per page written
     ##########################################
@@ -678,15 +678,15 @@ initialize:
             unit: hours/page
             description: How long it takes a human to write a page of text. Int he paper supp info sheet it is cell B20.
             aggregation-method:
-              time: sum
-              component: sum  
+              time: copy
+              component: copy  
         outputs:
           carbon-per-page:
             unit: gCO2e/page
             description: How much carbon is emitted when a desktop is used to generate a page of text. In the paper it is cell B71
             aggregation-method:
-              time: copy
-              component: copy  
+              time: sum
+              component: sum  
 
 tree:
   children:
