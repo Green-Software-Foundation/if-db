@@ -1,0 +1,395 @@
+name: Zoom SCI
+description: Aims to replicate the methodology described by Tomlinson et al 2024 (https://www.nature.com/articles/s41598-024-54271-x#data-availibility)
+tags:
+# aggregation:
+#   metrics:
+#     - carbon
+#   type: component
+
+initialize:
+  plugins:
+
+    ## bloom carbon emissions per page written
+    ##########################################
+
+    divide-training-carbon-by-prompts-per-month:
+      method: Divide
+      path: "builtin"
+      config:
+        numerator: training-carbon-bloom
+        denominator: prompts-per-month-bloom
+        output: carbon-per-prompt-bloom-training
+      parameter-metadata:
+        inputs:
+          training-carbon-bloom:
+            unit: gCO2e
+            description: Carbon used to train BLOOM model, per https://arxiv.org/abs/2211.02001.
+            aggregation-method:
+              time: sum
+              component: sum 
+          prompts-per-month-bloom:
+            unit: prompts
+            description: Number of prompts to amortize training carbon over, per https://medium.com/@chrispointon/the-carbon-footprint-of-chatgpt-e1bc14e4cc2a.
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          carbon-per-prompt-bloom:
+            unit: gCO2e
+            description: Carbon emitted during bloom model training normalized per prompt. In paper supp info sheet it is cell B13.
+            aggregation-method:
+              time: sum
+              component: sum  
+
+
+    divide-inference-carbon-by-n-queries-bloom:
+      method: Divide
+      path: "builtin"
+      config:
+        numerator: carbon-per-n-queries-bloom
+        denominator: n-queries-in-bloom-study
+        output: carbon-per-prompt-bloom-inference
+      parameter-metadata:
+        inputs:
+          carbon-per-n-queries-bloom:
+            unit: gCO2e
+            description: Carbon used during inference for a time period during which 230768 queries were made, per https://arxiv.org/abs/2211.02001.
+            aggregation-method:
+              time: sum
+              component: sum 
+          n-queries-in-bloom-study:
+            unit: prompts
+            description: Number of prompts made during a study period, per https://arxiv.org/abs/2211.02001.
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          carbon-per-prompt-bloom-inference:
+            unit: gCO2e
+            description: Carbon emitted per prompt for model inference. In the paper's supp info sheet it is cell B6.
+            aggregation-method:
+              time: sum
+              component: sum  
+
+
+    divide-embodied-carbon-of-gpu-by-prompts-per-month:
+      method: Divide
+      path: "builtin"
+      config:
+        numerator: bloom-gpu-embodied-carbon
+        denominator: prompts-per-month-bloom
+        output: embodied-carbon-per-prompt-bloom
+      parameter-metadata:
+        inputs:
+          bloom-gpu-embodied-carbon:
+            unit: gCO2e
+            description: Embodied carbon of the GPU used to train BLOOM.
+            aggregation-method:
+              time: sum
+              component: sum 
+          prompts-per-month-bloom:
+            unit: prompts
+            description: Number of prompts to amortize training carbon over, per https://medium.com/@chrispointon/the-carbon-footprint-of-chatgpt-e1bc14e4cc2a.
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          embodied-carbon-per-prompt-bloom:
+            unit: gCO2e
+            description: Embodied carbon attributed to GPUs used to train bloom model.
+            aggregation-method:
+              time: sum
+              component: sum  
+
+    sum-embodied-carbon-components-bloom:
+      method: Sum
+      path: builtin
+      config:
+        input-parameters: ['embodied-energy-of-a100-gpu','carbon-footprint-for-recycling-gpu']
+        output-parameter: 'embodied-carbon-bloom'
+      parameter-metadata:
+        inputs:
+          embodied-carbon-of-a100-gpu:
+            unit: gCO2e
+            description: embodied carbon for a100 GPUs used for training bloom, per https://arxiv.org/abs/2211.02001.
+            aggregation-method:
+              time: sum
+              component: sum 
+          carbon-footprint-for-recycling-gpu:
+            unit: prompts
+            description: Carbon footprint for gpu recycling, per https://circularcomputing.com/news/carbon-footprint-laptop/.
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          embodied-carbon-bloom:
+            unit: gCO2e
+            description: total-embodied carbon emitted by gpu production and recycling for bloom model. In paper supp info sheet, it is cell B41.
+            aggregation-method:
+              time: sum
+              component: sum 
+
+    scale-embodied-carbon-to-training-time-period:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: ["embodied-carbon-bloom", "fraction-of-gpu-lifetime-used-for-training-bloom"]
+        output-parameter: "embodied-carbon-bloom-scaled-by-time"
+      parameter-metadata:
+        inputs:
+          embodied-carbon-bloom:
+            unit: gCO2e
+            description: Embodied carbon allocated to training bloom, as sum of gpu embodied and carbon emitted in recycling.
+            aggregation-method:
+              time: sum
+              component: sum 
+          fraction-of-gpu-lifetime-used-for-training-bloom:
+            unit: prompts
+            description: ratio of 1082 training hours to 1.5 year lifespan, per https://screenrant.com/when-is-nvidia-releasing-new-graphics-cards/.
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          embodied-carbon-bloom-scaled-by-time:
+            unit: gCO2e
+            description: Embodied carbon of bloom training scaled by the ratio of training time to hardware lifespan.
+            aggregation-method:
+              time: sum
+              component: sum  
+
+
+    scale-embodied-carbon-to-prompts-per-month:
+      method: Divide
+      path: "builtin"
+      config:
+        numerator: embodied-carbon-bloom-scaled-by-time
+        denominator: prompts-per-month-bloom
+        output: embodied-carbon-per-prompt-bloom
+      parameter-metadata:
+        inputs:
+          embodied-carbon-bloom-scaled-by-time:
+            unit: gCO2e
+            description: Embodied carbon of bloom training scaled by the ratio of training time to hardware lifespan.
+            aggregation-method:
+              time: sum
+              component: sum 
+          prompts-per-month-bloom:
+            unit: prompts
+            description: assumed number of prompts per month used to scale carbon.
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          embodied-carbon-per-prompt-bloom:
+            unit: gCO2e
+            description: Embodied carbon of bloom training scaled by the ratio of training time to hardware lifespan and prompts per month.
+            aggregation-method:
+              time: sum
+              component: sum  
+
+
+    convert-carbon-per-prompt-to-carbon-per-word-bloom:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: ["total-carbon-per-prompt-bloom", "words-per-page"]
+        output-parameter: "carbon-per-word-bloom"
+      parameter-metadata:
+        inputs:
+          carbon-per-prompt-bloom:
+            unit: gCO2e
+            description: Carbon per prompt for bloom model.
+            aggregation-method:
+              time: sum
+              component: sum 
+          words-per-page:
+            unit: words
+            description: Number of words on a page of writing, per common knowledge, or https://wordcounter.net/words-per-page.
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          carbon-per-word-bloom:
+            unit: gCO2e
+            description: Carbon emitted per word in a 250-word page of writing. In paper supp info sheet it is cell B15 * B19, a component of cell B69.
+            aggregation-method:
+              time: sum
+              component: sum  
+
+    sum-training-and-inference-carbon-per-prompt:
+      method: Sum
+      path: builtin
+      config:
+        input-parameters: [carbon-per-prompt-bloom-training, carbon-per-prompt-bloom-inference]
+        output-parameter: 'total-carbon-per-prompt-bloom'    
+        inputs:
+          carbon-per-prompt-bloom-training:
+            unit: gCO2e/prompt
+            description: carbon emitted during model training.
+            aggregation-method:
+              time: sum
+              component: sum 
+          carbon-per-prompt-bloom-inference:
+            unit: gCO2e/prompt
+            description: carbon emitted during model inference.
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          total-carbon-per-prompt-bloom:
+            unit: gCO2e/prompt
+            description: total carbon emitted per prompt by bloom model, as sum of training and inference carbon. In paper supp info sheet, it is cell B15.
+            aggregation-method:
+              time: sum
+              component: sum  
+
+    sum-words-per-query-and-embodied-carbon-per-prompt:
+      method: Sum
+      path: builtin
+      config:
+        input-parameters: ['words-per-bloom-response', embodied-carbon-per-prompt-bloom]
+        output-parameter: 'intermediate-value-summing-words-per-response-and-carbon-per-response'
+        inputs:
+          words-per-bloom-response:
+            unit: words
+            description: number of words returned per bloom model response.
+            aggregation-method:
+              time: sum
+              component: sum 
+          embodied-carbon-per-prompt-bloom:
+            unit: gCO2e
+            description: Embodied carbon of bloom training scaled by the ratio of training time to hardware lifespan and prompts per month.
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          intermediate-value-summing-words-per-response-and-carbon-per-response:
+            unit: not sure!
+            description: A summation of words per response and carbon per response. Not currently understanding this step in the pipeline.
+            aggregation-method:
+              time: sum
+              component: sum  
+
+    calculate-total-footprint-per-page:
+      method: Divide
+      path: "builtin"
+      config:
+        numerator: carbon-per-word-bloom
+        denominator: intermediate-value-summing-words-per-response-and-carbon-per-response
+        output: carbon-per-page
+
+
+tree:
+  children:
+    ai:
+      children:
+        bloom:
+          pipeline:
+            compute:
+              - divide-training-carbon-by-prompts-per-month
+              - divide-inference-carbon-by-n-queries-bloom
+              - sum-embodied-carbon-components-bloom
+              - scale-embodied-carbon-to-training-time-period
+              - scale-embodied-carbon-to-prompts-per-month
+              - sum-training-and-inference-carbon-per-prompt
+              - convert-carbon-per-prompt-to-carbon-per-word-bloom
+              - sum-words-per-query-and-embodied-carbon-per-prompt
+              - calculate-total-footprint-per-page
+
+          defaults:
+            training-carbon-bloom: 30000000 # from https://arxiv.org/abs/2211.02001
+            prompts-per-month-bloom: 300000000
+            carbon-per-n-queries-bloom: 340000
+            n-queries-in-bloom-study: 230768
+            bloom-gpu-embodied-carbon: 12439.69798
+            fraction-of-gpu-lifetime-used-for-training-bloom: 0.08238203957 # 1082.5 hours out of 1.5 year lifetime
+            embodied-energy-of-a100-gpu: 150000
+            carbon-footprint-for-recycling-gpu: 1000
+            words-per-bloom-response: 412.8
+            words-per-page: 250
+
+          inputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+
+
+
+
+      #   chat-gpt:
+      #     pipeline:
+      #       compute:
+      #         - network-energy-to-transfer-call-data
+      #         - multiply-energy-by-participants
+      #         - energy-to-carbon
+      #         - sci
+      #     defaults:
+      #       participants: 5
+      #       kwh-per-gb-network: 0.07
+      #       grid-intensity: 260 # assume uk
+      #     inputs:
+
+      #   midjourney:
+      #     pipeline:
+      #       compute:
+      #         - network-energy-to-transfer-call-data
+      #         - multiply-energy-by-participants
+      #         - energy-to-carbon
+      #         - sci
+      #     defaults:
+      #       participants: 5
+      #       kwh-per-gb-network: 0.07
+      #       grid-intensity: 260 # assume uk
+      #     inputs:
+
+      # humans:
+      #   usa-writer:
+      #     pipeline:
+      #       compute:
+      #         - network-energy-to-transfer-call-data
+      #         - multiply-energy-by-participants
+      #         - energy-to-carbon
+      #         - sci
+      #     defaults:
+      #       participants: 5
+      #       kwh-per-gb-network: 0.07
+      #       grid-intensity: 260 # assume uk
+      #     inputs:
+
+      #   usa-illustrator:
+      #     pipeline:
+      #       compute:
+      #         - network-energy-to-transfer-call-data
+      #         - multiply-energy-by-participants
+      #         - energy-to-carbon
+      #         - sci
+      #     defaults:
+      #       participants: 5
+      #       kwh-per-gb-network: 0.07
+      #       grid-intensity: 260 # assume uk
+      #     inputs:
+
+      #   india-writer:
+      #     pipeline:
+      #       compute:
+      #         - network-energy-to-transfer-call-data
+      #         - multiply-energy-by-participants
+      #         - energy-to-carbon
+      #         - sci
+      #     defaults:
+      #       participants: 5
+      #       kwh-per-gb-network: 0.07
+      #       grid-intensity: 260 # assume uk
+      #     inputs:
+
+      #   india-illustrator:
+      #     pipeline:
+      #       compute:
+      #         - network-energy-to-transfer-call-data
+      #         - multiply-energy-by-participants
+      #         - energy-to-carbon
+      #         - sci
+      #     defaults:
+      #       participants: 5
+      #       kwh-per-gb-network: 0.07
+      #       grid-intensity: 260 # assume uk
+      #     inputs:
