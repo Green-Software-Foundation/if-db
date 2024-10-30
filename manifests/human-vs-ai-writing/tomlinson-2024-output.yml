@@ -3,6 +3,7 @@ description: >-
   Aims to replicate the methodology described by Tomlinson et al 2024
   (https://www.nature.com/articles/s41598-024-54271-x#data-availibility)
 tags: null
+explainer: true
 initialize:
   plugins:
     divide-training-carbon-by-queries-per-month-bloom:
@@ -32,7 +33,7 @@ initialize:
               component: sum
         outputs:
           carbon-per-query-bloom:
-            unit: gCO2e
+            unit: gCO2e/query
             description: >-
               Carbon emitted during bloom model training normalized per query.
               In paper supp info sheet it is cell B13.
@@ -66,7 +67,7 @@ initialize:
               component: sum
         outputs:
           carbon-per-query-bloom-inference:
-            unit: gCO2e
+            unit: gCO2e/query
             description: >-
               Carbon emitted per query for model inference. In the paper's supp
               info sheet it is cell B6.
@@ -98,7 +99,7 @@ initialize:
               component: sum
         outputs:
           embodied-carbon-per-query-bloom:
-            unit: gCO2e
+            unit: gCO2e/query
             description: Embodied carbon attributed to GPUs used to train bloom model.
             aggregation-method:
               time: sum
@@ -198,7 +199,7 @@ initialize:
               component: sum
         outputs:
           embodied-carbon-per-query-bloom:
-            unit: gCO2e
+            unit: gCO2e/query
             description: >-
               Embodied carbon of bloom training scaled by the ratio of training
               time to hardware lifespan and queries per month.
@@ -216,7 +217,7 @@ initialize:
       parameter-metadata:
         inputs:
           carbon-per-query-bloom:
-            unit: gCO2e
+            unit: gCO2e/query
             description: Carbon per query for bloom model.
             aggregation-method:
               time: sum
@@ -231,7 +232,7 @@ initialize:
               component: sum
         outputs:
           carbon-per-word-bloom:
-            unit: gCO2e
+            unit: gCO2e/word
             description: >-
               Carbon emitted per word in a 250-word page of writing. In paper
               supp info sheet it is cell B15 * B19, a component of cell B69.
@@ -285,7 +286,7 @@ initialize:
               time: sum
               component: sum
           embodied-carbon-per-query-bloom:
-            unit: gCO2e
+            unit: gCO2e/query
             description: >-
               Embodied carbon of bloom training scaled by the ratio of training
               time to hardware lifespan and queries per month.
@@ -294,7 +295,7 @@ initialize:
               component: sum
         outputs:
           intermediate-value-summing-words-per-response-and-carbon-per-response:
-            unit: not sure!
+            unit: Not sure!
             description: >-
               A summation of words per response and carbon per response. Not
               currently understanding this step in the pipeline. I think maybe
@@ -327,7 +328,7 @@ initialize:
               component: sum
         outputs:
           carbon-per-page:
-            unit: gCO2/page!
+            unit: gCO2e/page
             description: >-
               Carbon emitted per page of writing done using bloom model. In
               paper supp info sheet it is cell B69.
@@ -563,7 +564,7 @@ initialize:
               component: sum
         outputs:
           carbon-per-word-chat-gpt:
-            unit: gCO2e
+            unit: gCO2e/word
             description: >-
               Carbon emitted per word in a 250-word page of writing. In paper
               supp info sheet it is cell B14 * B19, a component of cell B69.
@@ -596,7 +597,7 @@ initialize:
               component: sum
         outputs:
           intermediate-value-summing-words-per-response-and-carbon-per-response:
-            unit: not sure!
+            unit: Not sure!
             description: >-
               A summation of words per response and carbon per response. Not
               currently understanding this step in the pipeline. I think maybe
@@ -629,7 +630,7 @@ initialize:
               component: sum
         outputs:
           carbon-per-page:
-            unit: gCO2/page!
+            unit: gCO2e/page
             description: >-
               Carbon emitted per page of writing done using chat-gpt model. In
               paper supp info it is cell B68.
@@ -661,14 +662,14 @@ initialize:
               component: sum
         outputs:
           writing-rate-hours-per-page:
-            unit: hour/page
+            unit: hours/page
             description: >-
               How long it takes a human to write a page of text. Int he paper
               supp info sheet it is cell B20.
             aggregation-method:
               time: copy
               component: copy
-    divide-human-carbon-footprint-by-writing-rate:
+    multiply-human-carbon-footprint-by-writing-rate:
       path: builtin
       method: Multiply
       config:
@@ -679,7 +680,7 @@ initialize:
       parameter-metadata:
         inputs:
           writing-rate-hours-per-page:
-            unit: words/page
+            unit: hours/page
             description: >-
               How long it takes a human to write a page of text. Int he paper
               supp info sheet it is cell B20.
@@ -703,8 +704,8 @@ initialize:
               Ho wmuch carbon is emitted when a person writes a page of text. in
               the paper it is cell B72 (USA) or B73 (India)
             aggregation-method:
-              time: copy
-              component: copy
+              time: sum
+              component: sum
     multiply-laptop-footprint-by-writing-rate:
       path: builtin
       method: Multiply
@@ -729,8 +730,8 @@ initialize:
               How long it takes a human to write a page of text. Int he paper
               supp info sheet it is cell B20.
             aggregation-method:
-              time: sum
-              component: sum
+              time: copy
+              component: copy
         outputs:
           carbon-per-page:
             unit: gCO2e/page
@@ -738,8 +739,8 @@ initialize:
               How much carbon is emitted when a laptop is used to generate a
               page of text. In the paper it is cell B70
             aggregation-method:
-              time: copy
-              component: copy
+              time: sum
+              component: sum
     multiply-desktop-footprint-by-writing-rate:
       path: builtin
       method: Multiply
@@ -764,8 +765,8 @@ initialize:
               How long it takes a human to write a page of text. Int he paper
               supp info sheet it is cell B20.
             aggregation-method:
-              time: sum
-              component: sum
+              time: copy
+              component: copy
         outputs:
           carbon-per-page:
             unit: gCO2e/page
@@ -773,8 +774,221 @@ initialize:
               How much carbon is emitted when a desktop is used to generate a
               page of text. In the paper it is cell B71
             aggregation-method:
+              time: sum
+              component: sum
+    sum-embodied-and-inference-for-dalle:
+      path: builtin
+      method: Sum
+      config:
+        input-parameters:
+          - total-carbon-per-query-chat-gpt
+          - embodied-carbon-per-query-chat-gpt
+        output-parameter: total-carbon-per-image-dalle
+      parameter-metadata:
+        inputs:
+          total-carbon-per-query-chat-gpt:
+            unit: gCO2e/query
+            description: >-
+              total carbon emitted per query by chat-gpt model, as sum of
+              training and inference carbon. In paper supp info sheet, it is
+              cell B14.
+            aggregation-method:
+              time: sum
+              component: sum
+          embodied-carbon-per-query-chat-gpt:
+            unit: gCO2e
+            description: >-
+              Embodied carbon of chat-gpt training scaled by the ratio of
+              training time to hardware lifespan and queries per month.
+            aggregation-method:
+              time: sum
+              component: sum
+        outputs:
+          total-footprint-per-image-dalle:
+            unit: gCO2/image
+            description: >-
+              total carbon emitted during image generation for the Dalle-2
+              model. In paper supp info it is cell B84.
+            aggregation-method:
+              time: sum
+              component: sum
+    sum-embodied-and-inference-for-midjourney:
+      path: builtin
+      method: Sum
+      config:
+        input-parameters:
+          - inference-carbon-for-midjourney
+          - embodied-carbon-per-query-chat-gpt
+        output-parameter: total-carbon-per-image-midjourney
+      parameter-metadata:
+        inputs:
+          inference-carbon-for-midjourney:
+            unit: gCO2e/query
+            description: >-
+              total carbon emitted per image generated by midjourney. Paper says
+              this was generated using online calculator assuming 4.5Wh energy
+              used. In paper supp info sheet, it is hardcoded into cell B85.
+            aggregation-method:
+              time: sum
+              component: sum
+          embodied-carbon-per-query-chat-gpt:
+            unit: gCO2e
+            description: >-
+              Embodied carbon of chat-gpt training scaled by the ratio of
+              training time to hardware lifespan and queries per month.
+            aggregation-method:
+              time: sum
+              component: sum
+        outputs:
+          total-footprint-per-image-midjourney:
+            unit: gCO2/image
+            description: >-
+              total carbon emitted during image generation for the midjourney
+              model. In paper supp info it is cell B85.
+            aggregation-method:
+              time: sum
+              component: sum
+    compute-illustration-rate-in-hours-per-image:
+      path: builtin
+      method: Divide
+      config:
+        numerator: cost-of-illustration-per-hour
+        denominator: cost-per-hour-human-illustrator
+        output: human-illustrator-work-rate
+      parameter-metadata:
+        inputs:
+          cost-of-illustration-per-hour:
+            unit: USD
+            description: >-
+              cost of an illustration, per
+              https://www.thumbtack.com/p/illustration-rates
+            aggregation-method:
               time: copy
               component: copy
+          cost-per-hour-human-illustrator:
+            unit: USD
+            description: >-
+              human illustrator hourly rate, per
+              https://www.thumbtack.com/p/illustration-rates
+            aggregation-method:
+              time: copy
+              component: copy
+        outputs:
+          human-illustrator-work-rate:
+            unit: hours/image
+            description: >-
+              How long it takes a human to create an image. In the paper supp
+              info sheet it is cell B35.
+            aggregation-method:
+              time: copy
+              component: copy
+    multiply-laptop-carbon-by-illustration-rate:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters:
+          - laptop-footprint-in-gco2-per-hour
+          - human-illustrator-work-rate
+        output-parameter: carbon-per-image
+      parameter-metadata:
+        inputs:
+          laptop-footprint-in-gco2-per-hour:
+            unit: gCO2/hour
+            description: >-
+              carbon footprint of a lapktop per hour of usage, per
+              https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator#results.
+            aggregation-method:
+              time: copy
+              component: copy
+          human-illustrator-work-rate:
+            unit: hours/image
+            description: >-
+              How long it takes a human to create an image. In the paper supp
+              info sheet it is cell B35.
+            aggregation-method:
+              time: copy
+              component: copy
+        outputs:
+          carbon-per-image:
+            unit: gCO2e/page
+            description: >-
+              How much carbon is emitted during image generation. In the paper
+              it is cell B86
+            aggregation-method:
+              time: sum
+              component: sum
+    multiply-desktop-carbon-by-illustration-rate:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters:
+          - desktop-footprint-in-gco2-per-hour
+          - human-illustrator-work-rate
+        output-parameter: carbon-per-image
+      parameter-metadata:
+        inputs:
+          desktop-footprint-in-gco2-per-hour:
+            unit: gCO2/hour
+            description: >-
+              carbon footprint of a desktop per hour of usage, per
+              https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator#results.
+            aggregation-method:
+              time: copy
+              component: copy
+          human-illustrator-work-rate:
+            unit: hours/image
+            description: >-
+              How long it takes a human to create an image. In the paper supp
+              info sheet it is cell B35.
+            aggregation-method:
+              time: copy
+              component: copy
+        outputs:
+          carbon-per-image:
+            unit: gCO2e/page
+            description: >-
+              How much carbon is emitted during image generation. In the paper
+              it is cell B87
+            aggregation-method:
+              time: sum
+              component: sum
+    multiply-human-carbon-footprint-by-illustration-rate:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters:
+          - human-footprint-in-gco2-per-hour
+          - human-illustrator-work-rate
+        output-parameter: carbon-per-image
+      parameter-metadata:
+        inputs:
+          human-illustrator-work-rate:
+            unit: hours/image
+            description: >-
+              How long it takes a human to create an image. In the paper supp
+              info sheet it is cell B35.
+            aggregation-method:
+              time: copy
+              component: copy
+          human-footprint-in-gco2-per-hour:
+            unit: gCO2e/hour
+            description: >-
+              How much carbon a human emits per hour for a given country, from
+              https://ourworldindata.org/co2-and-other-greenhouse-gas-emissions
+              and scaled to per hour.In the paper supp info sheet it is cell B21
+              or B22 (USA or India).
+            aggregation-method:
+              time: sum
+              component: sum
+        outputs:
+          carbon-per-page:
+            unit: gCO2e/page
+            description: >-
+              Ho wmuch carbon is emitted when a person writes a page of text. in
+              the paper it is cell B72 (USA) or B73 (India)
+            aggregation-method:
+              time: sum
+              component: sum
 execution:
   command: >-
     /home/joe/.npm/_npx/1bf7c3c15bf47d04/node_modules/.bin/ts-node
@@ -786,7 +1000,7 @@ execution:
     os: linux
     os-version: 5.15.0-124-generic
     node-version: 21.4.0
-    date-time: 2024-10-29T15:57:39.366Z (UTC)
+    date-time: 2024-10-30T10:20:37.796Z (UTC)
     dependencies:
       - '@babel/core@7.22.10'
       - '@babel/preset-typescript@7.23.3'
@@ -821,6 +1035,464 @@ execution:
       - winston@3.11.0
       - zod@3.23.8
   status: success
+explain:
+  training-carbon-bloom:
+    plugins:
+      - divide-training-carbon-by-queries-per-month-bloom
+    unit: gCO2e
+    description: Carbon used to train BLOOM model, per https://arxiv.org/abs/2211.02001.
+    aggregation-method:
+      time: sum
+      component: sum
+  queries-per-month-bloom:
+    plugins:
+      - divide-training-carbon-by-queries-per-month-bloom
+      - scale-embodied-carbon-to-queries-per-month-bloom
+    unit: queries
+    description: assumed number of queries per month used to scale carbon.
+    aggregation-method:
+      time: sum
+      component: sum
+  carbon-per-query-bloom:
+    plugins:
+      - divide-training-carbon-by-queries-per-month-bloom
+      - convert-carbon-per-query-to-carbon-per-word-bloom
+    unit: gCO2e/query
+    description: Carbon per query for bloom model.
+    aggregation-method:
+      time: sum
+      component: sum
+  carbon-per-n-queries-bloom:
+    plugins:
+      - divide-inference-carbon-by-n-queries-bloom
+    unit: gCO2e
+    description: >-
+      Carbon used during inference for a time period during which 230768 queries
+      were made, per https://arxiv.org/abs/2211.02001.
+    aggregation-method:
+      time: sum
+      component: sum
+  n-queries-in-bloom-study:
+    plugins:
+      - divide-inference-carbon-by-n-queries-bloom
+    unit: queries
+    description: >-
+      Number of queries made during a study period, per
+      https://arxiv.org/abs/2211.02001.
+    aggregation-method:
+      time: sum
+      component: sum
+  carbon-per-query-bloom-inference:
+    plugins:
+      - divide-inference-carbon-by-n-queries-bloom
+    unit: gCO2e/query
+    description: >-
+      Carbon emitted per query for model inference. In the paper's supp info
+      sheet it is cell B6.
+    aggregation-method:
+      time: sum
+      component: sum
+  embodied-carbon-of-a100-gpu:
+    plugins:
+      - sum-embodied-carbon-components-bloom
+      - sum-embodied-carbon-components-chat-gpt
+    unit: gCO2e
+    description: >-
+      embodied carbon for a100 GPUs used for training chat-gpt, per
+      https://arxiv.org/abs/2211.02001.
+    aggregation-method:
+      time: sum
+      component: sum
+  carbon-footprint-for-recycling-gpu:
+    plugins:
+      - sum-embodied-carbon-components-bloom
+      - sum-embodied-carbon-components-chat-gpt
+    unit: queries
+    description: >-
+      Carbon footprint for gpu recycling, per
+      https://circularcomputing.com/news/carbon-footprint-laptop/.
+    aggregation-method:
+      time: sum
+      component: sum
+  embodied-carbon-bloom:
+    plugins:
+      - sum-embodied-carbon-components-bloom
+      - scale-embodied-carbon-to-training-time-period-bloom
+    unit: gCO2e
+    description: >-
+      Embodied carbon allocated to training bloom, as sum of gpu embodied and
+      carbon emitted in recycling.
+    aggregation-method:
+      time: sum
+      component: sum
+  fraction-of-gpu-lifetime-used-for-training-bloom:
+    plugins:
+      - scale-embodied-carbon-to-training-time-period-bloom
+    unit: queries
+    description: >-
+      ratio of 1082 training hours to 1.5 year lifespan, per
+      https://screenrant.com/when-is-nvidia-releasing-new-graphics-cards/.
+    aggregation-method:
+      time: sum
+      component: sum
+  embodied-carbon-bloom-scaled-by-time:
+    plugins:
+      - scale-embodied-carbon-to-training-time-period-bloom
+      - scale-embodied-carbon-to-queries-per-month-bloom
+    unit: gCO2e
+    description: >-
+      Embodied carbon of bloom training scaled by the ratio of training time to
+      hardware lifespan.
+    aggregation-method:
+      time: sum
+      component: sum
+  embodied-carbon-per-query-bloom:
+    plugins:
+      - scale-embodied-carbon-to-queries-per-month-bloom
+      - sum-words-per-query-and-embodied-carbon-per-query-bloom
+    unit: gCO2e/query
+    description: >-
+      Embodied carbon of bloom training scaled by the ratio of training time to
+      hardware lifespan and queries per month.
+    aggregation-method:
+      time: sum
+      component: sum
+  words-per-page:
+    plugins:
+      - convert-carbon-per-query-to-carbon-per-word-bloom
+      - convert-carbon-per-query-to-carbon-per-word-chat-gpt
+    unit: words
+    description: >-
+      Number of words on a page of writing, per common knowledge, or
+      https://wordcounter.net/words-per-page.
+    aggregation-method:
+      time: sum
+      component: sum
+  carbon-per-word-bloom:
+    plugins:
+      - convert-carbon-per-query-to-carbon-per-word-bloom
+      - calculate-total-footprint-per-page-bloom
+    unit: gCO2e/word
+    description: carbon emitted per word for bloom model.
+    aggregation-method:
+      time: sum
+      component: sum
+  words-per-bloom-response:
+    plugins:
+      - sum-words-per-query-and-embodied-carbon-per-query-bloom
+    unit: words
+    description: number of words returned per bloom model response.
+    aggregation-method:
+      time: sum
+      component: sum
+  intermediate-value-summing-words-per-response-and-carbon-per-response:
+    plugins:
+      - sum-words-per-query-and-embodied-carbon-per-query-bloom
+      - calculate-total-footprint-per-page-bloom
+      - sum-words-per-query-and-embodied-carbon-per-query-chat-gpt
+      - calculate-total-footprint-per-page-chat-gpt
+    unit: Not sure!
+    description: >-
+      A summation of words per response and carbon per response. Not currently
+      understanding this step in the pipeline.
+    aggregation-method:
+      time: sum
+      component: sum
+  carbon-per-page:
+    plugins:
+      - calculate-total-footprint-per-page-bloom
+      - calculate-total-footprint-per-page-chat-gpt
+      - multiply-human-carbon-footprint-by-writing-rate
+      - multiply-laptop-footprint-by-writing-rate
+      - multiply-desktop-footprint-by-writing-rate
+      - multiply-human-carbon-footprint-by-illustration-rate
+    unit: gCO2e/page
+    description: >-
+      Ho wmuch carbon is emitted when a person writes a page of text. in the
+      paper it is cell B72 (USA) or B73 (India)
+    aggregation-method:
+      time: sum
+      component: sum
+  training-carbon-chat-gpt:
+    plugins:
+      - divide-training-carbon-by-queries-per-month-chat-gpt
+    unit: gCO2e
+    description: >-
+      Carbon used to train chat-gpt model, per
+      https://medium.com/@chrispointon/the-carbon-footprint-of-chatgpt-e1bc14e4cc2a.
+    aggregation-method:
+      time: sum
+      component: sum
+  queries-per-month-chat-gpt:
+    plugins:
+      - divide-training-carbon-by-queries-per-month-chat-gpt
+      - scale-embodied-carbon-to-queries-per-month-chat-gpt
+    unit: queries
+    description: assumed number of queries per month used to scale carbon.
+    aggregation-method:
+      time: sum
+      component: sum
+  carbon-per-query-chat-gpt-training:
+    plugins:
+      - divide-training-carbon-by-queries-per-month-chat-gpt
+    unit: gCO2e
+    description: >-
+      Carbon emitted during chat-gpt model training normalized per query. In
+      paper supp info sheet it is cell B12.
+    aggregation-method:
+      time: sum
+      component: sum
+  operational-carbon-per-day-chat-gpt:
+    plugins:
+      - divide-inference-carbon-by-n-queries-chat-gpt
+    unit: gCO2e
+    description: >-
+      Carbon emitted per day for inference by chat-gpt, per
+      https://medium.com/@chrispointon/the-carbon-footprint-of-chatgpt-e1bc14e4cc2a.
+    aggregation-method:
+      time: sum
+      component: sum
+  queries-per-day-chat-gpt:
+    plugins:
+      - divide-inference-carbon-by-n-queries-chat-gpt
+    unit: queries
+    description: >-
+      Number of queries made per day to chat gpt, per
+      https://medium.com/@chrispointon/the-carbon-footprint-of-chatgpt-e1bc14e4cc2a.
+    aggregation-method:
+      time: sum
+      component: sum
+  carbon-per-query-chat-gpt-inference:
+    plugins:
+      - divide-inference-carbon-by-n-queries-chat-gpt
+    unit: gCO2e/query
+    description: >-
+      Carbon emitted per query for model inference. In the paper's supp info
+      sheet it is cell B10.
+    aggregation-method:
+      time: sum
+      component: sum
+  embodied-carbon-chat-gpt:
+    plugins:
+      - sum-embodied-carbon-components-chat-gpt
+      - scale-embodied-carbon-to-training-time-period-chat-gpt
+    unit: gCO2e
+    description: >-
+      Embodied carbon allocated to training chat-gpt, as sum of gpu embodied and
+      carbon emitted in recycling.
+    aggregation-method:
+      time: sum
+      component: sum
+  fraction-of-gpu-lifetime-used-for-training-chat-gpt:
+    plugins:
+      - scale-embodied-carbon-to-training-time-period-chat-gpt
+    unit: queries
+    description: >-
+      ratio of 1082 training hours to 1.5 year lifespan, per
+      https://screenrant.com/when-is-nvidia-releasing-new-graphics-cards/.
+    aggregation-method:
+      time: sum
+      component: sum
+  embodied-carbon-chat-gpt-scaled-by-time:
+    plugins:
+      - scale-embodied-carbon-to-training-time-period-chat-gpt
+      - scale-embodied-carbon-to-queries-per-month-chat-gpt
+    unit: gCO2e
+    description: >-
+      Embodied carbon of chat-gpt training scaled by the ratio of training time
+      to hardware lifespan.
+    aggregation-method:
+      time: sum
+      component: sum
+  embodied-carbon-per-query-chat-gpt:
+    plugins:
+      - scale-embodied-carbon-to-queries-per-month-chat-gpt
+      - sum-words-per-query-and-embodied-carbon-per-query-chat-gpt
+      - sum-embodied-and-inference-for-dalle
+      - sum-embodied-and-inference-for-midjourney
+    unit: gCO2e
+    description: >-
+      Embodied carbon of chat-gpt training scaled by the ratio of training time
+      to hardware lifespan and queries per month.
+    aggregation-method:
+      time: sum
+      component: sum
+  carbon-per-query-chat-gpt:
+    plugins:
+      - convert-carbon-per-query-to-carbon-per-word-chat-gpt
+    unit: gCO2e
+    description: Carbon per query for chat-gpt model.
+    aggregation-method:
+      time: sum
+      component: sum
+  carbon-per-word-chat-gpt:
+    plugins:
+      - convert-carbon-per-query-to-carbon-per-word-chat-gpt
+      - calculate-total-footprint-per-page-chat-gpt
+    unit: gCO2e/word
+    description: carbon emitted per word for chat-gpt model.
+    aggregation-method:
+      time: sum
+      component: sum
+  words-per-chat-gpt-response:
+    plugins:
+      - sum-words-per-query-and-embodied-carbon-per-query-chat-gpt
+    unit: words
+    description: number of words returned per chat-gpt model response.
+    aggregation-method:
+      time: sum
+      component: sum
+  writing-rate-words-per-page:
+    plugins:
+      - compute-writing-rate-in-hours-per-page
+    unit: words/page
+    description: >-
+      number of words on a page of writing, per common knowledge, or
+      https://wordcounter.net/words-per-page
+    aggregation-method:
+      time: copy
+      component: copy
+  writing-rate-words-per-hour:
+    plugins:
+      - compute-writing-rate-in-hours-per-page
+    unit: words/hour
+    description: number of words a human writes in an hour
+    aggregation-method:
+      time: sum
+      component: sum
+  writing-rate-hours-per-page:
+    plugins:
+      - compute-writing-rate-in-hours-per-page
+      - multiply-human-carbon-footprint-by-writing-rate
+      - multiply-laptop-footprint-by-writing-rate
+      - multiply-desktop-footprint-by-writing-rate
+    unit: hours/page
+    description: >-
+      How long it takes a human to write a page of text. Int he paper supp info
+      sheet it is cell B20.
+    aggregation-method:
+      time: copy
+      component: copy
+  human-footprint-in-gco2-per-hour:
+    plugins:
+      - multiply-human-carbon-footprint-by-writing-rate
+      - multiply-human-carbon-footprint-by-illustration-rate
+    unit: gCO2e/hour
+    description: >-
+      How much carbon a human emits per hour for a given country, from
+      https://ourworldindata.org/co2-and-other-greenhouse-gas-emissions and
+      scaled to per hour.In the paper supp info sheet it is cell B21 or B22 (USA
+      or India).
+    aggregation-method:
+      time: sum
+      component: sum
+  laptop-footprint-in-gco2-per-hour:
+    plugins:
+      - multiply-laptop-footprint-by-writing-rate
+      - multiply-laptop-carbon-by-illustration-rate
+    unit: gCO2/hour
+    description: >-
+      carbon footprint of a lapktop per hour of usage, per
+      https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator#results.
+    aggregation-method:
+      time: copy
+      component: copy
+  desktop-footprint-in-gco2-per-hour:
+    plugins:
+      - multiply-desktop-footprint-by-writing-rate
+      - multiply-desktop-carbon-by-illustration-rate
+    unit: gCO2/hour
+    description: >-
+      carbon footprint of a desktop per hour of usage, per
+      https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator#results.
+    aggregation-method:
+      time: copy
+      component: copy
+  total-carbon-per-query-chat-gpt:
+    plugins:
+      - sum-embodied-and-inference-for-dalle
+    unit: gCO2e/query
+    description: >-
+      total carbon emitted per query by chat-gpt model, as sum of training and
+      inference carbon. In paper supp info sheet, it is cell B14.
+    aggregation-method:
+      time: sum
+      component: sum
+  total-footprint-per-image-dalle:
+    plugins:
+      - sum-embodied-and-inference-for-dalle
+    unit: gCO2/image
+    description: >-
+      total carbon emitted during image generation for the Dalle-2 model. In
+      paper supp info it is cell B84.
+    aggregation-method:
+      time: sum
+      component: sum
+  inference-carbon-for-midjourney:
+    plugins:
+      - sum-embodied-and-inference-for-midjourney
+    unit: gCO2e/query
+    description: >-
+      total carbon emitted per image generated by midjourney. Paper says this
+      was generated using online calculator assuming 4.5Wh energy used. In paper
+      supp info sheet, it is hardcoded into cell B85.
+    aggregation-method:
+      time: sum
+      component: sum
+  total-footprint-per-image-midjourney:
+    plugins:
+      - sum-embodied-and-inference-for-midjourney
+    unit: gCO2/image
+    description: >-
+      total carbon emitted during image generation for the midjourney model. In
+      paper supp info it is cell B85.
+    aggregation-method:
+      time: sum
+      component: sum
+  cost-of-illustration-per-hour:
+    plugins:
+      - compute-illustration-rate-in-hours-per-image
+    unit: USD
+    description: >-
+      cost of an illustration, per
+      https://www.thumbtack.com/p/illustration-rates
+    aggregation-method:
+      time: copy
+      component: copy
+  cost-per-hour-human-illustrator:
+    plugins:
+      - compute-illustration-rate-in-hours-per-image
+    unit: USD
+    description: >-
+      human illustrator hourly rate, per
+      https://www.thumbtack.com/p/illustration-rates
+    aggregation-method:
+      time: copy
+      component: copy
+  human-illustrator-work-rate:
+    plugins:
+      - compute-illustration-rate-in-hours-per-image
+      - multiply-laptop-carbon-by-illustration-rate
+      - multiply-desktop-carbon-by-illustration-rate
+      - multiply-human-carbon-footprint-by-illustration-rate
+    unit: hours/image
+    description: >-
+      How long it takes a human to create an image. In the paper supp info sheet
+      it is cell B35.
+    aggregation-method:
+      time: copy
+      component: copy
+  carbon-per-image:
+    plugins:
+      - multiply-laptop-carbon-by-illustration-rate
+      - multiply-desktop-carbon-by-illustration-rate
+    unit: gCO2e/page
+    description: >-
+      How much carbon is emitted during image generation. In the paper it is
+      cell B87
+    aggregation-method:
+      time: sum
+      component: sum
 tree:
   children:
     writing:
@@ -925,7 +1597,7 @@ tree:
           pipeline:
             compute:
               - compute-writing-rate-in-hours-per-page
-              - divide-human-carbon-footprint-by-writing-rate
+              - multiply-human-carbon-footprint-by-writing-rate
           defaults:
             writing-rate-words-per-hour: 300
             writing-rate-words-per-page: 250
@@ -945,7 +1617,7 @@ tree:
           pipeline:
             compute:
               - compute-writing-rate-in-hours-per-page
-              - divide-human-carbon-footprint-by-writing-rate
+              - multiply-human-carbon-footprint-by-writing-rate
           defaults:
             writing-rate-words-per-hour: 300
             writing-rate-words-per-page: 250
@@ -1001,3 +1673,157 @@ tree:
               desktop-footprint-in-gco2-per-hour: 72.08
               writing-rate-hours-per-page: 0.8333333333333334
               carbon-per-page: 60.06666666666667
+    illustration:
+      children:
+        dalle-2:
+          pipeline:
+            compute:
+              - divide-training-carbon-by-queries-per-month-chat-gpt
+              - divide-inference-carbon-by-n-queries-chat-gpt
+              - sum-training-and-inference-carbon-per-query
+              - sum-embodied-carbon-components-chat-gpt
+              - scale-embodied-carbon-to-training-time-period-chat-gpt
+              - scale-embodied-carbon-to-queries-per-month-chat-gpt
+              - sum-embodied-and-inference-for-dalle
+          defaults:
+            training-carbon-chat-gpt: 552000000
+            queries-per-month-chat-gpt: 300000000
+            operational-carbon-per-day-chat-gpt: 3820000
+            queries-per-day-chat-gpt: 10000000
+            chat-gpt-gpu-embodied-carbon: 36974.31507
+            fraction-of-gpu-lifetime-used-for-training-chat-gpt: 0.2448630137
+            embodied-energy-of-a100-gpu: 150000
+            carbon-footprint-for-recycling-gpu: 1000
+          inputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+          outputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+              training-carbon-chat-gpt: 552000000
+              queries-per-month-chat-gpt: 300000000
+              operational-carbon-per-day-chat-gpt: 3820000
+              queries-per-day-chat-gpt: 10000000
+              chat-gpt-gpu-embodied-carbon: 36974.31507
+              fraction-of-gpu-lifetime-used-for-training-chat-gpt: 0.2448630137
+              embodied-energy-of-a100-gpu: 150000
+              carbon-footprint-for-recycling-gpu: 1000
+              carbon-per-query-chat-gpt-training: 1.84
+              carbon-per-query-chat-gpt-inference: 0.382
+              total-carbon-per-query-chat-gpt: 2.222
+              embodied-carbon-chat-gpt: 151000
+              embodied-carbon-chat-gpt-scaled-by-time: 36974.3150687
+              embodied-carbon-per-query-chat-gpt: 0.00012324771689566669
+              total-carbon-per-image-dalle: 2.2221232477168957
+        midjourney:
+          pipeline:
+            compute:
+              - sum-embodied-carbon-components-chat-gpt
+              - scale-embodied-carbon-to-training-time-period-chat-gpt
+              - scale-embodied-carbon-to-queries-per-month-chat-gpt
+              - sum-embodied-and-inference-for-midjourney
+          defaults:
+            training-carbon-chat-gpt: 552000000
+            queries-per-month-chat-gpt: 300000000
+            chat-gpt-gpu-embodied-carbon: 36974.31507
+            fraction-of-gpu-lifetime-used-for-training-chat-gpt: 0.2448630137
+            embodied-energy-of-a100-gpu: 150000
+            carbon-footprint-for-recycling-gpu: 1000
+            inference-carbon-for-midjourney: 1.9
+          inputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+          outputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+              training-carbon-chat-gpt: 552000000
+              queries-per-month-chat-gpt: 300000000
+              chat-gpt-gpu-embodied-carbon: 36974.31507
+              fraction-of-gpu-lifetime-used-for-training-chat-gpt: 0.2448630137
+              embodied-energy-of-a100-gpu: 150000
+              carbon-footprint-for-recycling-gpu: 1000
+              inference-carbon-for-midjourney: 1.9
+              embodied-carbon-chat-gpt: 151000
+              embodied-carbon-chat-gpt-scaled-by-time: 36974.3150687
+              embodied-carbon-per-query-chat-gpt: 0.00012324771689566669
+              total-carbon-per-image-midjourney: 1.9001232477168957
+        laptop:
+          pipeline:
+            compute:
+              - compute-illustration-rate-in-hours-per-image
+              - multiply-laptop-carbon-by-illustration-rate
+          defaults:
+            cost-per-hour-human-illustrator: 62.5
+            cost-of-illustration-per-hour: 200
+            laptop-footprint-in-gco2-per-hour: 32.4
+          inputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+          outputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+              cost-per-hour-human-illustrator: 62.5
+              cost-of-illustration-per-hour: 200
+              laptop-footprint-in-gco2-per-hour: 32.4
+              human-illustrator-work-rate: 3.2
+              carbon-per-image: 103.68
+        desktop:
+          pipeline:
+            compute:
+              - compute-illustration-rate-in-hours-per-image
+              - multiply-desktop-carbon-by-illustration-rate
+          defaults:
+            cost-per-hour-human-illustrator: 62.5
+            cost-of-illustration-per-hour: 200
+            desktop-footprint-in-gco2-per-hour: 86.5
+          inputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+          outputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+              cost-per-hour-human-illustrator: 62.5
+              cost-of-illustration-per-hour: 200
+              desktop-footprint-in-gco2-per-hour: 86.5
+              human-illustrator-work-rate: 3.2
+              carbon-per-image: 276.8
+        human-usa:
+          pipeline:
+            compute:
+              - compute-illustration-rate-in-hours-per-image
+              - multiply-human-carbon-footprint-by-illustration-rate
+          defaults:
+            cost-per-hour-human-illustrator: 62.5
+            cost-of-illustration-per-hour: 200
+            human-footprint-in-gco2-per-hour: 1712.328767123329
+          inputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+          outputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+              cost-per-hour-human-illustrator: 62.5
+              cost-of-illustration-per-hour: 200
+              human-footprint-in-gco2-per-hour: 1712.328767123329
+              human-illustrator-work-rate: 3.2
+              carbon-per-image: 5479.452054794653
+        human-india:
+          pipeline:
+            compute:
+              - compute-illustration-rate-in-hours-per-image
+              - multiply-human-carbon-footprint-by-illustration-rate
+          defaults:
+            cost-per-hour-human-illustrator: 62.5
+            cost-of-illustration-per-hour: 200
+            human-footprint-in-gco2-per-hour: 216.89497716895
+          inputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+          outputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+              cost-per-hour-human-illustrator: 62.5
+              cost-of-illustration-per-hour: 200
+              human-footprint-in-gco2-per-hour: 216.89497716895
+              human-illustrator-work-rate: 3.2
+              carbon-per-image: 694.06392694064
