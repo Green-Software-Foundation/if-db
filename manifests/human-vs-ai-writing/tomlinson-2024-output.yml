@@ -1,4 +1,4 @@
-name: Zoom SCI
+name: Human vs ai writing and illustrations
 description: >-
   Aims to replicate the methodology described by Tomlinson et al 2024
   (https://www.nature.com/articles/s41598-024-54271-x#data-availibility)
@@ -991,8 +991,8 @@ initialize:
               component: sum
 execution:
   command: >-
-    /home/joe/.npm/_npx/1bf7c3c15bf47d04/node_modules/.bin/ts-node
-    /home/joe/Code/if/src/if-run/index.ts -m
+    /home/user/.npm/_npx/1bf7c3c15bf47d04/node_modules/.bin/ts-node
+    /home/user/Code/if/src/if-run/index.ts -m
     manifests/examples/sci-rep-paper.yml -o
     manifests/outputs/tomlinson-2024-output.yml
   environment:
