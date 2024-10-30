@@ -597,7 +597,7 @@ initialize:
               component: copy  
 
 
-    divide-human-carbon-footprint-by-writing-rate:
+    multiply-human-carbon-footprint-by-writing-rate:
       method: Multiply
       path: "builtin"
       config:
@@ -688,6 +688,8 @@ initialize:
               time: sum
               component: sum  
 
+    # dalle-2 image generation
+    ##########################
 
     sum-embodied-and-inference-for-dalle:
       method: Sum
@@ -717,6 +719,9 @@ initialize:
               time: sum
               component: sum  
 
+    # midjourney image generation
+    #############################
+
     sum-embodied-and-inference-for-midjourney:
       method: Sum
       path: builtin
@@ -744,6 +749,123 @@ initialize:
             aggregation-method:
               time: sum
               component: sum
+
+
+    # laptop image generation
+    #########################
+
+    compute-illustration-rate-in-hours-per-image:
+      method: Divide
+      path: "builtin"
+      config:
+        numerator: cost-of-illustration-per-hour
+        denominator: cost-per-hour-human-illustrator
+        output: human-illustrator-work-rate
+      parameter-metadata:
+        inputs:
+          cost-of-illustration-per-hour:
+            unit: USD
+            description: cost of an illustration, per https://www.thumbtack.com/p/illustration-rates
+            aggregation-method:
+              time: copy
+              component: copy 
+          cost-per-hour-human-illustrator:
+            unit: USD
+            description: human illustrator hourly rate, per https://www.thumbtack.com/p/illustration-rates
+            aggregation-method:
+              time: copy
+              component: copy  
+        outputs:
+          human-illustrator-work-rate:
+            unit: hours/image
+            description: How long it takes a human to create an image. In the paper supp info sheet it is cell B35.
+            aggregation-method:
+              time: copy
+              component: copy  
+
+    multiply-laptop-carbon-by-illustration-rate:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [laptop-footprint-in-gco2-per-hour, human-illustrator-work-rate]
+        output-parameter: carbon-per-image  
+      parameter-metadata:
+        inputs:
+          laptop-footprint-in-gco2-per-hour:
+            unit: gCO2/hour
+            description: carbon footprint of a lapktop per hour of usage, per https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator#results.
+            aggregation-method:
+              time: copy
+              component: copy 
+          human-illustrator-work-rate:
+            unit: hours/image
+            description: How long it takes a human to create an image. In the paper supp info sheet it is cell B35.
+            aggregation-method:
+              time: copy
+              component: copy  
+        outputs:
+          carbon-per-image:
+            unit: gCO2e/page
+            description: How much carbon is emitted during image generation. In the paper it is cell B86
+            aggregation-method:
+              time: sum
+              component: sum  
+
+    multiply-desktop-carbon-by-illustration-rate:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [desktop-footprint-in-gco2-per-hour, human-illustrator-work-rate]
+        output-parameter: carbon-per-image  
+      parameter-metadata:
+        inputs:
+          desktop-footprint-in-gco2-per-hour:
+            unit: gCO2/hour
+            description: carbon footprint of a desktop per hour of usage, per https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator#results.
+            aggregation-method:
+              time: copy
+              component: copy 
+          human-illustrator-work-rate:
+            unit: hours/image
+            description: How long it takes a human to create an image. In the paper supp info sheet it is cell B35.
+            aggregation-method:
+              time: copy
+              component: copy  
+        outputs:
+          carbon-per-image:
+            unit: gCO2e/page
+            description: How much carbon is emitted during image generation. In the paper it is cell B87
+            aggregation-method:
+              time: sum
+              component: sum  
+
+    multiply-human-carbon-footprint-by-illustration-rate:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [human-footprint-in-gco2-per-hour, human-illustrator-work-rate]
+        output-parameter: carbon-per-image
+      parameter-metadata:
+        inputs:
+          human-illustrator-work-rate:
+            unit: hours/image
+            description: How long it takes a human to create an image. In the paper supp info sheet it is cell B35.
+            aggregation-method:
+              time: copy
+              component: copy  
+          human-footprint-in-gco2-per-hour:
+            unit: gCO2e/hour
+            description: How much carbon a human emits per hour for a given country, from https://ourworldindata.org/co2-and-other-greenhouse-gas-emissions and scaled to per hour.In the paper supp info sheet it is cell B21 or B22 (USA or India).
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          carbon-per-page:
+            unit: gCO2e/page
+            description: Ho wmuch carbon is emitted when a person writes a page of text. in the paper it is cell B72 (USA) or B73 (India)
+            aggregation-method:
+              time: sum
+              component: sum  
 
 
 tree:
@@ -811,7 +933,7 @@ tree:
           pipeline:
             compute:
               - compute-writing-rate-in-hours-per-page
-              - divide-human-carbon-footprint-by-writing-rate
+              - multiply-human-carbon-footprint-by-writing-rate
           defaults:
             writing-rate-words-per-hour: 300 # from https://www.writermag.com/writing-inspiration/the-writing-life/many-words-one-write-per-day/
             writing-rate-words-per-page: 250 # Common knowledge, or https://wordcounter.net/words-per-page
@@ -824,7 +946,7 @@ tree:
           pipeline:
             compute:
               - compute-writing-rate-in-hours-per-page
-              - divide-human-carbon-footprint-by-writing-rate
+              - multiply-human-carbon-footprint-by-writing-rate
           defaults:
             writing-rate-words-per-hour: 300 # from https://www.writermag.com/writing-inspiration/the-writing-life/many-words-one-write-per-day/
             writing-rate-words-per-page: 250 # Common knowledge, or https://wordcounter.net/words-per-page
@@ -903,4 +1025,55 @@ tree:
           inputs:
             - timestamp: '2024-09-01T10:00:00'
               duration: 86400
-          
+
+        laptop:
+          pipeline:
+            compute:
+              - compute-illustration-rate-in-hours-per-image
+              - multiply-laptop-carbon-by-illustration-rate
+          defaults:
+            cost-per-hour-human-illustrator: 62.5 # usd from https://www.thumbtack.com/p/illustration-rates 
+            cost-of-illustration-per-hour: 200 # hours from https://www.thumbtack.com/p/illustration-rates 
+            laptop-footprint-in-gco2-per-hour: 32.4 # derived from https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator#results
+          inputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+
+        desktop:
+          pipeline:
+            compute:
+              - compute-illustration-rate-in-hours-per-image
+              - multiply-desktop-carbon-by-illustration-rate
+          defaults:
+            cost-per-hour-human-illustrator: 62.5 # usd from https://www.thumbtack.com/p/illustration-rates 
+            cost-of-illustration-per-hour: 200 # hours from https://www.thumbtack.com/p/illustration-rates 
+            desktop-footprint-in-gco2-per-hour: 86.5 # derived from https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator#results
+          inputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+
+        human-usa:
+          pipeline:
+            compute:
+              - compute-illustration-rate-in-hours-per-image
+              - multiply-human-carbon-footprint-by-illustration-rate
+          defaults:
+            cost-per-hour-human-illustrator: 62.5 # usd from https://www.thumbtack.com/p/illustration-rates 
+            cost-of-illustration-per-hour: 200 # hours from https://www.thumbtack.com/p/illustration-rates 
+            human-footprint-in-gco2-per-hour: 1712.328767123329 # derived from https://ourworldindata.org/co2-and-other-greenhouse-gas-emissions and converted from per year to per hour
+          inputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+
+        human-india:
+          pipeline:
+            compute:
+              - compute-illustration-rate-in-hours-per-image
+              - multiply-human-carbon-footprint-by-illustration-rate
+          defaults:
+            cost-per-hour-human-illustrator: 62.5 # usd from https://www.thumbtack.com/p/illustration-rates 
+            cost-of-illustration-per-hour: 200 # hours from https://www.thumbtack.com/p/illustration-rates 
+            human-footprint-in-gco2-per-hour: 216.89497716895 # derived from https://ourworldindata.org/co2-and-other-greenhouse-gas-emissions and converted from per year to per hour
+          inputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
