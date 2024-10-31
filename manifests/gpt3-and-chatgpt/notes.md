@@ -57,8 +57,7 @@ MS/Nvidia already announced the models are running on Azure servers. A single Nv
 
 ## Embodied carbon
 
-```
-Some thoughts on embodied carbon attribution.
+### Embodied carbon allocation strategy
 
 If we calculate the embodied carbon of the hardware that was used for training, and then bundle it with operational carbon before dividing by queries per day, we end up double counting embodied emissions. I've seen this method used in several places, and started doing it myself, but some vague alarm bell was ringing in my head and I sat down to deal with it and realised the following:
 
@@ -80,16 +79,14 @@ Let's say we want to account for it all over 1 year. Then we distribute the tota
 
 Another option could be to establish a decay curve for the carbon, so that instead of expiring on some given day, the burden decreases according to some linear or non-linear function, until eventually the carbon allocated per query becomes negligible, and we can decide what negligible means based on how much of the original carbon emission has been allocated. This seems uneccessarily complex, and also vulnerable to unusual effects.
 
-**Chosen solution**
-
 In this estimate, I amortized the embodied carbon due to training over the time beetween Chat-GPT being released using GPT3, and Chat-GPT being upgraded to use GPT4, as this is the time period of heaviest use for the actual model setup we've modelled here. That time span was about 4 months, between [November 2022 and March 2023](https://www.searchenginejournal.com/history-of-chatgpt-timeline/488370/).
 
 This means the embodied carbon for the GPT-3 training and Chat-GPT training phases are *both* scaled to a daily value using 120 days as the denominator, and then carbon is allocated per query by dividing that daily amount of embodied carbon by queries per day.
 
 This only makes sense for the hardware that was *only* used for training. The time window for the hardware being used to serve queries should be the lifespan of the hardware, or if the hardware is used for less than the declared lifespan, the time it was actually in operation for (*if* the hardware is theh used for other purposes - if it is binned, then account for it all). If the application is moved to new hardware, the embodied carbon of that new hardware should be accounted for and amortized over *its* lifespan.
 
-```
 
+### Emboded carbon values
 
 Nvidia do not publish embodied carbon values for their chips, but GPUs are well known to be dirty and energy intensive to produce. We will have to look for analogs from other manufacturers and accept there's some uncertainty. 
 
@@ -163,10 +160,6 @@ So to sum up the embodied carbon for training and inference for Chat-GPT, we hav
 ```
 
 As explained earlier, we want to fix a time window of 4 months (120 days) over which to amortize this carbon. So we will account for the 34851 T of carbon in 120 individual timesteps.
-
-
-
-
 
 
 We can further distribute this embodied carbon value down to daily timesteps to make it easier to aggregate with operational carbon estimates and to normalize to daily interactions data that are available online.
