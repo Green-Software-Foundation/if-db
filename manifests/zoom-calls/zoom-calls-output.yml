@@ -309,17 +309,20 @@ execution:
     /home/joe/Code/if/src/if-run/index.ts -m manifests/examples/zoom-calls.yml
     -o manifests/outputs/zoom-calls-output.yaml
   environment:
-    if-version: 0.6.0
-    os: linux
-    os-version: 5.15.0-117-generic
-    node-version: 21.4.0
-    date-time: 2024-09-13T14:25:44.148Z (UTC)
+    if-version: 0.7.2
+    os: macOS
+    os-version: 14.6.1
+    node-version: 18.20.4
+    date-time: 2024-11-22T06:02:49.882Z (UTC)
     dependencies:
       - '@babel/core@7.22.10'
       - '@babel/preset-typescript@7.23.3'
       - '@commitlint/cli@18.6.0'
       - '@commitlint/config-conventional@18.6.0'
-      - '@grnsft/if-core@0.0.22'
+      - '@grnsft/if-core@0.0.28'
+      - >-
+        @grnsft/if-eco-ci-plugin@0.0.1 extraneous ->
+        file:../../../if-eco-ci-plugin
       - '@jest/globals@29.7.0'
       - '@types/jest@29.5.8'
       - '@types/js-yaml@4.0.9'
@@ -333,7 +336,6 @@ execution:
       - fixpack@4.0.0
       - gts@5.2.0
       - husky@8.0.3
-      - if-github-plugin@v0.0.1 extraneous -> file:../../if-github-plugin
       - jest@29.7.0
       - js-yaml@4.1.0
       - lint-staged@15.2.10
@@ -348,152 +350,215 @@ execution:
       - zod@3.23.8
   status: success
 explain:
-  data-transferred:
-    plugins:
-      - network-energy-to-transfer-call-data
-    unit: GB
-    description: >-
-      Data transferred over network, in GB. Estimated from values here
-      https://tactiq.io/learn/zoom-data-usage-facts.
-    aggregation-method:
-      time: sum
-      component: sum
-  kwh-per-gb-network:
-    plugins:
-      - network-energy-to-transfer-call-data
-    unit: kWh/GB
-    description: >-
-      Coefficient relating energy expendidture to 1GB of data transferred over
-      network. Taken from Orbinger et al 2021
-      (https://www.sciencedirect.com/science/article/abs/pii/S0921344920307072)
-    aggregation-method:
-      time: copy
-      component: copy
-  energy:
-    plugins:
-      - network-energy-to-transfer-call-data
-      - energy-to-carbon
-      - sum-energy-components
-    unit: kWh
-    description: >-
-      Total Energy consumed by the server to handle zoom call, for the given
-      timestep.
-    aggregation-method:
-      time: sum
-      component: sum
-  grid-intensity:
-    plugins:
-      - energy-to-carbon
-    unit: gCO2e/kWh
-    description: Carbon emissions per unit energy.
-    aggregation-method:
-      time: copy
-      component: copy
-  carbon:
-    plugins:
-      - energy-to-carbon
-    unit: gCO2e
-    description: mass of carbon emitted.
-    aggregation-method:
-      time: sum
-      component: sum
+  network-energy-to-transfer-call-data:
+    inputs:
+      data-transferred:
+        unit: GB
+        description: >-
+          Data transferred over network, in GB. Estimated from values here
+          https://tactiq.io/learn/zoom-data-usage-facts.
+        aggregation-method:
+          time: sum
+          component: sum
+      kwh-per-gb-network:
+        unit: kWh/GB
+        description: >-
+          Coefficient relating energy expendidture to 1GB of data transferred
+          over network. Taken from Orbinger et al 2021
+          (https://www.sciencedirect.com/science/article/abs/pii/S0921344920307072)
+        aggregation-method:
+          time: copy
+          component: copy
+    outputs:
+      energy:
+        unit: kWh
+        description: Energy due to data transferred over network, in kWh.
+        aggregation-method:
+          time: sum
+          component: sum
+  energy-to-carbon:
+    inputs:
+      energy:
+        unit: kWh
+        description: Energy due to data transferred over network, in kWh.
+        aggregation-method:
+          time: sum
+          component: sum
+      grid-intensity:
+        unit: gCO2e/kWh
+        description: Carbon emissions per unit energy.
+        aggregation-method:
+          time: copy
+          component: copy
+    outputs:
+      carbon:
+        unit: gCO2e
+        description: mass of carbon emitted.
+        aggregation-method:
+          time: sum
+          component: sum
   sci:
-    plugins:
-      - sci
-    unit: gCO2 / participant
-    description: software carbon intensity
-    aggregation-method:
-      time: sum
-      component: sum
-  cpu-util:
-    plugins:
-      - interpolate-power-curve
-    unit: percent
-    description: percentage total CPU utilization during build process
-    aggregation-method:
-      time: avg
-      component: avg
-  cpu-factor:
-    plugins:
-      - interpolate-power-curve
-      - cpu-factor-to-wattage
-    unit: dimensionless
-    description: A multiplier applied to the processor TDP to estimate power draw.
-    aggregation-method:
-      time: copy
-      component: copy
-  thermal-design-power:
-    plugins:
-      - cpu-factor-to-wattage
-    unit: W
-    description: Estimate of the maximum power draw by a processor.
-    aggregation-method:
-      time: copy
-      component: copy
-  cpu-wattage:
-    plugins:
-      - cpu-factor-to-wattage
-      - cpu-wattage-times-timestep-duration
-    unit: W
-    description: Power used by CPU, estimated as the product of the cpu-factor and the TDP.
-    aggregation-method:
-      time: sum
-      component: sum
-  duration:
-    plugins:
-      - cpu-wattage-times-timestep-duration
-      - memory-coefficient-correction
-    unit: s
-    description: Duration of the timestep, in seconds.
-    aggregation-method:
-      time: sum
-      component: sum
-  cpu-wattage-times-duration:
-    plugins:
-      - cpu-wattage-times-timestep-duration
-      - cpu-wattage-to-energy-kwh
-    unit: Ws
-    description: Energy used by CPU, in Ws.
-    aggregation-method:
-      time: sum
-      component: sum
-  energy-cpu-kwh:
-    plugins:
-      - cpu-wattage-to-energy-kwh
-      - sum-energy-components
-    unit: kWh
-    description: Energy used by CPU at server or client, converted to kWh.
-    aggregation-method:
-      time: sum
-      component: sum
-  memory-coefficient:
-    plugins:
-      - memory-coefficient-correction
-      - memory-energy
-    unit: kW/GB/s
-    description: >-
-      Energy used per GB of memory, per second. Converted from CCF coefficient
-      expressed in kW/GB/h kWh.
-    aggregation-method:
-      time: sum
-      component: sum
-  memory-gb:
-    plugins:
-      - memory-energy
-    unit: GB
-    description: Memory used at server or client during zoom call.
-    aggregation-method:
-      time: sum
-      component: sum
-  energy-memory-kwh:
-    plugins:
-      - memory-energy
-      - sum-energy-components
-    unit: kWh
-    description: Energy consumed by server due to memory usage.
-    aggregation-method:
-      time: sum
-      component: sum
+    inputs:
+      carbon:
+        description: an amount of carbon emitted into the atmosphere
+        unit: gCO2e
+        aggregation-method:
+          time: sum
+          component: sum
+      functional-unit:
+        description: >-
+          the name of the functional unit in which the final SCI value should be
+          expressed, e.g. requests, users
+        unit: none
+        aggregation-method:
+          time: sum
+          component: sum
+    outputs:
+      sci:
+        unit: gCO2 / participant
+        description: software carbon intensity
+        aggregation-method:
+          time: sum
+          component: sum
+  interpolate-power-curve:
+    inputs:
+      cpu-util:
+        unit: percent
+        description: percentage total CPU utilization during build process
+        aggregation-method:
+          time: avg
+          component: avg
+    outputs:
+      cpu-factor:
+        unit: dimensionless
+        description: A multiplier applied to the processor TDP to estimate power draw.
+        aggregation-method:
+          time: copy
+          component: copy
+  cpu-factor-to-wattage:
+    inputs:
+      cpu-factor:
+        unit: dimensionless
+        description: A multiplier applied to the processor TDP to estimate power draw.
+        aggregation-method:
+          time: copy
+          component: copy
+      thermal-design-power:
+        unit: W
+        description: Estimate of the maximum power draw by a processor.
+        aggregation-method:
+          time: copy
+          component: copy
+    outputs:
+      cpu-wattage:
+        unit: W
+        description: >-
+          Power used by CPU, estimated as the product of the cpu-factor and the
+          TDP.
+        aggregation-method:
+          time: sum
+          component: sum
+  cpu-wattage-times-timestep-duration:
+    inputs:
+      cpu-wattage:
+        unit: W
+        description: >-
+          Power used by CPU, estimated as the product of the cpu-factor and the
+          TDP.
+        aggregation-method:
+          time: sum
+          component: sum
+      duration:
+        unit: s
+        description: Timestep duration in seconds.
+        aggregation-method:
+          time: sum
+          component: sum
+    outputs:
+      cpu-wattage-times-duration:
+        unit: Ws
+        description: Energy used by CPU in timestep.
+        aggregation-method:
+          time: sum
+          component: sum
+  cpu-wattage-to-energy-kwh:
+    inputs:
+      cpu-wattage-times-duration:
+        unit: Ws
+        description: Energy used by CPU, in Ws.
+        aggregation-method:
+          time: sum
+          component: sum
+    outputs:
+      energy-cpu-kwh:
+        unit: kWh
+        description: Energy used by CPU, converted to kWh.
+        aggregation-method:
+          time: sum
+          component: sum
+  memory-coefficient-correction:
+    inputs:
+      duration:
+        unit: s
+        description: Duration of the timestep, in seconds.
+        aggregation-method:
+          time: sum
+          component: sum
+    outputs:
+      memory-coefficient:
+        unit: kW/GB/s
+        description: >-
+          Energy used per GB of memory, per second. Converted from CCF
+          coefficient expressed in kW/GB/h kWh.
+        aggregation-method:
+          time: sum
+          component: sum
+  memory-energy:
+    inputs:
+      memory-gb:
+        unit: GB
+        description: Memory used at server or client during zoom call.
+        aggregation-method:
+          time: sum
+          component: sum
+      memory-coefficient:
+        unit: kW/GB/s
+        description: >-
+          Energy used per GB of memory, per second. Converted from CCF
+          coefficient expressed in kW/GB/h kWh.
+        aggregation-method:
+          time: sum
+          component: sum
+    outputs:
+      energy-memory-kwh:
+        unit: kWh
+        description: Energy consumed at server or client due to memory usage.
+        aggregation-method:
+          time: sum
+          component: sum
+  sum-energy-components:
+    inputs:
+      energy-cpu-kwh:
+        unit: kWh
+        description: Energy used by CPU at server or client, converted to kWh.
+        aggregation-method:
+          time: sum
+          component: sum
+      energy-memory-kwh:
+        unit: kWh
+        description: Energy consumed by server due to memory usage.
+        aggregation-method:
+          time: sum
+          component: sum
+    outputs:
+      energy:
+        unit: kWh
+        description: >-
+          Total Energy consumed by the server to handle zoom call, for the given
+          timestep.
+        aggregation-method:
+          time: sum
+          component: sum
 tree:
   children:
     network:
