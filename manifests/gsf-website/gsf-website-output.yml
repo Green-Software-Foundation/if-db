@@ -877,17 +877,20 @@ execution:
     manifests/examples/gsf-website-nested.yaml -o
     manifests/outputs/gsf-website-nested-output.yaml
   environment:
-    if-version: 0.6.0
-    os: linux
-    os-version: 5.15.0-117-generic
-    node-version: 21.4.0
-    date-time: 2024-09-13T08:31:52.348Z (UTC)
+    if-version: 0.7.2
+    os: macOS
+    os-version: 14.6.1
+    node-version: 18.20.4
+    date-time: 2024-11-22T05:59:04.083Z (UTC)
     dependencies:
       - '@babel/core@7.22.10'
       - '@babel/preset-typescript@7.23.3'
       - '@commitlint/cli@18.6.0'
       - '@commitlint/config-conventional@18.6.0'
-      - '@grnsft/if-core@0.0.22'
+      - '@grnsft/if-core@0.0.28'
+      - >-
+        @grnsft/if-eco-ci-plugin@0.0.1 extraneous ->
+        file:../../../if-eco-ci-plugin
       - '@jest/globals@29.7.0'
       - '@types/jest@29.5.8'
       - '@types/js-yaml@4.0.9'
@@ -901,7 +904,6 @@ execution:
       - fixpack@4.0.0
       - gts@5.2.0
       - husky@8.0.3
-      - if-github-plugin@v0.0.1 extraneous -> file:../../if-github-plugin
       - jest@29.7.0
       - js-yaml@4.1.0
       - lint-staged@15.2.10
@@ -916,377 +918,818 @@ execution:
       - zod@3.23.8
   status: success
 explain:
-  repo-clones-source-repo:
-    plugins:
-      - storage-and-traffic-from-github-source-repo
-    unit: number
-    description: >-
-      the clones count of the source-repo repository in the specified time
-      range. Renamed from default "clones" output param.
-    aggregation-method:
-      time: sum
-      component: sum
-  repo-size-source-repo:
-    plugins:
-      - storage-and-traffic-from-github-source-repo
-      - storage-in-gb-to-tb-source-repo
-    unit: GB
-    description: >-
-      the size of the source-repo repository. Renamed from default "size" output
-      param in "storage-and-traffic-from-github-source-repo".
-    aggregation-method:
-      time: sum
-      component: sum
-  storage-tb-source-repo:
-    plugins:
-      - storage-in-gb-to-tb-source-repo
-      - storage-energy-in-watts-source-repo
-    unit: TB
-    description: >-
-      the size of the source-repo repository. Renamed from default "size" output
-      param in "storage-and-traffic-from-github-source-repo".
-    aggregation-method:
-      time: copy
-      component: copy
-  watt-hours-per-tb-hour:
-    plugins:
-      - storage-energy-in-watts-source-repo
-      - storage-energy-static-site-in-watts-for-one-hour
-    unit: Wh
-    description: >-
-      Energy required to store 1 TB of data for 1 hour on an SSD, taken from
-      CCF.
-    aggregation-method:
-      time: copy
-      component: copy
-  storage-watts-source-repo:
-    plugins:
-      - storage-energy-in-watts-source-repo
-      - storage-energy-in-wh-source-repo
-    unit: W
-    description: Watts consumed storing IF docs repository.
-    aggregation-method:
-      time: sum
-      component: sum
-  duration-in-hours:
-    plugins:
-      - storage-energy-in-wh-source-repo
-      - storage-energy-in-wh-static-site-per-duration
-    unit: hours
-    description: duration of the timestep converted from seconds to hours.
-    aggregation-method:
-      time: sum
-      component: sum
-  storage-wh-source-repo:
-    plugins:
-      - storage-energy-in-wh-source-repo
-      - storage-energy-to-kwh-source-repo
-    unit: Wh
-    description: Energy consumed storing IF docs repository in Watt hours.
-    aggregation-method:
-      time: sum
-      component: sum
-  energy:
-    plugins:
-      - storage-energy-to-kwh-source-repo
-      - energy-to-carbon
-      - build-energy-total
-      - sum-serving-static-site-energy-components
-      - network-energy-serving-static-site-total
-      - end-user-energy
-    unit: kWh
-    description: >-
-      Energy consumed by all users viewing the site in their browser, in
-      timestep.
-    aggregation-method:
-      time: sum
-      component: sum
-  grid-intensity:
-    plugins:
-      - energy-to-carbon
-    unit: gCO2e/kWh
-    description: Mass of carbon dioxide equivalent emitted per kWh of energy consumed.
-    aggregation-method:
-      time: sum
-      component: sum
-  carbon:
-    plugins:
-      - energy-to-carbon
-      - embodied-carbon-web-server-origin
-      - embodied-carbon-web-server-cdn
-      - embodied-carbon-github
-      - total-embodied-carbon
-    unit: gCO2e
-    description: >-
-      Mass of carbon emitted for all the end-user devices used to visit our
-      site.
-    aggregation-method:
-      time: sum
-      component: sum
+  storage-and-traffic-from-github-source-repo:
+    outputs:
+      repo-clones-source-repo:
+        unit: number
+        description: >-
+          the clones count of the source-repo repository in the specified time
+          range. Renamed from default "clones" output param.
+        aggregation-method:
+          time: sum
+          component: sum
+      repo-size-source-repo:
+        unit: GB
+        description: >-
+          the size of the source-repo repository. Renamed from default "size"
+          output param.
+        aggregation-method:
+          time: sum
+          component: sum
+  storage-in-gb-to-tb-source-repo:
+    inputs:
+      repo-size-source-repo:
+        unit: GB
+        description: >-
+          the size of the source-repo repository. Renamed from default "size"
+          output param in "storage-and-traffic-from-github-source-repo".
+        aggregation-method:
+          time: sum
+          component: sum
+    outputs:
+      storage-tb-source-repo:
+        unit: TB
+        description: Storage size of Github source-repo repo in terabytes.
+        aggregation-method:
+          time: copy
+          component: copy
+  storage-energy-in-watts-source-repo:
+    inputs:
+      storage-tb-source-repo:
+        unit: TB
+        description: >-
+          the size of the source-repo repository. Renamed from default "size"
+          output param in "storage-and-traffic-from-github-source-repo".
+        aggregation-method:
+          time: copy
+          component: copy
+      watt-hours-per-tb-hour:
+        unit: Wh
+        description: >-
+          Coefficient relating the storage size in TB to energy in Watts, taken
+          from CCF.
+        aggregation-method:
+          time: copy
+          component: copy
+    outputs:
+      storage-watts-source-repo:
+        unit: W
+        description: Watts consumed storing IF docs repository.
+        aggregation-method:
+          time: sum
+          component: sum
+  storage-energy-in-wh-source-repo:
+    inputs:
+      storage-watts-source-repo:
+        unit: W
+        description: Watts consumed storing IF docs repository.
+        aggregation-method:
+          time: sum
+          component: sum
+      duration-in-hours:
+        unit: hours
+        description: duration of the timestep converted from seconds to hours.
+        aggregation-method:
+          time: sum
+          component: sum
+    outputs:
+      storage-wh-source-repo:
+        unit: Wh
+        description: Energy consumed storing IF docs repository in Watt hours.
+        aggregation-method:
+          time: sum
+          component: sum
+  storage-energy-to-kwh-source-repo:
+    inputs:
+      storage-wh-source-repo:
+        unit: Wh
+        description: Energy consumed storing IF docs repository in Watt hours.
+        aggregation-method:
+          time: sum
+          component: sum
+    outputs:
+      energy:
+        unit: kWh
+        description: Energy consumed storing IF docs repository in kWh.
+        aggregation-method:
+          time: sum
+          component: sum
+  energy-to-carbon:
+    inputs:
+      energy:
+        unit: kWh
+        description: Energy consumed in kWh.
+        aggregation-method:
+          time: sum
+          component: sum
+      grid-intensity:
+        unit: gCO2e/kWh
+        description: Mass of carbon dioxide equivalent emitted per kWh of energy consumed.
+        aggregation-method:
+          time: sum
+          component: sum
+    outputs:
+      carbon:
+        unit: gCO2e
+        description: Mass of CO2e emitted.
+        aggregation-method:
+          time: sum
+          component: sum
   sci:
-    plugins:
-      - sci
-    unit: gCO2 / visit
-    description: software carbon intensity
-    aggregation-method:
-      time: avg
-      component: sum
-  cpu-utilization-during-build:
-    plugins:
-      - interpolate-power-curve
-    unit: percent
-    description: percentage total CPU utilization during build process
-    aggregation-method:
-      time: avg
-      component: avg
-  cpu-factor:
-    plugins:
-      - interpolate-power-curve
-      - build-stage-cpu-factor-to-wattage
-    unit: dimensionless
-    description: A multiplier applied to the processor TDP to estimate power draw.
-    aggregation-method:
-      time: copy
-      component: copy
-  thermal-design-power:
-    plugins:
-      - build-stage-cpu-factor-to-wattage
-    unit: W
-    description: Estimate of the maximum power draw by a processor.
-    aggregation-method:
-      time: copy
-      component: copy
-  cpu-wattage:
-    plugins:
-      - build-stage-cpu-factor-to-wattage
-      - build-stage-cpu-wattage-times-build-duration
-    unit: W
-    description: >-
-      Power used by CPU during build process,estimated as the product of the
-      cpu-factor and the TDP.
-    aggregation-method:
-      time: sum
-      component: sum
-  build-duration:
-    plugins:
-      - build-stage-cpu-wattage-times-build-duration
-      - memory-coefficient-correction
-    unit: s
-    description: Time taken for build process to complete.
-    aggregation-method:
-      time: sum
-      component: sum
-  cpu-wattage-times-duration:
-    plugins:
-      - build-stage-cpu-wattage-times-build-duration
-      - build-stage-cpu-wattage-to-energy-kwh
-    unit: Ws
-    description: Energy used by CPU during build process.
-    aggregation-method:
-      time: sum
-      component: sum
-  build-energy-cpu-kwh:
-    plugins:
-      - build-stage-cpu-wattage-to-energy-kwh
-      - sum-build-energy-components
-    unit: kWh
-    description: Energy used by CPU during build process, converted to kWh.
-    aggregation-method:
-      time: sum
-      component: sum
-  memory-coefficient:
-    plugins:
-      - memory-coefficient-correction
-      - memory-energy-per-build
-    unit: kW/GB/s
-    description: >-
-      Energy used per GB of memory, per second. Converted from CCF coefficient
-      expressed in kW/GB/h kWh.
-    aggregation-method:
-      time: sum
-      component: sum
-  build-memory-gb:
-    plugins:
-      - memory-energy-per-build
-    unit: GB
-    description: Memory used during build process.
-    aggregation-method:
-      time: sum
-      component: sum
-  build-energy-memory-kwh:
-    plugins:
-      - memory-energy-per-build
-      - sum-build-energy-components
-    unit: kWh
-    description: Energy consumed during build process due to memory usage.
-    aggregation-method:
-      time: sum
-      component: sum
-  build-energy-kwh-per-build:
-    plugins:
-      - sum-build-energy-components
-      - build-energy-total
-    unit: kWh
-    description: Total Energy consumed during build process due to memory and CPU usage.
-    aggregation-method:
-      time: sum
-      component: sum
-  builds:
-    plugins:
-      - build-energy-total
-    unit: builds
-    description: Number of builds that happened in the given timestep.
-    aggregation-method:
-      time: sum
-      component: sum
-  static-site-size-in-mb:
-    plugins:
-      - static-site-size-in-tb
-      - static-site-size-in-gb
-    unit: MB
-    description: Size of static site as reported by Github API.
-    aggregation-method:
-      time: copy
-      component: copy
+    inputs:
+      carbon:
+        description: an amount of carbon emitted into the atmosphere
+        unit: gCO2e
+        aggregation-method:
+          time: sum
+          component: sum
+      functional-unit:
+        description: >-
+          the name of the functional unit in which the final SCI value should be
+          expressed, e.g. requests, users
+        unit: none
+        aggregation-method:
+          time: sum
+          component: sum
+    outputs:
+      sci:
+        unit: gCO2 / visit
+        description: software carbon intensity
+        aggregation-method:
+          time: avg
+          component: sum
+  interpolate-power-curve:
+    inputs:
+      cpu-utilization-during-build:
+        unit: percent
+        description: percentage total CPU utilization during build process
+        aggregation-method:
+          time: avg
+          component: avg
+    outputs:
+      cpu-factor:
+        unit: dimensionless
+        description: A multiplier applied to the processor TDP to estimate power draw.
+        aggregation-method:
+          time: copy
+          component: copy
+  build-stage-cpu-factor-to-wattage:
+    inputs:
+      cpu-factor:
+        unit: dimensionless
+        description: A multiplier applied to the processor TDP to estimate power draw.
+        aggregation-method:
+          time: copy
+          component: copy
+      thermal-design-power:
+        unit: W
+        description: Estimate of the maximum power draw by a processor.
+        aggregation-method:
+          time: copy
+          component: copy
+    outputs:
+      cpu-wattage:
+        unit: W
+        description: >-
+          Power used by CPU during build process, estimated as the product of
+          the cpu-factor and the TDP.
+        aggregation-method:
+          time: sum
+          component: sum
+  build-stage-cpu-wattage-times-build-duration:
+    inputs:
+      cpu-wattage:
+        unit: W
+        description: >-
+          Power used by CPU during build process,estimated as the product of the
+          cpu-factor and the TDP.
+        aggregation-method:
+          time: sum
+          component: sum
+      build-duration:
+        unit: s
+        description: Time taken for build process to complete.
+        aggregation-method:
+          time: sum
+          component: sum
+    outputs:
+      cpu-wattage-times-duration:
+        unit: Ws
+        description: Energy used by CPU during build process.
+        aggregation-method:
+          time: sum
+          component: sum
+  build-stage-cpu-wattage-to-energy-kwh:
+    inputs:
+      cpu-wattage-times-duration:
+        unit: Ws
+        description: Energy used by CPU during build process.
+        aggregation-method:
+          time: sum
+          component: sum
+    outputs:
+      build-energy-cpu-kwh:
+        unit: kWh
+        description: Energy used by CPU during build process, converted to kWh.
+        aggregation-method:
+          time: sum
+          component: sum
+  memory-coefficient-correction:
+    inputs:
+      build-duration:
+        unit: s
+        description: Time taken for build process to complete.
+        aggregation-method:
+          time: sum
+          component: sum
+    outputs:
+      memory-coefficient:
+        unit: kW/GB/s
+        description: >-
+          Energy used per GB of memory, per second. Converted from CCF
+          coefficient expressed in kW/GB/h kWh.
+        aggregation-method:
+          time: sum
+          component: sum
+  memory-energy-per-build:
+    inputs:
+      build-memory-gb:
+        unit: GB
+        description: Memory used during build process.
+        aggregation-method:
+          time: sum
+          component: sum
+      memory-coefficient:
+        unit: kW/GB/s
+        description: >-
+          Energy used per GB of memory, per second. Converted from CCF
+          coefficient expressed in kW/GB/h kWh.
+        aggregation-method:
+          time: sum
+          component: sum
+    outputs:
+      build-energy-memory-kwh:
+        unit: kWh
+        description: Energy consumed during build process due to memory usage.
+        aggregation-method:
+          time: sum
+          component: sum
+  sum-build-energy-components:
+    inputs:
+      build-energy-cpu-kwh:
+        unit: kWh
+        description: Energy used by CPU during build process, converted to kWh.
+        aggregation-method:
+          time: sum
+          component: sum
+      build-energy-memory-kwh:
+        unit: kWh
+        description: Energy consumed during build process due to memory usage.
+        aggregation-method:
+          time: sum
+          component: sum
+    outputs:
+      build-energy-kwh-per-build:
+        unit: kWh
+        description: >-
+          Total Energy consumed during build process due to memory and CPU
+          usage, per build.
+        aggregation-method:
+          time: sum
+          component: sum
+  build-energy-total:
+    inputs:
+      build-energy-kwh-per-build:
+        unit: kWh
+        description: >-
+          Total Energy consumed during build process due to memory and CPU
+          usage.
+        aggregation-method:
+          time: sum
+          component: sum
+      builds:
+        unit: builds
+        description: Number of builds that happened in the given timestep.
+        aggregation-method:
+          time: sum
+          component: sum
+    outputs:
+      energy:
+        unit: kWh
+        description: >-
+          Total Energy consumed during build process due to memory and CPU
+          usage, for all builds.
+        aggregation-method:
+          time: sum
+          component: sum
   static-site-size-in-tb:
-    plugins:
-      - static-site-size-in-tb
-      - storage-energy-static-site-in-watts-for-one-hour
-    unit: TB
-    description: Size of the static site, taken from Google PageSpeed API.
-    aggregation-method:
-      time: sum
-      component: sum
-  storage-watt-hours-static-site-at-origin:
-    plugins:
-      - storage-energy-static-site-in-watts-for-one-hour
-      - storage-energy-in-wh-static-site-per-duration
-    unit: Wh
-    description: Energy required to store the IF docs repo for one hour.
-    aggregation-method:
-      time: sum
-      component: sum
-  storage-wh-static-site-at-origin:
-    plugins:
-      - storage-energy-in-wh-static-site-per-duration
-      - storage-energy-to-kwh-static-site
-    unit: Wh
-    description: Energy required to store the IF docs repo in each timestep.
-    aggregation-method:
-      time: sum
-      component: sum
-  storage-energy-kwh-static-site-at-origin:
-    plugins:
-      - storage-energy-to-kwh-static-site
-      - storage-energy-per-cdn-node
-      - sum-serving-static-site-energy-components
-    unit: kWh
-    description: Energy required to store the IF docs repo in each timestep, in kWh.
-    aggregation-method:
-      time: sum
-      component: sum
+    inputs:
+      static-site-size-in-mb:
+        unit: MB
+        description: Size of the static site, taken from Google PageSpeed API.
+        aggregation-method:
+          time: copy
+          component: copy
+    outputs:
+      static-site-size-in-tb:
+        unit: TB
+        description: Size of the static site, taken from Google PageSpeed API.
+        aggregation-method:
+          time: sum
+          component: sum
+  storage-energy-static-site-in-watts-for-one-hour:
+    inputs:
+      static-site-size-in-tb:
+        unit: TB
+        description: Size of the static site, taken from Google PageSpeed API.
+        aggregation-method:
+          time: sum
+          component: sum
+      watt-hours-per-tb-hour:
+        unit: Wh
+        description: >-
+          Energy required to store 1 TB of data for 1 hour on an SSD, taken from
+          CCF.
+        aggregation-method:
+          time: copy
+          component: copy
+    outputs:
+      storage-watt-hours-static-site-at-origin:
+        unit: Wh
+        description: Energy required to store the IF docs repo for one hour.
+        aggregation-method:
+          time: sum
+          component: sum
+  storage-energy-in-wh-static-site-per-duration:
+    inputs:
+      storage-watt-hours-static-site-at-origin:
+        unit: Wh
+        description: Energy required to store the IF docs repo for one hour.
+        aggregation-method:
+          time: sum
+          component: sum
+      duration-in-hours:
+        unit: hours
+        description: duration of the timestep converted from seconds to hours.
+        aggregation-method:
+          time: sum
+          component: sum
+    outputs:
+      storage-wh-static-site-at-origin:
+        unit: Wh
+        description: Energy required to store the IF docs repo in each timestep.
+        aggregation-method:
+          time: sum
+          component: sum
+  storage-energy-to-kwh-static-site:
+    inputs:
+      storage-wh-static-site-at-origin:
+        unit: Wh
+        description: Energy required to store the IF docs repo in each timestep.
+        aggregation-method:
+          time: sum
+          component: sum
+    outputs:
+      storage-energy-kwh-static-site-at-origin:
+        unit: kWh
+        description: Energy required to store the IF docs repo in each timestep, in kWh.
+        aggregation-method:
+          time: sum
+          component: sum
   storage-energy-per-cdn-node:
-    plugins:
-      - storage-energy-per-cdn-node
-      - storage-energy-for-entire-cdn
-    unit: kWh
-    description: >-
-      Energy required to store the static site at each CDN PoP, assuming it to
-      be 10% of that at the origin.
-    aggregation-method:
-      time: sum
-      component: sum
-  storage-energy-whole-cdn:
-    plugins:
-      - storage-energy-for-entire-cdn
-      - sum-serving-static-site-energy-components
-    unit: kWh
-    description: >-
-      Energy required to store the static site across the entire CDN, assuming
-      46 PoPs.
-    aggregation-method:
-      time: sum
-      component: sum
+    inputs:
+      storage-energy-kwh-static-site-at-origin:
+        unit: kWh
+        description: Energy required to store the IF docs repo in each timestep, in kWh.
+        aggregation-method:
+          time: sum
+          component: sum
+    outputs:
+      storage-energy-per-cdn-node:
+        unit: kWh
+        description: >-
+          Energy required to store the static site at each CDN PoP, assuming it
+          to be 10% of that at the origin.
+        aggregation-method:
+          time: sum
+          component: sum
+  storage-energy-for-entire-cdn:
+    inputs:
+      storage-energy-per-cdn-node:
+        unit: kWh
+        description: >-
+          Energy required to store the static site at each CDN PoP, assuming it
+          to be 10% of that at the origin.
+        aggregation-method:
+          time: sum
+          component: sum
+    outputs:
+      storage-energy-whole-cdn:
+        unit: kWh
+        description: >-
+          Energy required to store the static site across the entire CDN,
+          assuming 46 PoPs.
+        aggregation-method:
+          time: sum
+          component: sum
+  sum-serving-static-site-energy-components:
+    inputs:
+      storage-energy-whole-cdn:
+        unit: kWh
+        description: >-
+          Energy required to store the static site across the entire CDN,
+          assuming 46 PoPs.
+        aggregation-method:
+          time: sum
+          component: sum
+      storage-energy-kwh-static-site-at-origin:
+        unit: kWh
+        description: Energy required to store the IF docs repo in each timestep, in kWh.
+        aggregation-method:
+          time: sum
+          component: sum
+    outputs:
+      energy:
+        unit: kWh
+        description: Energy required to serve site from origin and CDN, in kWh.
+        aggregation-method:
+          time: sum
+          component: sum
+  embodied-carbon-web-server-origin:
+    inputs:
+      vCPUs:
+        description: number of CPUs allocated to an application
+        unit: CPUs
+        aggregation-method:
+          time: copy
+          component: copy
+      memory:
+        description: RAM available for a resource, in GB
+        unit: GB
+        aggregation-method:
+          time: copy
+          component: copy
+      ssd:
+        description: number of SSDs available for a resource
+        unit: SSDs
+        aggregation-method:
+          time: copy
+          component: copy
+      hdd:
+        description: number of HDDs available for a resource
+        unit: HDDs
+        aggregation-method:
+          time: copy
+          component: copy
+      gpu:
+        description: number of GPUs available for a resource
+        unit: GPUs
+        aggregation-method:
+          time: copy
+          component: copy
+      usage-ratio:
+        description: >-
+          a scaling factor that can be used to describe the ratio of actual
+          resource usage comapred to real device usage, e.g. 0.25 if you are
+          using 2 out of 8 vCPUs, 0.1 if you are responsible for 1 out of 10 GB
+          of storage, etc
+        unit: dimensionless
+        aggregation-method:
+          time: copy
+          component: copy
+      time:
+        description: >-
+          a time unit to scale the embodied carbon by, in seconds. If not
+          provided,time defaults to the value of the timestep duration.
+        unit: seconds
+        aggregation-method:
+          time: copy
+          component: copy
+    outputs:
+      carbon:
+        unit: gCO2e
+        description: >-
+          Mass of carbon emitted in the production and disposal of the server
+          serving our site.
+        aggregation-method:
+          time: sum
+          component: sum
+  embodied-carbon-web-server-cdn:
+    inputs:
+      vCPUs:
+        description: number of CPUs allocated to an application
+        unit: CPUs
+        aggregation-method:
+          time: copy
+          component: copy
+      memory:
+        description: RAM available for a resource, in GB
+        unit: GB
+        aggregation-method:
+          time: copy
+          component: copy
+      ssd:
+        description: number of SSDs available for a resource
+        unit: SSDs
+        aggregation-method:
+          time: copy
+          component: copy
+      hdd:
+        description: number of HDDs available for a resource
+        unit: HDDs
+        aggregation-method:
+          time: copy
+          component: copy
+      gpu:
+        description: number of GPUs available for a resource
+        unit: GPUs
+        aggregation-method:
+          time: copy
+          component: copy
+      usage-ratio:
+        description: >-
+          a scaling factor that can be used to describe the ratio of actual
+          resource usage comapred to real device usage, e.g. 0.25 if you are
+          using 2 out of 8 vCPUs, 0.1 if you are responsible for 1 out of 10 GB
+          of storage, etc
+        unit: dimensionless
+        aggregation-method:
+          time: copy
+          component: copy
+      time:
+        description: >-
+          a time unit to scale the embodied carbon by, in seconds. If not
+          provided,time defaults to the value of the timestep duration.
+        unit: seconds
+        aggregation-method:
+          time: copy
+          component: copy
+    outputs:
+      carbon:
+        unit: gCO2e
+        description: >-
+          Mass of carbon emitted in the production and disposal of the servers
+          comprising the CDN serving our site.
+        aggregation-method:
+          time: sum
+          component: sum
+  embodied-carbon-github:
+    inputs:
+      vCPUs:
+        description: number of CPUs allocated to an application
+        unit: CPUs
+        aggregation-method:
+          time: copy
+          component: copy
+      memory:
+        description: RAM available for a resource, in GB
+        unit: GB
+        aggregation-method:
+          time: copy
+          component: copy
+      ssd:
+        description: number of SSDs available for a resource
+        unit: SSDs
+        aggregation-method:
+          time: copy
+          component: copy
+      hdd:
+        description: number of HDDs available for a resource
+        unit: HDDs
+        aggregation-method:
+          time: copy
+          component: copy
+      gpu:
+        description: number of GPUs available for a resource
+        unit: GPUs
+        aggregation-method:
+          time: copy
+          component: copy
+      usage-ratio:
+        description: >-
+          a scaling factor that can be used to describe the ratio of actual
+          resource usage comapred to real device usage, e.g. 0.25 if you are
+          using 2 out of 8 vCPUs, 0.1 if you are responsible for 1 out of 10 GB
+          of storage, etc
+        unit: dimensionless
+        aggregation-method:
+          time: copy
+          component: copy
+      time:
+        description: >-
+          a time unit to scale the embodied carbon by, in seconds. If not
+          provided,time defaults to the value of the timestep duration.
+        unit: seconds
+        aggregation-method:
+          time: copy
+          component: copy
+    outputs:
+      carbon:
+        unit: gCO2e
+        description: >-
+          Mass of carbon emitted in the production and disposal of Github server
+          serving our source code.
+        aggregation-method:
+          time: sum
+          component: sum
   static-site-size-in-gb:
-    plugins:
-      - static-site-size-in-gb
-      - network-energy-serving-static-site-per-view
-      - end-user-energy
-    unit: GB
-    description: Size of static site as reported by Github API, converted to GB.
-    aggregation-method:
-      time: copy
-      component: copy
-  kwh-per-gb-network:
-    plugins:
-      - network-energy-serving-static-site-per-view
-    unit: kWh/GB
-    description: >-
-      Coefficient relating energy expendidture to 1GB of data transferred over
-      network.
-    aggregation-method:
-      time: copy
-      component: copy
-  network-energy-kwh-serving-static-site-per-view:
-    plugins:
-      - network-energy-serving-static-site-per-view
-      - network-energy-serving-static-site-total
-    unit: kWh
-    description: >-
-      Energy required to transfer static site data over the network, for each
-      first-time visitor.
-    aggregation-method:
-      time: sum
-      component: sum
-  site-visits:
-    plugins:
-      - network-energy-serving-static-site-total
-      - end-user-energy
-      - total-embodied-carbon
-    unit: visits
-    description: >-
-      Number of times the site was visited in this timestep, from Google
-      Analytics
-    aggregation-method:
-      time: sum
-      component: sum
-  end-user-energy-coefficient:
-    plugins:
-      - end-user-energy
-    unit: kWh
-    description: >-
-      Coefficient for end user energy expended viewing site in browser, from
-      Sustainable Web Design model.
-    aggregation-method:
-      time: copy
-      component: copy
-  baseline-emissions:
-    plugins:
-      - embodied-carbon-devices
-    unit: gCO2e
-    description: >-
-      Mass of carbon emitted in the production and disposal of a basic rack
-      server with 1 CPU and 16GB RAM.
-    aggregation-method:
-      time: copy
-      component: copy
-  lifespan:
-    plugins:
-      - embodied-carbon-devices
-    unit: s
-    description: Expected lifespan of server, in seconds.
-    aggregation-method:
-      time: copy
-      component: copy
-  carbon-per-device:
-    plugins:
-      - embodied-carbon-devices
-      - total-embodied-carbon
-    unit: gCO2e
-    description: Mass of embodied carbon per user device.
-    aggregation-method:
-      time: sum
-      component: sum
+    inputs:
+      static-site-size-in-mb:
+        unit: MB
+        description: Size of static site as reported by Github API.
+        aggregation-method:
+          time: copy
+          component: copy
+    outputs:
+      static-site-size-in-gb:
+        unit: GB
+        description: Size of static site as reported by Github API, converted to GB.
+        aggregation-method:
+          time: copy
+          component: copy
+  network-energy-serving-static-site-per-view:
+    inputs:
+      static-site-size-in-gb:
+        unit: GB
+        description: Size of static site as reported by Github API, converted to GB.
+        aggregation-method:
+          time: copy
+          component: copy
+      kwh-per-gb-network:
+        unit: kWh/GB
+        description: >-
+          Coefficient relating energy expendidture to 1GB of data transferred
+          over network.
+        aggregation-method:
+          time: copy
+          component: copy
+    outputs:
+      network-energy-kwh-serving-static-site-per-view:
+        unit: kWh
+        description: >-
+          Energy required to transfer static site data over the network, for
+          each first-time visitor.
+        aggregation-method:
+          time: sum
+          component: sum
+  network-energy-serving-static-site-total:
+    inputs:
+      network-energy-kwh-serving-static-site-per-view:
+        unit: kWh
+        description: >-
+          Energy required to transfer static site data over the network, for
+          each first-time visitor.
+        aggregation-method:
+          time: sum
+          component: sum
+      site-visits:
+        unit: visits
+        description: >-
+          Number of times the site was visited in this timestep, from Google
+          Analytics
+        aggregation-method:
+          time: sum
+          component: sum
+    outputs:
+      energy:
+        unit: kWh
+        description: >-
+          Energy required to transfer static site data over the network, for all
+          users in timestep.
+        aggregation-method:
+          time: sum
+          component: sum
+  end-user-energy:
+    inputs:
+      site-visits:
+        unit: visits
+        description: >-
+          Number of times the site was visited in this timestep, from Google
+          Analytics
+        aggregation-method:
+          time: sum
+          component: sum
+      static-site-size-in-gb:
+        unit: GB
+        description: Size of static site as reported by Github API, converted to GB.
+        aggregation-method:
+          time: copy
+          component: copy
+      end-user-energy-coefficient:
+        unit: kWh
+        description: >-
+          Coefficient for end user energy expended viewing site in browser, from
+          Sustainable Web Design model.
+        aggregation-method:
+          time: copy
+          component: copy
+    outputs:
+      energy:
+        unit: kWh
+        description: >-
+          Energy consumed by all users viewing the site in their browser, in
+          timestep.
+        aggregation-method:
+          time: sum
+          component: sum
+  embodied-carbon-devices:
+    inputs:
+      vCPUs:
+        description: number of CPUs allocated to an application
+        unit: CPUs
+        aggregation-method:
+          time: copy
+          component: copy
+      memory:
+        description: RAM available for a resource, in GB
+        unit: GB
+        aggregation-method:
+          time: copy
+          component: copy
+      ssd:
+        description: number of SSDs available for a resource
+        unit: SSDs
+        aggregation-method:
+          time: copy
+          component: copy
+      hdd:
+        description: number of HDDs available for a resource
+        unit: HDDs
+        aggregation-method:
+          time: copy
+          component: copy
+      gpu:
+        description: number of GPUs available for a resource
+        unit: GPUs
+        aggregation-method:
+          time: copy
+          component: copy
+      usage-ratio:
+        description: >-
+          a scaling factor that can be used to describe the ratio of actual
+          resource usage comapred to real device usage, e.g. 0.25 if you are
+          using 2 out of 8 vCPUs, 0.1 if you are responsible for 1 out of 10 GB
+          of storage, etc
+        unit: dimensionless
+        aggregation-method:
+          time: copy
+          component: copy
+      time:
+        description: >-
+          a time unit to scale the embodied carbon by, in seconds. If not
+          provided,time defaults to the value of the timestep duration.
+        unit: seconds
+        aggregation-method:
+          time: copy
+          component: copy
+      baseline-emissions:
+        unit: gCO2e
+        description: >-
+          Mass of carbon emitted in the production and disposal of a basic rack
+          server with 1 CPU and 16GB RAM.
+        aggregation-method:
+          time: copy
+          component: copy
+      lifespan:
+        unit: s
+        description: Expected lifespan of server, in seconds.
+        aggregation-method:
+          time: copy
+          component: copy
+    outputs:
+      carbon-per-device:
+        unit: gCO2e
+        description: >-
+          Mass of carbon emitted in the production and disposal of end-user
+          devices.
+        aggregation-method:
+          time: sum
+          component: sum
+  total-embodied-carbon:
+    inputs:
+      carbon-per-device:
+        unit: gCO2e
+        description: Mass of embodied carbon per user device.
+        aggregation-method:
+          time: sum
+          component: sum
+      site-visits:
+        unit: visits
+        description: >-
+          Number of times the site was visited in this timestep, from Google
+          Analytics
+        aggregation-method:
+          time: sum
+          component: sum
+    outputs:
+      carbon:
+        unit: gCO2e
+        description: >-
+          Mass of carbon emitted for all the end-user devices used to visit our
+          site.
+        aggregation-method:
+          time: sum
+          component: sum
 tree:
   children:
     development:
@@ -1468,13 +1911,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.0000045031536996674164
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.000004503649117914607
             - timestamp: '2024-08-02T00:00:00'
               duration: 86400
               site-visits: 922
@@ -1482,13 +1925,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.000002173431015566161
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.0000021736701274099786
             - timestamp: '2024-08-03T00:00:00'
               duration: 86400
               site-visits: 132
@@ -1496,13 +1939,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.000015181086336000002
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.000015182756496000001
             - timestamp: '2024-08-04T00:00:00'
               duration: 86400
               site-visits: 162
@@ -1510,13 +1953,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.000012369774051555557
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.000012371134922666668
             - timestamp: '2024-08-05T00:00:00'
               duration: 86400
               site-visits: 2097
@@ -1524,13 +1967,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 9.556048623519315e-7
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 9.557099940257511e-7
             - timestamp: '2024-08-06T00:00:00'
               duration: 86400
               site-visits: 579
@@ -1538,13 +1981,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.000003460973050694301
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.0000034613538125595857
             - timestamp: '2024-08-07T00:00:00'
               duration: 86400
               site-visits: 681
@@ -1552,13 +1995,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.0000029425894219559475
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.0000029429131534096916
             - timestamp: '2024-08-08T00:00:00'
               duration: 86400
               site-visits: 557
@@ -1566,13 +2009,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.000003597672165802514
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.0000035980679667360864
             - timestamp: '2024-08-09T00:00:00'
               duration: 86400
               site-visits: 1168
@@ -1580,13 +2023,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.0000017156707160547948
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.0000017158594670136986
             - timestamp: '2024-08-10T00:00:00'
               duration: 86400
               site-visits: 166
@@ -1594,13 +2037,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.00001207170720693976
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.000012073035285975904
             - timestamp: '2024-08-11T00:00:00'
               duration: 86400
               site-visits: 190
@@ -1608,13 +2051,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.000010546859980800002
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.000010548020302484211
             - timestamp: '2024-08-12T00:00:00'
               duration: 86400
               site-visits: 1201
@@ -1622,13 +2065,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.0000016685290560799336
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.000001668712620709409
             - timestamp: '2024-08-13T00:00:00'
               duration: 86400
               site-visits: 465
@@ -1636,13 +2079,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.000004309469669574194
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.000004309943779509678
             - timestamp: '2024-08-14T00:00:00'
               duration: 86400
               site-visits: 575
@@ -1650,13 +2093,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.0000034850493849600005
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.0000034854327956034785
             - timestamp: '2024-08-15T00:00:00'
               duration: 86400
               site-visits: 477
@@ -1664,13 +2107,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.000004201055338264151
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.000004201517520905661
             - timestamp: '2024-08-16T00:00:00'
               duration: 86400
               site-visits: 765
@@ -1678,13 +2121,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.000002619481563858824
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.000002619769748329412
             - timestamp: '2024-08-17T00:00:00'
               duration: 86400
               site-visits: 142
@@ -1692,13 +2135,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.000014111995748957748
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.00001411354829205634
             - timestamp: '2024-08-18T00:00:00'
               duration: 86400
               site-visits: 183
@@ -1706,13 +2149,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.000010950291783344263
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.000010951496488918033
             - timestamp: '2024-08-19T00:00:00'
               duration: 86400
               site-visits: 1821
@@ -1720,13 +2163,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.000001100441184158155
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.000001100562250121911
             - timestamp: '2024-08-20T00:00:00'
               duration: 86400
               site-visits: 815
@@ -1734,13 +2177,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.0000024587771734380373
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.000002459047677879755
             - timestamp: '2024-08-21T00:00:00'
               duration: 86400
               site-visits: 632
@@ -1748,13 +2191,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.0000031707332220759496
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.0000031710820529620254
             - timestamp: '2024-08-22T00:00:00'
               duration: 86400
               site-visits: 622
@@ -1762,13 +2205,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.0000032217096404372996
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.0000032220640795369777
             - timestamp: '2024-08-23T00:00:00'
               duration: 86400
               site-visits: 787
@@ -1776,13 +2219,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.000002546255903878018
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.000002546536032365947
             - timestamp: '2024-08-24T00:00:00'
               duration: 86400
               site-visits: 93
@@ -1790,13 +2233,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.00002154734834787097
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.000021549718897548387
             - timestamp: '2024-08-25T00:00:00'
               duration: 86400
               site-visits: 132
@@ -1804,13 +2247,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.000015181086336000002
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.000015182756496000001
             - timestamp: '2024-08-26T00:00:00'
               duration: 86400
               site-visits: 1088
@@ -1818,13 +2261,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.0000018418229745882356
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.0000018420256042941178
             - timestamp: '2024-08-27T00:00:00'
               duration: 86400
               site-visits: 425
@@ -1832,13 +2275,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.000004715066814945883
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.000004715585546992941
             - timestamp: '2024-08-28T00:00:00'
               duration: 86400
               site-visits: 602
@@ -1846,13 +2289,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.0000033287431833089706
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.0000033291093977940202
             - timestamp: '2024-08-29T00:00:00'
               duration: 86400
               site-visits: 586
@@ -1860,13 +2303,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.0000034196303692013658
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.0000034200065827167235
             - timestamp: '2024-08-30T00:00:00'
               duration: 86400
               site-visits: 824
@@ -1874,13 +2317,13 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.0000024319215975145635
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.0000024321891474174758
             - timestamp: '2024-08-31T00:00:00'
               duration: 86400
               site-visits: 182
@@ -1888,144 +2331,144 @@ tree:
               grid-intensity: 765.49
               duration-in-hours: 24
               repo-clones-source-repo: 0
-              repo-size-source-repo: 0.090896
-              storage-tb-source-repo: 0.000090896
-              storage-watts-source-repo: 0.00010907520000000001
-              storage-wh-source-repo: 0.0026178048000000003
-              energy: 0.0000026178048
-              carbon: 0.0020039033963520003
-              sci: 0.000011010458221714287
+              repo-size-source-repo: 0.090906
+              storage-tb-source-repo: 0.000090906
+              storage-watts-source-repo: 0.0001090872
+              storage-wh-source-repo: 0.0026180928
+              energy: 0.0000026180928
+              carbon: 0.002004123857472
+              sci: 0.000011011669546549451
           aggregated:
-            carbon: 0.06212100528691203
-            sci: 0.000006027044839405136
+            carbon: 0.062127839581632
+            sci: 0.000006027707909819611
       outputs:
-        - carbon: 0.0020039033963520003
-          sci: 0.0000045031536996674164
+        - carbon: 0.002004123857472
+          sci: 0.000004503649117914607
           timestamp: '2024-08-01T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.000002173431015566161
+        - carbon: 0.002004123857472
+          sci: 0.0000021736701274099786
           timestamp: '2024-08-02T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.000015181086336000002
+        - carbon: 0.002004123857472
+          sci: 0.000015182756496000001
           timestamp: '2024-08-03T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.000012369774051555557
+        - carbon: 0.002004123857472
+          sci: 0.000012371134922666668
           timestamp: '2024-08-04T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 9.556048623519315e-7
+        - carbon: 0.002004123857472
+          sci: 9.557099940257511e-7
           timestamp: '2024-08-05T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.000003460973050694301
+        - carbon: 0.002004123857472
+          sci: 0.0000034613538125595857
           timestamp: '2024-08-06T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.0000029425894219559475
+        - carbon: 0.002004123857472
+          sci: 0.0000029429131534096916
           timestamp: '2024-08-07T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.000003597672165802514
+        - carbon: 0.002004123857472
+          sci: 0.0000035980679667360864
           timestamp: '2024-08-08T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.0000017156707160547948
+        - carbon: 0.002004123857472
+          sci: 0.0000017158594670136986
           timestamp: '2024-08-09T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.00001207170720693976
+        - carbon: 0.002004123857472
+          sci: 0.000012073035285975904
           timestamp: '2024-08-10T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.000010546859980800002
+        - carbon: 0.002004123857472
+          sci: 0.000010548020302484211
           timestamp: '2024-08-11T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.0000016685290560799336
+        - carbon: 0.002004123857472
+          sci: 0.000001668712620709409
           timestamp: '2024-08-12T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.000004309469669574194
+        - carbon: 0.002004123857472
+          sci: 0.000004309943779509678
           timestamp: '2024-08-13T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.0000034850493849600005
+        - carbon: 0.002004123857472
+          sci: 0.0000034854327956034785
           timestamp: '2024-08-14T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.000004201055338264151
+        - carbon: 0.002004123857472
+          sci: 0.000004201517520905661
           timestamp: '2024-08-15T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.000002619481563858824
+        - carbon: 0.002004123857472
+          sci: 0.000002619769748329412
           timestamp: '2024-08-16T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.000014111995748957748
+        - carbon: 0.002004123857472
+          sci: 0.00001411354829205634
           timestamp: '2024-08-17T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.000010950291783344263
+        - carbon: 0.002004123857472
+          sci: 0.000010951496488918033
           timestamp: '2024-08-18T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.000001100441184158155
+        - carbon: 0.002004123857472
+          sci: 0.000001100562250121911
           timestamp: '2024-08-19T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.0000024587771734380373
+        - carbon: 0.002004123857472
+          sci: 0.000002459047677879755
           timestamp: '2024-08-20T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.0000031707332220759496
+        - carbon: 0.002004123857472
+          sci: 0.0000031710820529620254
           timestamp: '2024-08-21T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.0000032217096404372996
+        - carbon: 0.002004123857472
+          sci: 0.0000032220640795369777
           timestamp: '2024-08-22T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.000002546255903878018
+        - carbon: 0.002004123857472
+          sci: 0.000002546536032365947
           timestamp: '2024-08-23T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.00002154734834787097
+        - carbon: 0.002004123857472
+          sci: 0.000021549718897548387
           timestamp: '2024-08-24T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.000015181086336000002
+        - carbon: 0.002004123857472
+          sci: 0.000015182756496000001
           timestamp: '2024-08-25T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.0000018418229745882356
+        - carbon: 0.002004123857472
+          sci: 0.0000018420256042941178
           timestamp: '2024-08-26T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.000004715066814945883
+        - carbon: 0.002004123857472
+          sci: 0.000004715585546992941
           timestamp: '2024-08-27T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.0000033287431833089706
+        - carbon: 0.002004123857472
+          sci: 0.0000033291093977940202
           timestamp: '2024-08-28T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.0000034196303692013658
+        - carbon: 0.002004123857472
+          sci: 0.0000034200065827167235
           timestamp: '2024-08-29T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.0000024319215975145635
+        - carbon: 0.002004123857472
+          sci: 0.0000024321891474174758
           timestamp: '2024-08-30T00:00:00'
           duration: 86400
-        - carbon: 0.0020039033963520003
-          sci: 0.000011010458221714287
+        - carbon: 0.002004123857472
+          sci: 0.000011011669546549451
           timestamp: '2024-08-31T00:00:00'
           duration: 86400
       aggregated:
-        carbon: 0.06212100528691203
-        sci: 0.000006027044839405136
+        carbon: 0.062127839581632
+        sci: 0.000006027707909819611
     server:
       children:
         netlify-builds:
@@ -3941,186 +4384,341 @@ tree:
               duration: 86400
               site-visits: 445
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.0010700909577314073
             - timestamp: '2024-08-02T00:00:00'
               duration: 86400
               site-visits: 922
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.0005164755707055057
             - timestamp: '2024-08-03T00:00:00'
               duration: 86400
               site-visits: 132
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.003607503607503608
             - timestamp: '2024-08-04T00:00:00'
               duration: 86400
               site-visits: 162
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.0029394473838918285
             - timestamp: '2024-08-05T00:00:00'
               duration: 86400
               site-visits: 2097
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.00022708177214614985
             - timestamp: '2024-08-06T00:00:00'
               duration: 86400
               site-visits: 579
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.0008224360555966774
             - timestamp: '2024-08-07T00:00:00'
               duration: 86400
               site-visits: 681
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.0006992518005733866
             - timestamp: '2024-08-08T00:00:00'
               duration: 86400
               site-visits: 557
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.000854920064973925
             - timestamp: '2024-08-09T00:00:00'
               duration: 86400
               site-visits: 1168
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.0004076973255055447
             - timestamp: '2024-08-10T00:00:00'
               duration: 86400
               site-visits: 166
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.002868617326448652
             - timestamp: '2024-08-11T00:00:00'
               duration: 86400
               site-visits: 190
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.0025062656641604013
             - timestamp: '2024-08-12T00:00:00'
               duration: 86400
               site-visits: 1201
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.00039649498433844816
             - timestamp: '2024-08-13T00:00:00'
               duration: 86400
               site-visits: 465
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.0010240655401945725
             - timestamp: '2024-08-14T00:00:00'
               duration: 86400
               site-visits: 575
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.0008281573498964804
             - timestamp: '2024-08-15T00:00:00'
               duration: 86400
               site-visits: 477
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.000998302885095338
             - timestamp: '2024-08-16T00:00:00'
               duration: 86400
               site-visits: 765
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.0006224712107065049
             - timestamp: '2024-08-17T00:00:00'
               duration: 86400
               site-visits: 142
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.00335345405767941
             - timestamp: '2024-08-18T00:00:00'
               duration: 86400
               site-visits: 183
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.0026021337496747333
             - timestamp: '2024-08-19T00:00:00'
               duration: 86400
               site-visits: 1821
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.0002614994377762088
             - timestamp: '2024-08-20T00:00:00'
               duration: 86400
               site-visits: 815
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.00058428279287175
             - timestamp: '2024-08-21T00:00:00'
               duration: 86400
               site-visits: 632
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.0007534659433393611
             - timestamp: '2024-08-22T00:00:00'
               duration: 86400
               site-visits: 622
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.000765579543714592
             - timestamp: '2024-08-23T00:00:00'
               duration: 86400
               site-visits: 787
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.000605070490712168
             - timestamp: '2024-08-24T00:00:00'
               duration: 86400
               site-visits: 93
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.005120327700972862
             - timestamp: '2024-08-25T00:00:00'
               duration: 86400
               site-visits: 132
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.003607503607503608
             - timestamp: '2024-08-26T00:00:00'
               duration: 86400
               site-visits: 1088
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.0004376750700280112
             - timestamp: '2024-08-27T00:00:00'
               duration: 86400
               site-visits: 425
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.0011204481792717088
             - timestamp: '2024-08-28T00:00:00'
               duration: 86400
               site-visits: 602
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.0007910140800506249
             - timestamp: '2024-08-29T00:00:00'
               duration: 86400
               site-visits: 586
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.0008126117341134407
             - timestamp: '2024-08-30T00:00:00'
               duration: 86400
               site-visits: 824
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.0005779010633379565
             - timestamp: '2024-08-31T00:00:00'
               duration: 86400
               site-visits: 182
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.4761904761904762
               sci: 0.0026164311878597597
           aggregated:
@@ -4263,186 +4861,341 @@ tree:
               duration: 86400
               site-visits: 445
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.004922418405564473
             - timestamp: '2024-08-02T00:00:00'
               duration: 86400
               site-visits: 922
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.0023757876252453263
             - timestamp: '2024-08-03T00:00:00'
               duration: 86400
               site-visits: 132
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.016594516594516596
             - timestamp: '2024-08-04T00:00:00'
               duration: 86400
               site-visits: 162
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.013521457965902412
             - timestamp: '2024-08-05T00:00:00'
               duration: 86400
               site-visits: 2097
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.0010445761518722892
             - timestamp: '2024-08-06T00:00:00'
               duration: 86400
               site-visits: 579
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.0037832058557447164
             - timestamp: '2024-08-07T00:00:00'
               duration: 86400
               site-visits: 681
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.0032165582826375783
             - timestamp: '2024-08-08T00:00:00'
               duration: 86400
               site-visits: 557
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.003932632298880055
             - timestamp: '2024-08-09T00:00:00'
               duration: 86400
               site-visits: 1168
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.0018754076973255057
             - timestamp: '2024-08-10T00:00:00'
               duration: 86400
               site-visits: 166
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.013195639701663799
             - timestamp: '2024-08-11T00:00:00'
               duration: 86400
               site-visits: 190
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.011528822055137845
             - timestamp: '2024-08-12T00:00:00'
               duration: 86400
               site-visits: 1201
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.0018238769279568616
             - timestamp: '2024-08-13T00:00:00'
               duration: 86400
               site-visits: 465
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.004710701484895034
             - timestamp: '2024-08-14T00:00:00'
               duration: 86400
               site-visits: 575
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.00380952380952381
             - timestamp: '2024-08-15T00:00:00'
               duration: 86400
               site-visits: 477
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.004592193271438555
             - timestamp: '2024-08-16T00:00:00'
               duration: 86400
               site-visits: 765
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.0028633675692499223
             - timestamp: '2024-08-17T00:00:00'
               duration: 86400
               site-visits: 142
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.015425888665325287
             - timestamp: '2024-08-18T00:00:00'
               duration: 86400
               site-visits: 183
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.011969815248503775
             - timestamp: '2024-08-19T00:00:00'
               duration: 86400
               site-visits: 1821
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.0012028974137705604
             - timestamp: '2024-08-20T00:00:00'
               duration: 86400
               site-visits: 815
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.00268770084721005
             - timestamp: '2024-08-21T00:00:00'
               duration: 86400
               site-visits: 632
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.0034659433393610614
             - timestamp: '2024-08-22T00:00:00'
               duration: 86400
               site-visits: 622
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.003521665901087123
             - timestamp: '2024-08-23T00:00:00'
               duration: 86400
               site-visits: 787
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.002783324257275973
             - timestamp: '2024-08-24T00:00:00'
               duration: 86400
               site-visits: 93
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.023553507424475168
             - timestamp: '2024-08-25T00:00:00'
               duration: 86400
               site-visits: 132
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.016594516594516596
             - timestamp: '2024-08-26T00:00:00'
               duration: 86400
               site-visits: 1088
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.0020133053221288518
             - timestamp: '2024-08-27T00:00:00'
               duration: 86400
               site-visits: 425
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.00515406162464986
             - timestamp: '2024-08-28T00:00:00'
               duration: 86400
               site-visits: 602
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.003638664768232875
             - timestamp: '2024-08-29T00:00:00'
               duration: 86400
               site-visits: 586
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.003738013976921827
             - timestamp: '2024-08-30T00:00:00'
               duration: 86400
               site-visits: 824
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.0026583448913546004
             - timestamp: '2024-08-31T00:00:00'
               duration: 86400
               site-visits: 182
               usage-ratio: 0.0008
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 2.1904761904761907
               sci: 0.012035583464154894
           aggregated:
@@ -4649,6 +5402,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 8.699479989054777e-7
             - timestamp: '2024-08-02T00:00:00'
@@ -4657,6 +5413,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 4.198772879749865e-7
             - timestamp: '2024-08-03T00:00:00'
@@ -4665,6 +5424,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 0.0000029327792387343754
             - timestamp: '2024-08-04T00:00:00'
@@ -4673,6 +5435,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 0.000002389671972302084
             - timestamp: '2024-08-05T00:00:00'
@@ -4681,6 +5446,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 1.8460985193750004e-7
             - timestamp: '2024-08-06T00:00:00'
@@ -4689,6 +5457,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 6.686128834420338e-7
             - timestamp: '2024-08-07T00:00:00'
@@ -4697,6 +5468,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 5.684682224859582e-7
             - timestamp: '2024-08-08T00:00:00'
@@ -4705,6 +5479,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 6.950212917646994e-7
             - timestamp: '2024-08-09T00:00:00'
@@ -4713,6 +5490,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 3.3144422903504927e-7
             - timestamp: '2024-08-10T00:00:00'
@@ -4721,6 +5501,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 0.000002332089515138178
             - timestamp: '2024-08-11T00:00:00'
@@ -4729,6 +5512,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 0.0000020375097869101976
             - timestamp: '2024-08-12T00:00:00'
@@ -4737,6 +5523,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 3.22337102009107e-7
             - timestamp: '2024-08-13T00:00:00'
@@ -4745,6 +5534,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 8.32530880672984e-7
             - timestamp: '2024-08-14T00:00:00'
@@ -4753,6 +5545,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 6.73264103500761e-7
             - timestamp: '2024-08-15T00:00:00'
@@ -4761,6 +5556,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 8.115867075742925e-7
             - timestamp: '2024-08-16T00:00:00'
@@ -4769,6 +5567,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 5.06048182369853e-7
             - timestamp: '2024-08-17T00:00:00'
@@ -4777,6 +5578,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 0.0000027262454895277295
             - timestamp: '2024-08-18T00:00:00'
@@ -4785,6 +5589,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 0.0000021154473197428283
             - timestamp: '2024-08-19T00:00:00'
@@ -4793,6 +5600,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 2.1259025783247532e-7
             - timestamp: '2024-08-20T00:00:00'
@@ -4801,6 +5611,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 4.750022816109663e-7
             - timestamp: '2024-08-21T00:00:00'
@@ -4809,6 +5622,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 6.125424992293316e-7
             - timestamp: '2024-08-22T00:00:00'
@@ -4817,6 +5633,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 6.223904493777131e-7
             - timestamp: '2024-08-23T00:00:00'
@@ -4825,6 +5644,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 4.919019815920427e-7
             - timestamp: '2024-08-24T00:00:00'
@@ -4833,6 +5655,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 0.00000416265440336492
             - timestamp: '2024-08-25T00:00:00'
@@ -4841,6 +5666,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 0.0000029327792387343754
             - timestamp: '2024-08-26T00:00:00'
@@ -4849,6 +5677,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 3.558151282288029e-7
             - timestamp: '2024-08-27T00:00:00'
@@ -4857,6 +5688,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 9.108867282657354e-7
             - timestamp: '2024-08-28T00:00:00'
@@ -4865,6 +5699,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 6.43067872945079e-7
             - timestamp: '2024-08-29T00:00:00'
@@ -4873,6 +5710,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 6.606260401244668e-7
             - timestamp: '2024-08-30T00:00:00'
@@ -4881,6 +5721,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 4.698141498943417e-7
             - timestamp: '2024-08-31T00:00:00'
@@ -4889,6 +5732,9 @@ tree:
               usage-ratio: 3.029866666666667e-8
               vCPUs: 160
               memory: 1280
+              ssd: 0
+              hdd: 0
+              gpu: 0
               carbon: 0.00038712685951293756
               sci: 0.000002127070656664492
           aggregated:
@@ -6532,6 +7378,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 29.240373883928573
               sci: 0.06570870535714286
@@ -6541,6 +7393,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 60.58342633928572
               sci: 0.06570870535714286
@@ -6550,6 +7408,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 8.673549107142858
               sci: 0.06570870535714286
@@ -6559,6 +7423,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 10.644810267857144
               sci: 0.06570870535714286
@@ -6568,6 +7438,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 137.79115513392858
               sci: 0.06570870535714286
@@ -6577,6 +7453,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 38.045340401785715
               sci: 0.06570870535714286
@@ -6586,6 +7468,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 44.74762834821429
               sci: 0.06570870535714286
@@ -6595,6 +7483,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 36.59974888392858
               sci: 0.06570870535714286
@@ -6604,6 +7498,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 76.74776785714286
               sci: 0.06570870535714286
@@ -6613,6 +7513,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 10.907645089285715
               sci: 0.06570870535714286
@@ -6622,6 +7528,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 12.484654017857144
               sci: 0.06570870535714286
@@ -6631,6 +7543,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 78.91615513392858
               sci: 0.06570870535714286
@@ -6640,6 +7558,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 30.55454799107143
               sci: 0.06570870535714286
@@ -6649,6 +7573,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 37.782505580357146
               sci: 0.06570870535714286
@@ -6658,6 +7588,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 31.343052455357146
               sci: 0.06570870535714286
@@ -6667,6 +7603,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 50.26715959821429
               sci: 0.06570870535714286
@@ -6676,6 +7618,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 9.330636160714286
               sci: 0.06570870535714286
@@ -6685,6 +7633,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 12.024693080357144
               sci: 0.06570870535714286
@@ -6694,6 +7648,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 119.65555245535715
               sci: 0.06570870535714286
@@ -6703,6 +7663,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 53.55259486607143
               sci: 0.06570870535714286
@@ -6712,6 +7678,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 41.52790178571429
               sci: 0.06570870535714286
@@ -6721,6 +7693,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 40.87081473214286
               sci: 0.06570870535714286
@@ -6730,6 +7708,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 51.71275111607143
               sci: 0.06570870535714286
@@ -6739,6 +7723,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 6.1109095982142865
               sci: 0.06570870535714286
@@ -6748,6 +7738,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 8.673549107142858
               sci: 0.06570870535714286
@@ -6757,6 +7753,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 71.49107142857143
               sci: 0.06570870535714286
@@ -6766,6 +7768,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 27.926199776785715
               sci: 0.06570870535714286
@@ -6775,6 +7783,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 39.55664062500001
               sci: 0.06570870535714286
@@ -6784,6 +7798,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 38.505301339285715
               sci: 0.06570870535714286
@@ -6793,6 +7813,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 54.14397321428572
               sci: 0.06570870535714286
@@ -6802,6 +7828,12 @@ tree:
               time: 120
               kwh-per-gb-network: 0.001
               grid-intensity: 765.49
+              vCPUs: 1
+              memory: 16
+              ssd: 0
+              hdd: 0
+              gpu: 0
+              usage-ratio: 1
               carbon-per-device: 0.06570870535714286
               carbon: 11.958984375000002
               sci: 0.06570870535714286
@@ -6937,130 +7969,130 @@ tree:
         carbon: 2249.8080767742663
         sci: 0.11528018429874279
   outputs:
-    - carbon: 54.24458099757731
-      sci: 0.12189793482601642
+    - carbon: 54.24458121803843
+      sci: 0.12189793532143467
       timestamp: '2024-08-01T00:00:00'
       duration: 86400
-    - carbon: 109.52879885126694
-      sci: 0.11879479268033291
+    - carbon: 109.52879907172806
+      sci: 0.11879479291944475
       timestamp: '2024-08-02T00:00:00'
       duration: 86400
-    - carbon: 17.967934900711775
-      sci: 0.1361207189447862
+    - carbon: 17.967935121172896
+      sci: 0.13612072061494618
       timestamp: '2024-08-03T00:00:00'
       duration: 86400
-    - carbon: 21.44492973427716
-      sci: 0.1323761094708467
+    - carbon: 21.44492995473828
+      sci: 0.1323761108317178
       timestamp: '2024-08-04T00:00:00'
       duration: 86400
-    - carbon: 245.71109649924455
-      sci: 0.11717267358094637
+    - carbon: 245.71109671970567
+      sci: 0.11717267368607805
       timestamp: '2024-08-05T00:00:00'
       duration: 86400
-    - carbon: 69.77515792083602
-      sci: 0.12050977188400006
+    - carbon: 69.77515814129715
+      sci: 0.12050977226476192
       timestamp: '2024-08-06T00:00:00'
       duration: 86400
-    - carbon: 81.59694035495833
-      sci: 0.11981929567541606
+    - carbon: 81.59694057541945
+      sci: 0.11981929599914751
       timestamp: '2024-08-07T00:00:00'
       duration: 86400
-    - carbon: 67.22536170955475
-      sci: 0.12069185226131912
+    - carbon: 67.22536193001586
+      sci: 0.12069185265712006
       timestamp: '2024-08-08T00:00:00'
       duration: 86400
-    - carbon: 138.04015648650312
-      sci: 0.1181850654850198
+    - carbon: 138.04015670696424
+      sci: 0.11818506567377074
       timestamp: '2024-08-09T00:00:00'
       duration: 86400
-    - carbon: 21.908529045419215
-      sci: 0.1319790906350555
+    - carbon: 21.908529265880336
+      sci: 0.13197909196313454
       timestamp: '2024-08-10T00:00:00'
       duration: 86400
-    - carbon: 24.69012491227152
-      sci: 0.12994802585406065
+    - carbon: 24.690125132732643
+      sci: 0.12994802701438235
       timestamp: '2024-08-11T00:00:00'
       duration: 86400
-    - carbon: 141.86485080342504
-      sci: 0.1181222737747086
+    - carbon: 141.86485102388616
+      sci: 0.11812227395827324
       timestamp: '2024-08-12T00:00:00'
       duration: 86400
-    - carbon: 70.3402370344389
-      sci: 0.1512693269557826
+    - carbon: 70.34023725490002
+      sci: 0.15126932742989255
       timestamp: '2024-08-13T00:00:00'
       duration: 86400
-    - carbon: 73.90411177007776
-      sci: 0.12852889003491785
+    - carbon: 73.90411199053888
+      sci: 0.1285288904183285
       timestamp: '2024-08-14T00:00:00'
       duration: 86400
-    - carbon: 80.91614128863263
-      sci: 0.16963551632837032
+    - carbon: 80.91614150909375
+      sci: 0.16963551679055294
       timestamp: '2024-08-15T00:00:00'
       duration: 86400
-    - carbon: 91.33252588894143
-      sci: 0.11938892273064239
+    - carbon: 91.33252610940255
+      sci: 0.11938892301882685
       timestamp: '2024-08-16T00:00:00'
       duration: 86400
-    - carbon: 19.126933178566908
-      sci: 0.13469671252511906
+    - carbon: 19.126933399028026
+      sci: 0.13469671407766215
       timestamp: '2024-08-17T00:00:00'
       duration: 86400
-    - carbon: 23.878826117772935
-      sci: 0.13048538862171002
+    - carbon: 23.878826338234052
+      sci: 0.13048538982641558
       timestamp: '2024-08-18T00:00:00'
       duration: 86400
-    - carbon: 213.722744030443
-      sci: 0.1173655925482938
+    - carbon: 213.72274425090416
+      sci: 0.11736559266935977
       timestamp: '2024-08-19T00:00:00'
       duration: 86400
-    - carbon: 97.12751727821706
-      sci: 0.11917486782603322
+    - carbon: 97.12751749867817
+      sci: 0.11917486809653766
       timestamp: '2024-08-20T00:00:00'
       duration: 86400
-    - carbon: 85.10295511423578
-      sci: 0.1346565745478414
+    - carbon: 85.1029553346969
+      sci: 0.13465657489667232
       timestamp: '2024-08-21T00:00:00'
       duration: 86400
-    - carbon: 74.75885051561308
-      sci: 0.12019107799937795
+    - carbon: 74.7588507360742
+      sci: 0.12019107835381705
       timestamp: '2024-08-22T00:00:00'
       duration: 86400
-    - carbon: 98.4748752606065
-      sci: 0.12512690630318488
+    - carbon: 98.47487548106761
+      sci: 0.12512690658331335
       timestamp: '2024-08-23T00:00:00'
       duration: 86400
-    - carbon: 13.447841617076776
-      sci: 0.1446004474954492
+    - carbon: 13.447841837537895
+      sci: 0.14460044986599888
       timestamp: '2024-08-24T00:00:00'
       duration: 86400
-    - carbon: 17.967934900711775
-      sci: 0.1361207189447862
+    - carbon: 17.967935121172896
+      sci: 0.13612072061494618
       timestamp: '2024-08-25T00:00:00'
       duration: 86400
-    - carbon: 128.76817026366209
-      sci: 0.11835309766880706
+    - carbon: 128.7681704841232
+      sci: 0.11835309787143676
       timestamp: '2024-08-26T00:00:00'
       duration: 86400
-    - carbon: 61.111690762634616
-      sci: 0.14379221355914026
+    - carbon: 61.111690983095734
+      sci: 0.14379221407787232
       timestamp: '2024-08-27T00:00:00'
       duration: 86400
-    - carbon: 81.6259602806704
-      sci: 0.135591296147293
+    - carbon: 81.62596050113152
+      sci: 0.1355912965135075
       timestamp: '2024-08-28T00:00:00'
       duration: 86400
-    - carbon: 70.58645671533462
-      sci: 0.1204547042923799
+    - carbon: 70.58645693579574
+      sci: 0.12045470466859341
       timestamp: '2024-08-29T00:00:00'
       duration: 86400
-    - carbon: 98.17061572828669
-      sci: 0.11913909675762947
+    - carbon: 98.17061594874781
+      sci: 0.11913909702517937
       timestamp: '2024-08-30T00:00:00'
       duration: 86400
-    - carbon: 23.76292628998742
-      sci: 0.13056552906586494
+    - carbon: 23.76292651044854
+      sci: 0.13056553027718978
       timestamp: '2024-08-31T00:00:00'
       duration: 86400
   aggregated:
-    carbon: 2418.1257762519554
-    sci: 0.12854046727177845
+    carbon: 2418.125783086251
+    sci: 0.12854046793484886
