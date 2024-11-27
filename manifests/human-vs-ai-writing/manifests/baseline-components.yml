@@ -1,0 +1,327 @@
+name: Human vs ai writing and illustrations - baseline study replicating subset of Tomlinson et al 2024 calculations.
+description: Aims to replicate the methodology described by Tomlinson et al 2024 (https://www.nature.com/articles/s41598-024-54271-x#data-availibility), i.e. top down human, bottom up AI. Only considers USA human and Chat-GPT model.
+tags:
+aggregation:
+  metrics:
+    - carbon
+  type: component
+# explainer: true
+initialize:
+  plugins:
+
+    ## chat-gpt carbon emissions per page written
+    ##########################################
+
+    divide-training-carbon-by-queries-per-month-chat-gpt:
+      method: Divide
+      path: "builtin"
+      config:
+        numerator: training-carbon-chat-gpt
+        denominator: queries-per-month-chat-gpt
+        output: carbon-per-query
+      parameter-metadata:
+        inputs:
+          training-carbon-chat-gpt:
+            unit: gCO2e
+            description: Carbon used to train chat-gpt model, per https://medium.com/@chrispointon/the-carbon-footprint-of-chatgpt-e1bc14e4cc2a.
+            aggregation-method:
+              time: sum
+              component: sum 
+          queries-per-month-chat-gpt:
+            unit: queries
+            description: Number of queries to amortize training carbon over, per https://medium.com/@chrispointon/the-carbon-footprint-of-chatgpt-e1bc14e4cc2a.
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          carbon-per-query:
+            unit: gCO2e/query
+            description: Carbon emitted during chat-gpt model training or inference normalized per query. In paper supp info sheet it is cell B10 or B12.
+            aggregation-method:
+              time: sum
+              component: sum  
+
+    divide-inference-carbon-by-n-queries-chat-gpt:
+      method: Divide
+      path: "builtin"
+      config:
+        numerator: operational-carbon-per-day-chat-gpt
+        denominator: queries-per-day-chat-gpt
+        output: carbon-per-query
+      parameter-metadata:
+        inputs:
+          operational-carbon-per-day-chat-gpt:
+            unit: gCO2e
+            description: Carbon emitted per day for inference by chat-gpt, per https://medium.com/@chrispointon/the-carbon-footprint-of-chatgpt-e1bc14e4cc2a.
+            aggregation-method:
+              time: sum
+              component: sum 
+          queries-per-day-chat-gpt:
+            unit: queries
+            description: Number of queries made per day to chat gpt, per https://medium.com/@chrispointon/the-carbon-footprint-of-chatgpt-e1bc14e4cc2a.
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          carbon-per-query:
+            unit: gCO2e/query
+            description: Carbon emitted per query for model inference. In the paper's supp info sheet it is cell B10.
+            aggregation-method:
+              time: sum
+              component: sum  
+
+    # sum-training-and-inference-carbon-per-query:
+    #   method: Sum
+    #   path: builtin
+    #   config:
+    #     input-parameters: [carbon-per-query-chat-gpt-training, carbon-per-query-chat-gpt-inference]
+    #     output-parameter: 'total-carbon-per-query-chat-gpt'    
+    #     inputs:
+    #       carbon-per-query-chat-gpt-training:
+    #         unit: gCO2e/query
+    #         description: carbon emitted during model training.
+    #         aggregation-method:
+    #           time: sum
+    #           component: sum 
+    #       carbon-per-query-chat-gpt-inference:
+    #         unit: gCO2e/query
+    #         description: carbon emitted during model inference.
+    #         aggregation-method:
+    #           time: sum
+    #           component: sum  
+    #     outputs:
+    #       total-carbon-per-query-chat-gpt:
+    #         unit: gCO2e/query
+    #         description: total carbon emitted per query by chat-gpt model, as sum of training and inference carbon. In paper supp info sheet, it is cell B14.
+    #         aggregation-method:
+    #           time: sum
+    #           component: sum  
+
+    sum-embodied-carbon-components-chat-gpt:
+      method: Sum
+      path: builtin
+      config:
+        input-parameters: ['embodied-energy-of-a100-gpu','carbon-footprint-for-recycling-gpu']
+        output-parameter: 'embodied-carbon-chat-gpt'
+      parameter-metadata:
+        inputs:
+          embodied-carbon-of-a100-gpu:
+            unit: gCO2e
+            description: embodied carbon for a100 GPUs used for training chat-gpt, per https://arxiv.org/abs/2211.02001.
+            aggregation-method:
+              time: sum
+              component: sum 
+          carbon-footprint-for-recycling-gpu:
+            unit: queries
+            description: Carbon footprint for gpu recycling, per https://circularcomputing.com/news/carbon-footprint-laptop/.
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          embodied-carbon-chat-gpt:
+            unit: gCO2e
+            description: total-embodied carbon emitted by gpu production and recycling for chat-gpt model. In paper supp info sheet, it is cell B41.
+            aggregation-method:
+              time: sum
+              component: sum 
+
+
+    scale-embodied-carbon-to-training-time-period-chat-gpt:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: ["embodied-carbon-chat-gpt", "fraction-of-gpu-lifetime-used-for-training-chat-gpt"]
+        output-parameter: "embodied-carbon-chat-gpt-scaled-by-time"
+      parameter-metadata:
+        inputs:
+          embodied-carbon-chat-gpt:
+            unit: gCO2e
+            description: Embodied carbon allocated to training chat-gpt, as sum of gpu embodied and carbon emitted in recycling.
+            aggregation-method:
+              time: sum
+              component: sum 
+          fraction-of-gpu-lifetime-used-for-training-chat-gpt:
+            unit: queries
+            description: ratio of 1082 training hours to 1.5 year lifespan, per https://screenrant.com/when-is-nvidia-releasing-new-graphics-cards/.
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          embodied-carbon-chat-gpt-scaled-by-time:
+            unit: gCO2e
+            description: Embodied carbon of chat-gpt training scaled by the ratio of training time to hardware lifespan. In paper supp info sheet it is cell B51.
+            aggregation-method:
+              time: sum
+              component: sum  
+
+
+    scale-embodied-carbon-to-queries-per-month-chat-gpt:
+      method: Divide
+      path: "builtin"
+      config:
+        numerator: embodied-carbon-chat-gpt-scaled-by-time
+        denominator: queries-per-month-chat-gpt
+        output: embodied-carbon-per-query-chat-gpt
+      parameter-metadata:
+        inputs:
+          embodied-carbon-chat-gpt-scaled-by-time:
+            unit: gCO2e
+            description: Embodied carbon of chat-gpt training scaled by the ratio of training time to hardware lifespan.
+            aggregation-method:
+              time: sum
+              component: sum 
+          queries-per-month-chat-gpt:
+            unit: queries
+            description: assumed number of queries per month used to scale carbon.
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          embodied-carbon-per-query-chat-gpt:
+            unit: gCO2e
+            description: Embodied carbon of chat-gpt training scaled by the ratio of training time to hardware lifespan and queries per month. In paper sup[info sheet it is cell B53.
+            aggregation-method:
+              time: sum
+              component: sum  
+
+
+    convert-carbon-per-query-to-carbon-per-page-chat-gpt:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: ["carbon-per-query", "intermediate-value"]
+        output-parameter: "carbon"
+      parameter-metadata:
+        inputs:
+          carbon-per-query-chat-gpt:
+            unit: gCO2e
+            description: Carbon per query for chat-gpt model.
+            aggregation-method:
+              time: sum
+              component: sum 
+          words-per-page:
+            unit: words
+            description: Number of words on a page of writing, per common knowledge, or https://wordcounter.net/words-per-page.
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          carbon:
+            unit: gCO2e
+            description: Carbon emitted per 250-word page of writing.
+            aggregation-method:
+              time: sum
+              component: sum  
+
+
+    ## human carbon emissions per page written
+    ##########################################
+
+    compute-writing-rate-in-hours-per-page:
+      method: Divide
+      path: "builtin"
+      config:
+        numerator: writing-rate-words-per-page
+        denominator: writing-rate-words-per-hour
+        output: writing-rate-hours-per-page
+      parameter-metadata:
+        inputs:
+          writing-rate-words-per-page:
+            unit: words/page
+            description: number of words on a page of writing, per common knowledge, or https://wordcounter.net/words-per-page
+            aggregation-method:
+              time: copy
+              component: copy 
+          writing-rate-words-per-hour:
+            unit: words/hour
+            description: number of words a human writes in an hour
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          writing-rate-hours-per-page:
+            unit: hours/page
+            description: How long it takes a human to write a page of text. Int he paper supp info sheet it is cell B20.
+            aggregation-method:
+              time: copy
+              component: copy  
+
+
+    multiply-human-carbon-footprint-by-writing-rate:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [writing-rate-hours-per-page, human-footprint-in-gco2-per-hour]
+        output-parameter: carbon    
+      parameter-metadata:
+        inputs:
+          writing-rate-hours-per-page:
+            unit: hours/page
+            description: How long it takes a human to write a page of text. Int he paper supp info sheet it is cell B20.
+            aggregation-method:
+              time: copy
+              component: copy 
+          human-footprint-in-gco2-per-hour:
+            unit: gCO2e/hour
+            description: ow much carbon a human emits per hour for a given country, from https://ourworldindata.org/co2-and-other-greenhouse-gas-emissions and scaled to per hour.In the paper supp info sheet it is cell B21 or B22 (USA or India).
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          carbon:
+            unit: gCO2e
+            description: Ho wmuch carbon is emitted when a person writes a page of text. in the paper it is cell B72 (USA) or B73 (India)
+            aggregation-method:
+              time: sum
+              component: sum  
+
+tree:
+  children:
+    chat-gpt: #bottom-up
+      children:
+        inference:
+          pipeline:
+            compute:
+              - divide-inference-carbon-by-n-queries-chat-gpt
+              - convert-carbon-per-query-to-carbon-per-page-chat-gpt
+
+          defaults:
+            queries-per-month-chat-gpt: 300000000 # from https://medium.com/@chrispointon/the-carbon-footprint-of-chatgpt-e1bc14e4cc2a
+            operational-carbon-per-day-chat-gpt: 3820000 # from https://medium.com/@chrispointon/the-carbon-footprint-of-chatgpt-e1bc14e4cc2a
+            queries-per-day-chat-gpt: 10000000 # from https://medium.com/@chrispointon/the-carbon-footprint-of-chatgpt-e1bc14e4cc2a
+            words-per-chat-gpt-response: 412.8    
+            words-per-page: 250  
+            intermediate-value: 0.605743402755655
+
+          inputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+        training:
+          pipeline:
+            compute:
+              - divide-training-carbon-by-queries-per-month-chat-gpt
+              - convert-carbon-per-query-to-carbon-per-page-chat-gpt
+          
+          defaults:  
+            training-carbon-chat-gpt: 552000000 # from https://medium.com/@chrispointon/the-carbon-footprint-of-chatgpt-e1bc14e4cc2a
+            queries-per-month-chat-gpt: 300000000 # from https://medium.com/@chrispointon/the-carbon-footprint-of-chatgpt-e1bc14e4cc2a
+            words-per-chat-gpt-response: 412.8    
+            words-per-page: 250  
+            intermediate-value: 0.605743402755655
+
+          inputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+
+    human:           
+      pipeline:
+        compute:
+          - compute-writing-rate-in-hours-per-page
+          - multiply-human-carbon-footprint-by-writing-rate
+      defaults:
+        writing-rate-words-per-hour: 300 # from https://www.writermag.com/writing-inspiration/the-writing-life/many-words-one-write-per-day/
+        writing-rate-words-per-page: 250 # Common knowledge, or https://wordcounter.net/words-per-page
+        human-footprint-in-gco2-per-hour: 1712.328767123329 # derived from https://ourworldindata.org/co2-and-other-greenhouse-gas-emissions and converted from per year to per hour
+      inputs:
+        - timestamp: '2024-09-01T10:00:00'
+          duration: 86400

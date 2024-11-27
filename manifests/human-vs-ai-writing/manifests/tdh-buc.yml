@@ -1,0 +1,355 @@
+name: Human vs ai writing and illustrations - baseline study replicating subset of Tomlinson et al 2024 calculations.
+description: Aims to replicate the methodology described by Tomlinson et al 2024 (https://www.nature.com/articles/s41598-024-54271-x#data-availibility), i.e. top down human, bottom up AI. Only considers USA human and Chat-GPT model.
+tags:
+aggregation:
+  metrics:
+    - carbon
+  type: component
+explainer: true
+initialize:
+  plugins:
+
+    ## chat-gpt carbon emissions per page written
+    ##########################################
+    multiply-n-servers-by-embodied-c-per-server:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [n-servers, embodied-carbon-per-server]
+        output-parameter: server-carbon    
+      parameter-metadata:
+        inputs:
+          n-servers:
+            unit: servers
+            description: Number of servers used to train model.
+            aggregation-method:
+              time: copy
+              component: copy 
+          embodied-carbon-per-server:
+            unit: gCO2e
+            description: Embodied carbon in a server, from manufacturer's datasheet.
+            aggregation-method:
+              time: copy
+              component: copy  
+        outputs:
+          server-carbon:
+            unit: gCO2e
+            description: Embodied carbon in servers used for training or inference.
+            aggregation-method:
+              time: copy
+              component: copy  
+
+    scale-embodied-carbon-to-usage-time:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [server-carbon, lifespan-scaling-factor]
+        output-parameter: carbon-total    
+      parameter-metadata:
+        inputs:
+          server-carbon:
+            unit: gCO2e
+            description: embodied carbon in servers used for training or inference.
+            aggregation-method:
+              time: copy
+              component: copy 
+          lifespan-scaling-factor:
+            unit: none
+            description: scaling factor to correct embodied carbon according to server usage time.
+            aggregation-method:
+              time: copy
+              component: copy  
+        outputs:
+          carbon-total:
+            unit: gCO2e
+            description: Embodied carbon in servers used for training or inference, scaled.
+            aggregation-method:
+              time: sum
+              component: sum 
+
+    distribute-carbon-over-n-queries:
+      method: Divide
+      path: "builtin"
+      config:
+        numerator: carbon-total
+        denominator: n-queries
+        output: carbon
+      parameter-metadata:
+        inputs:
+          carbon-total:
+            unit: gCO2e
+            description: Embodied carbon in servers used for training or inference, scaled.
+            aggregation-method:
+              time: sum
+              component: sum 
+          n-queries:
+            unit: queries
+            description: number of queries to amortize carbon over
+            aggregation-method:
+              time: copy
+              component: copy  
+        outputs:
+          carbon:
+            unit: gCO2e
+            description: Carbon in gCO2e.
+            aggregation-method:
+              time: sum
+              component: sum  
+
+
+
+    ## Chat-GPT operational
+
+    multiply-n-gpus-by-gpu-power: # Multiply: n-gpus * gpu-power --> total-power
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [n-gpus, gpu-power]
+        output-parameter: total-power    
+      parameter-metadata:
+        inputs:
+          n-gpus:
+            unit: gpus
+            description: number of gpus used to train model.
+            aggregation-method:
+              time: copy
+              component: copy 
+          gpu-power:
+            unit: watts
+            description: power of each gpu.
+            aggregation-method:
+              time: copy
+              component: copy  
+        outputs:
+          total-power:
+            unit: watts
+            description: power used by all the GPUs training model.
+            aggregation-method:
+              time: sum
+              component: sum 
+
+
+    multiply-power-by-time:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [total-power, training-time]
+        output-parameter: energy-wh    
+      parameter-metadata:
+        inputs:
+          total-power:
+            unit: watts
+            description: power used by all the GPUs training model.
+            aggregation-method:
+              time: sum
+              component: sum 
+          training-time:
+            unit: hours
+            description: time taen to train model, in hours.
+            aggregation-method:
+              time: copy
+              component: copy  
+        outputs:
+          energy-wh:
+            unit: wh
+            description: energy used to train model.
+            aggregation-method:
+              time: sum
+              component: sum     
+    
+    convert-wh-to-kwh:
+      path: builtin
+      method: Coefficient
+      config:
+        input-parameter: energy-wh
+        coefficient: 0.001
+        output-parameter: energy-kwh
+
+    apply-pue:
+      path: builtin
+      method: Coefficient
+      config:
+        input-parameter: energy-kwh
+        coefficient: 1.1
+        output-parameter: energy-kwh
+
+    multiply-energy-by-grid-intensity: 
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [energy-kwh, grid-intensity]
+        output-parameter: carbon-total    
+      parameter-metadata:
+        inputs:
+          energy-kwh:
+            unit: kwh
+            description: energy used to train model.
+            aggregation-method:
+              time: sum
+              component: sum  
+          grid-intensity:
+            unit: gCO2e/kwh
+            description: carbon emitted per unit energy consumed.
+            aggregation-method:
+              time: copy
+              component: copy  
+        outputs:
+          carbon-total:
+            unit: gCO2e
+            description: carbon emitted.
+            aggregation-method:
+              time: sum
+              component: sum     
+
+
+    ## human carbon emissions per page written
+    ##########################################
+
+    compute-writing-rate-in-hours-per-page:
+      method: Divide
+      path: "builtin"
+      config:
+        numerator: writing-rate-words-per-page
+        denominator: writing-rate-words-per-hour
+        output: writing-rate-hours-per-page
+      parameter-metadata:
+        inputs:
+          writing-rate-words-per-page:
+            unit: words/page
+            description: number of words on a page of writing, per common knowledge, or https://wordcounter.net/words-per-page
+            aggregation-method:
+              time: copy
+              component: copy 
+          writing-rate-words-per-hour:
+            unit: words/hour
+            description: number of words a human writes in an hour
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          writing-rate-hours-per-page:
+            unit: hours/page
+            description: How long it takes a human to write a page of text. Int he paper supp info sheet it is cell B20.
+            aggregation-method:
+              time: copy
+              component: copy  
+
+
+    multiply-human-carbon-footprint-by-writing-rate:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [writing-rate-hours-per-page, human-footprint-in-gco2-per-hour]
+        output-parameter: carbon    
+      parameter-metadata:
+        inputs:
+          writing-rate-hours-per-page:
+            unit: hours/page
+            description: How long it takes a human to write a page of text. Int he paper supp info sheet it is cell B20.
+            aggregation-method:
+              time: copy
+              component: copy 
+          human-footprint-in-gco2-per-hour:
+            unit: gCO2e/hour
+            description: ow much carbon a human emits per hour for a given country, from https://ourworldindata.org/co2-and-other-greenhouse-gas-emissions and scaled to per hour.In the paper supp info sheet it is cell B21 or B22 (USA or India).
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          carbon:
+            unit: gCO2e
+            description: How much carbon is emitted when a person writes a page of text. in the paper it is cell B72 (USA) or B73 (India)
+            aggregation-method:
+              time: sum
+              component: sum  
+
+tree:
+  children:
+    human:            
+      pipeline:
+        compute:
+          - compute-writing-rate-in-hours-per-page
+          - multiply-human-carbon-footprint-by-writing-rate
+      defaults:
+        writing-rate-words-per-hour: 300 # from https://www.writermag.com/writing-inspiration/the-writing-life/many-words-one-write-per-day/
+        writing-rate-words-per-page: 250 # Common knowledge, or https://wordcounter.net/words-per-page
+        human-footprint-in-gco2-per-hour: 1712.328767123329 # derived from https://ourworldindata.org/co2-and-other-greenhouse-gas-emissions and converted from per year to per hour
+      inputs:
+        - timestamp: '2024-09-01T10:00:00'
+          duration: 86400
+
+    chat-gpt:
+      children:
+        embodied:
+          children:
+            training:
+              pipeline:
+                compute:
+                  - multiply-n-servers-by-embodied-c-per-server # Multiply: n-servers * embodied-carbon-per-server
+                  - scale-embodied-carbon-to-usage-time # Multiply server-carbon by lifespan-scaling-factor
+                  - distribute-carbon-over-n-queries # divide training carbon by n-queries
+              defaults:
+                n-servers: 1600
+                embodied-carbon-per-server: 9180000 # gCO2e
+                lifespan-scaling-factor: 0.0833 
+                n-queries: 300000000
+              inputs:
+                - timestamp: '2024-09-01T10:00:00'
+                  duration: 86400
+
+            inference:
+              pipeline:
+                compute:
+                  - multiply-n-servers-by-embodied-c-per-server # Multiply: n-servers * embodied-carbon-per-server
+                  - scale-embodied-carbon-to-usage-time # Multiply server-carbon by lifespan-scaling-factor
+                  - distribute-carbon-over-n-queries # divide training carbon by n-queries
+              defaults:
+                n-servers: 3617
+                embodied-carbon-per-server: 9180000 # gCO2e
+                lifespan-scaling-factor: 0.020833 # 1/48 
+                n-queries: 300000000
+              inputs:
+                - timestamp: '2024-09-01T10:00:00'
+                  duration: 86400
+        
+        operational:
+          children:
+            training:
+              pipeline:
+                compute:
+                  - multiply-n-gpus-by-gpu-power # Multiply: n-gpus * gpu-power --> total-power
+                  - multiply-power-by-time # multiply: total-power * training-time --> training energy
+                  - convert-wh-to-kwh
+                  - apply-pue
+                  - multiply-energy-by-grid-intensity # multiply: training-energy * grid-intensity --> training carbon
+                  - distribute-carbon-over-n-queries # divide training carbon by n-queries
+              defaults:
+                n-gpus: 4800 # n gpus used to train model
+                gpu-power: 300 # Watts
+                training-time: 2880
+                grid-intensity: 390
+                n-queries: 300000000
+
+              inputs:
+                - timestamp: '2024-09-01T10:00:00'
+                  duration: 86400
+
+            inference:
+              pipeline:
+                compute:
+                  - multiply-n-gpus-by-gpu-power # Multiply: n-gpus * gpu-power --> total-power
+                  - multiply-power-by-time # multiply: total-power * training-time --> training energy
+                  - convert-wh-to-kwh
+                  - apply-pue
+                  - multiply-energy-by-grid-intensity # multiply: training-energy * grid-intensity --> training carbon
+                  - distribute-carbon-over-n-queries # divide training carbon by n-queries
+              defaults:
+                n-gpus: 28936 # n gpus used to train model
+                gpu-power: 300 # Watts
+                training-time: 24
+                grid-intensity: 390
+                n-queries: 10000000
+
+              inputs:
+                - timestamp: '2024-09-01T10:00:00'
+                  duration: 86400

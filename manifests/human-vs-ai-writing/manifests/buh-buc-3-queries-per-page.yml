@@ -1,0 +1,604 @@
+name: Human vs ai writing and illustrations - baseline study replicating subset of Tomlinson et al 2024 calculations.
+description: Aims to replicate the methodology described by Tomlinson et al 2024 (https://www.nature.com/articles/s41598-024-54271-x#data-availibility), i.e. top down human, bottom up AI. Only considers USA human and Chat-GPT model.
+tags:
+aggregation:
+  metrics:
+    - carbon
+  type: component
+explainer: true
+initialize:
+  plugins:
+
+    ## chat-gpt carbon emissions per page written
+    ##########################################
+    multiply-n-servers-by-embodied-c-per-server:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [n-servers, embodied-carbon-per-server]
+        output-parameter: server-carbon    
+      parameter-metadata:
+        inputs:
+          n-servers:
+            unit: servers
+            description: Number of servers used to train model.
+            aggregation-method:
+              time: copy
+              component: copy 
+          embodied-carbon-per-server:
+            unit: gCO2e
+            description: Embodied carbon in a server, from manufacturer's datasheet.
+            aggregation-method:
+              time: copy
+              component: copy  
+        outputs:
+          server-carbon:
+            unit: gCO2e
+            description: Embodied carbon in servers used for training or inference.
+            aggregation-method:
+              time: copy
+              component: copy  
+
+    scale-embodied-carbon-to-usage-time:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [server-carbon, lifespan-scaling-factor]
+        output-parameter: carbon-total    
+      parameter-metadata:
+        inputs:
+          server-carbon:
+            unit: gCO2e
+            description: embodied carbon in servers used for training or inference.
+            aggregation-method:
+              time: copy
+              component: copy 
+          lifespan-scaling-factor:
+            unit: none
+            description: scaling factor to correct embodied carbon according to server usage time.
+            aggregation-method:
+              time: copy
+              component: copy  
+        outputs:
+          carbon-total:
+            unit: gCO2e
+            description: Embodied carbon in servers used for training or inference, scaled.
+            aggregation-method:
+              time: sum
+              component: sum 
+
+    distribute-carbon-over-n-queries:
+      method: Divide
+      path: "builtin"
+      config:
+        numerator: carbon-total
+        denominator: n-queries
+        output: carbon
+      parameter-metadata:
+        inputs:
+          carbon-total:
+            unit: gCO2e
+            description: Embodied carbon in servers used for training or inference, scaled.
+            aggregation-method:
+              time: sum
+              component: sum 
+          n-queries:
+            unit: queries
+            description: number of queries to amortize carbon over
+            aggregation-method:
+              time: copy
+              component: copy  
+        outputs:
+          carbon:
+            unit: gCO2e
+            description: Carbon in gCO2e.
+            aggregation-method:
+              time: sum
+              component: sum  
+
+
+
+    ## Chat-GPT operational
+
+    multiply-n-gpus-by-gpu-power: # Multiply: n-gpus * gpu-power --> total-power
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [n-gpus, gpu-power]
+        output-parameter: total-power    
+      parameter-metadata:
+        inputs:
+          n-gpus:
+            unit: gpus
+            description: number of gpus used to train model.
+            aggregation-method:
+              time: copy
+              component: copy 
+          gpu-power:
+            unit: watts
+            description: power of each gpu.
+            aggregation-method:
+              time: copy
+              component: copy  
+        outputs:
+          total-power:
+            unit: watts
+            description: power used by all the GPUs training model.
+            aggregation-method:
+              time: sum
+              component: sum 
+
+
+    multiply-power-by-time:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [total-power, training-time]
+        output-parameter: energy-wh    
+      parameter-metadata:
+        inputs:
+          total-power:
+            unit: watts
+            description: power used by all the GPUs training model.
+            aggregation-method:
+              time: sum
+              component: sum 
+          training-time:
+            unit: hours
+            description: time taen to train model, in hours.
+            aggregation-method:
+              time: copy
+              component: copy  
+        outputs:
+          energy-wh:
+            unit: wh
+            description: energy used to train model.
+            aggregation-method:
+              time: sum
+              component: sum     
+    
+    convert-wh-to-kwh:
+      path: builtin
+      method: Coefficient
+      config:
+        input-parameter: energy-wh
+        coefficient: 0.001
+        output-parameter: energy-kwh
+
+    apply-pue:
+      path: builtin
+      method: Coefficient
+      config:
+        input-parameter: energy-kwh
+        coefficient: 1.1
+        output-parameter: energy-kwh
+
+    multiply-energy-by-grid-intensity: 
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [energy-kwh, grid-intensity]
+        output-parameter: carbon-total    
+      parameter-metadata:
+        inputs:
+          energy-kwh:
+            unit: kWh
+            description: energy used to train model.
+            aggregation-method:
+              time: sum
+              component: sum  
+          grid-intensity:
+            unit: gCO2e/kwh
+            description: carbon emitted per unit energy consumed.
+            aggregation-method:
+              time: copy
+              component: copy  
+        outputs:
+          carbon-total:
+            unit: gCO2e
+            description: carbon emitted.
+            aggregation-method:
+              time: sum
+              component: sum     
+
+
+    ## human carbon emissions per page written
+    ##########################################
+
+
+    scale-gas-usage-by-purpose:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [annual-uk-gas-usage, fraction-of-gas-used-for-heating]
+        output-parameter: gas-scaled-by-purpose    
+      parameter-metadata:
+        inputs:
+          annual-uk-gas-usage:
+            unit: kWh
+            description: Gas used by an average Uk household annually.
+            aggregation-method:
+              time: copy
+              component: copy 
+          fraction-of-gas-used-for-heating:
+            unit: none
+            description: fraction of total gas consumption is due to heating.
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          gas-scaled-by-purpose:
+            unit: kWh
+            description: Energy used to heat average UK house
+            aggregation-method:
+              time: sum
+              component: sum  
+
+    scale-gas-usage-by-space:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [gas-scaled-by-purpose, fraction-of-house-used-for-writing]
+        output-parameter: gas-scaled-by-space    
+      parameter-metadata:
+        inputs:
+          gas-scaled-by-purpose:
+            unit: kWh
+            description: Energy used to heat average UK house
+            aggregation-method:
+              time: sum
+              component: sum  
+          fraction-of-house-used-for-writing:
+            unit: none
+            description: fraction of average house used for writing.
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          gas-scaled-by-space:
+            unit: kWh
+            description: Energy used to heat average UK house, scaled by space used for writing
+            aggregation-method:
+              time: sum
+              component: sum  
+
+    scale-gas-usage-by-time: # gas-scaled-by-space * time-correction-factor --> energy
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [gas-scaled-by-space, time-correction-factor]
+        output-parameter: energy-kwh    
+      parameter-metadata:
+        inputs:
+          gas-scaled-by-space:
+            unit: kWh
+            description: Energy used to heat average UK house, scaled by space used for writing
+            aggregation-method:
+              time: sum
+              component: sum  
+          time-correction-factor:
+            unit: none
+            description: 1/365 * 1/24 * 0.83 # gives frcation of annual energy attributed to 0.83 hour writing time
+            aggregation-method:
+              time: copy
+              component: copy  
+        outputs:
+          energy-kwh:
+            unit: kWh
+            description: Energy used to heat writing space during writing time
+            aggregation-method:
+              time: sum
+              component: sum  
+
+    multiply-energy-by-grid-intensity-human: 
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [energy-kwh, grid-intensity]
+        output-parameter: carbon  
+      parameter-metadata:
+        inputs:
+          energy-kwh:
+            unit: kWh
+            description: energy used to train model.
+            aggregation-method:
+              time: sum
+              component: sum  
+          grid-intensity:
+            unit: gCO2e/kwh
+            description: carbon emitted per unit energy consumed.
+            aggregation-method:
+              time: copy
+              component: copy  
+        outputs:
+          carbon:
+            unit: gCO2e
+            description: carbon emitted.
+            aggregation-method:
+              time: sum
+              component: sum     
+
+
+
+
+    scale-electricity-usage-by-purpose:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [annual-uk-electricity-usage, fraction-of-electricity-used-for-heating]
+        output-parameter: electricity-scaled-by-purpose
+      parameter-metadata:
+        inputs:
+          annual-uk-electricity-usage:
+            unit: kWh
+            description: Electricity used by an average UK household annually.
+            aggregation-method:
+              time: copy
+              component: copy 
+          fraction-of-electricity-used-for-heating:
+            unit: none
+            description: fraction of total electricity consumption is due to lighting.
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          electricity-scaled-by-purpose:
+            unit: kWh
+            description: Energy used to light average UK house
+            aggregation-method:
+              time: sum
+              component: sum  
+
+    scale-electricity-usage-by-space:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [electricity-scaled-by-purpose, fraction-of-house-used-for-writing]
+        output-parameter: electricity-scaled-by-space    
+      parameter-metadata:
+        inputs:
+          electricity-scaled-by-purpose:
+            unit: kWh
+            description: Energy used to light average UK house
+            aggregation-method:
+              time: sum
+              component: sum  
+          fraction-of-house-used-for-writing:
+            unit: none
+            description: fraction of average house used for writing.
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          electricity-scaled-by-space:
+            unit: kWh
+            description: Energy used to light average UK house, scaled by space used for writing
+            aggregation-method:
+              time: sum
+              component: sum  
+
+    scale-electricity-usage-by-time: # gas-scaled-by-space * time-correction-factor --> energy
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [electricity-scaled-by-space, time-correction-factor]
+        output-parameter: energy-kwh
+      parameter-metadata:
+        inputs:
+          electricity-scaled-by-space:
+            unit: kWh
+            description: Energy used to light average UK house, scaled by space used for writing
+            aggregation-method:
+              time: sum
+              component: sum  
+          time-correction-factor:
+            unit: none
+            description: 1/365 * 1/24 * 0.83 # gives fraction of annual energy attributed to 0.83 hour writing time
+            aggregation-method:
+              time: copy
+              component: copy  
+        outputs:
+          energy-kwh:
+            unit: kWh
+            description: Energy used to heat writing space during writing time
+            aggregation-method:
+              time: sum
+              component: sum  
+
+    scale-laptop-embodied-to-writing-time: # gas-scaled-by-space * time-correction-factor --> energy
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [embodied-carbon-laptop, time-correction-factor]
+        output-parameter: carbon
+      parameter-metadata:
+        inputs:
+          embodied-carbon-laptop:
+            unit: gCO2e
+            description: embodied carbon for macbook pro 14" from datasheet
+            aggregation-method:
+              time: copy
+              component: copy  
+          time-correction-factor:
+            unit: none
+            description: 1/ (4* 365 * 24 * 0.83) # gives fraction of annual energy attributed to 0.83 hour writing time
+            aggregation-method:
+              time: copy
+              component: copy  
+        outputs:
+          carbon:
+            unit: gCO2e
+            description: emitted carbon
+            aggregation-method:
+              time: sum
+              component: sum  
+
+    scale-laptop-operational-energy-to-writing-time: # gas-scaled-by-space * time-correction-factor --> energy
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [operational-carbon-laptop, time-correction-factor]
+        output-parameter: energy-kwh
+      parameter-metadata:
+        inputs:
+          operational-carbon-laptop:
+            unit: gCO2e
+            description: operational carbon for laptop usage per day
+            aggregation-method:
+              time: copy
+              component: copy  
+          time-correction-factor:
+            unit: none
+            description: (1 / 24) * 0.83 # gives fraction of annual energy attributed to 0.83 hour writing time
+            aggregation-method:
+              time: copy
+              component: copy  
+        outputs:
+          energy-kwh:
+            unit: kWh
+            description: emitted carbon
+            aggregation-method:
+              time: sum
+              component: sum  
+
+
+
+tree:
+  children:
+    human:
+      children:
+        heating:
+          pipeline:
+            compute:
+              - scale-gas-usage-by-purpose # annual-uk-gas-usage * fraction-of-gas-used-for-heating --> gas-scaled-by-purpose
+              - scale-gas-usage-by-space # gas-scaled-by-purpose * fraction-of-house-used-forwriting --> gas-scaled-by-space 
+              - scale-gas-usage-by-time # gas-scaled-by-space * time-correction-factor --> energy
+              - multiply-energy-by-grid-intensity-human
+          defaults:
+            annual-uk-gas-usage: 11500 #kwh
+            fraction-of-gas-used-for-heating: 0.66
+            fraction-of-house-used-for-writing: 0.125
+            time-correction-factor: 9.474885844748857e-05 # 0.83 hours / 1 year
+            grid-intensity: 185
+          inputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+
+
+        lighting:
+          pipeline:
+            compute:
+              - scale-electricity-usage-by-purpose # annual-uk-electricity-usage * fraction-of-electricity-used-for-lighting --> elec-scaled-by-purpose
+              - scale-electricity-usage-by-space # elec-scaled-by-purpose * fraction-of-house-used-forwriting --> electricity-scaled-by-space 
+              - scale-electricity-usage-by-time # electricity-scaled-by-space * time-correction-factor --> energy
+              - multiply-energy-by-grid-intensity-human
+          defaults:
+            annual-uk-electricity-usage: 3941 #kwh
+            fraction-of-electricity-used-for-heating: 0.15
+            fraction-of-house-used-for-writing: 0.125
+            time-correction-factor: 9.474885844748857e-05 # 0.83 hours / 1 year
+            grid-intensity: 162
+          inputs:
+            - timestamp: '2024-09-01T10:00:00'
+              duration: 86400
+
+        laptop:
+          children:
+            embodied:
+              pipeline:
+                compute:
+                  - scale-laptop-embodied-to-writing-time
+              defaults:
+                embodied-carbon-laptop: 196560
+                time-correction-factor: 2.3687214611872143e-05
+              inputs:
+                - timestamp: '2024-09-01T10:00:00'
+                  duration: 86400   
+
+            operational:
+              pipeline:
+                compute:
+                  - scale-laptop-operational-energy-to-writing-time
+                  - multiply-energy-by-grid-intensity-human
+              defaults:
+                operational-carbon-laptop: 0.05
+                time-correction-factor: 0.0345
+                grid-intensity: 162
+              inputs:
+                - timestamp: '2024-09-01T10:00:00'
+                  duration: 86400   
+    chat-gpt:
+      children:
+        embodied:
+          children:
+            training:
+              pipeline:
+                compute:
+                  - multiply-n-servers-by-embodied-c-per-server # Multiply: n-servers * embodied-carbon-per-server
+                  - scale-embodied-carbon-to-usage-time # Multiply server-carbon by lifespan-scaling-factor
+                  - distribute-carbon-over-n-queries # divide training carbon by n-queries
+              defaults:
+                n-servers: 1600
+                embodied-carbon-per-server: 9180000 # gCO2e
+                lifespan-scaling-factor: 0.0833 
+                n-queries: 100000000 # original / 3 to simulate 3 queries per page
+              inputs:
+                - timestamp: '2024-09-01T10:00:00'
+                  duration: 86400
+
+            inference:
+              pipeline:
+                compute:
+                  - multiply-n-servers-by-embodied-c-per-server # Multiply: n-servers * embodied-carbon-per-server
+                  - scale-embodied-carbon-to-usage-time # Multiply server-carbon by lifespan-scaling-factor
+                  - distribute-carbon-over-n-queries # divide training carbon by n-queries
+              defaults:
+                n-servers: 3617
+                embodied-carbon-per-server: 9180000 # gCO2e
+                lifespan-scaling-factor: 0.020833 # 1/48 
+                n-queries: 100000000 # original / 3 to simulate 3 queries per page
+              inputs:
+                - timestamp: '2024-09-01T10:00:00'
+                  duration: 86400
+        
+        operational:
+          children:
+            training:
+              pipeline:
+                compute:
+                  - multiply-n-gpus-by-gpu-power # Multiply: n-gpus * gpu-power --> total-power
+                  - multiply-power-by-time # multiply: total-power * training-time --> training energy
+                  - convert-wh-to-kwh
+                  - apply-pue
+                  - multiply-energy-by-grid-intensity # multiply: training-energy * grid-intensity --> training carbon
+                  - distribute-carbon-over-n-queries # divide training carbon by n-queries
+              defaults:
+                n-gpus: 4800 # n gpus used to train model
+                gpu-power: 300 # Watts
+                training-time: 2880
+                grid-intensity: 390
+                n-queries: 100000000 # original /3 to simulate 3 queries per page
+
+              inputs:
+                - timestamp: '2024-09-01T10:00:00'
+                  duration: 86400
+
+            inference:
+              pipeline:
+                compute:
+                  - multiply-n-gpus-by-gpu-power # Multiply: n-gpus * gpu-power --> total-power
+                  - multiply-power-by-time # multiply: total-power * training-time --> training energy
+                  - convert-wh-to-kwh
+                  - apply-pue
+                  - multiply-energy-by-grid-intensity # multiply: training-energy * grid-intensity --> training carbon
+                  - distribute-carbon-over-n-queries # divide training carbon by n-queries
+              defaults:
+                n-gpus: 28936 # n gpus used to train model
+                gpu-power: 300 # Watts
+                training-time: 24
+                grid-intensity: 390
+                n-queries: 3333333 # original / 3 to simulate 3 queries per page
+
+              inputs:
+                - timestamp: '2024-09-01T10:00:00'
+                  duration: 86400
