@@ -1,7 +1,9 @@
-name: Human vs ai writing and illustrations - baseline study replicating subset of Tomlinson et al 2024 calculations.
+name: >-
+  Human vs ai writing and illustrations - baseline study replicating subset of
+  Tomlinson et al 2024 calculations.
 description: >-
-  Aims to replicate the methodology described by Tomlinson et al 2024 
-  (https://www.nature.com/articles/s41598-024-54271-x#data-availibility), i.e. 
+  Aims to replicate the methodology described by Tomlinson et al 2024
+  (https://www.nature.com/articles/s41598-024-54271-x#data-availibility), i.e.
   top down human, bottom up AI. Only considers USA human and Chat-GPT model.
 tags: null
 aggregation:
@@ -285,8 +287,8 @@ initialize:
               component: sum
 execution:
   command: >-
-    /home/joseph/.nvm/versions/node/v21.4.0/bin/node
-    /home/joseph/.nvm/versions/node/v21.4.0/bin/if-run -m
+    /home/joe/.nvm/versions/node/v21.4.0/bin/node
+    /home/joe/.nvm/versions/node/v21.4.0/bin/if-run -m
     manifests/tomlinson-paper/manifests/baseline-components.yml -o
     manifests/tomlinson-paper/outputs/baseline-components.yml --debug
     --no-output
@@ -295,7 +297,7 @@ execution:
     os: linux
     os-version: 5.15.0-126-generic
     node-version: 21.4.0
-    date-time: 2024-11-27T12:01:36.114Z (UTC)
+    date-time: 2024-12-02T12:29:17.919Z (UTC)
     dependencies:
       - '@babel/core@7.22.10'
       - '@babel/preset-typescript@7.23.3'
@@ -312,7 +314,6 @@ execution:
       - cross-env@7.0.3
       - csv-parse@5.5.6
       - csv-stringify@6.4.6
-      - dotenv@16.4.5
       - fixpack@4.0.0
       - gts@5.2.0
       - husky@8.0.3
@@ -322,7 +323,6 @@ execution:
       - luxon@3.4.4
       - release-it@16.3.0
       - rimraf@5.0.5
-      - serve@14.2.4
       - ts-command-line-args@2.5.1
       - ts-jest@29.1.1
       - typescript-cubic-spline@1.0.1
