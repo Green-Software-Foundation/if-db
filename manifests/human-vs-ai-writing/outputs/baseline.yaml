@@ -395,7 +395,7 @@ execution:
     os: linux
     os-version: 5.15.0-126-generic
     node-version: 21.4.0
-    date-time: 2024-11-27T11:12:35.135Z (UTC)
+    date-time: 2024-11-28T10:21:16.631Z (UTC)
     dependencies:
       - '@babel/core@7.22.10'
       - '@babel/preset-typescript@7.23.3'
@@ -424,6 +424,7 @@ execution:
       - luxon@3.4.4
       - release-it@16.3.0
       - rimraf@5.0.5
+      - serve@14.2.4
       - ts-command-line-args@2.5.1
       - ts-jest@29.1.1
       - typescript-cubic-spline@1.0.1
@@ -691,7 +692,7 @@ explain:
       carbon:
         unit: gCO2e/page
         description: >-
-          How much carbon is emitted when a person writes a page of text. in the
+          Ho wmuch carbon is emitted when a person writes a page of text. in the
           paper it is cell B72 (USA) or B73 (India)
         aggregation-method:
           time: sum
@@ -699,69 +700,53 @@ explain:
 tree:
   children:
     chat-gpt:
-      children:
-        training:
-          children:
-            operational:
-              pipeline:
-                compute:
-                  - divide-training-carbon-by-queries-per-month-chat-gpt
-                  - divide-inference-carbon-by-n-queries-chat-gpt
-                  - sum-training-and-inference-carbon-per-query
-                  - sum-embodied-carbon-components-chat-gpt
-                  - scale-embodied-carbon-to-training-time-period-chat-gpt
-                  - scale-embodied-carbon-to-queries-per-month-chat-gpt
-                  - convert-carbon-per-query-to-carbon-per-word-chat-gpt
-                  - sum-words-per-query-and-embodied-carbon-per-query-chat-gpt
-                  - calculate-total-footprint-per-page-chat-gpt
-              defaults:
-                training-carbon-chat-gpt: 552000000
-                queries-per-month-chat-gpt: 300000000
-                operational-carbon-per-day-chat-gpt: 3820000
-                queries-per-day-chat-gpt: 10000000
-                chat-gpt-gpu-embodied-carbon: 36974.31507
-                fraction-of-gpu-lifetime-used-for-training-chat-gpt: 0.2448630137
-                embodied-energy-of-a100-gpu: 150000
-                carbon-footprint-for-recycling-gpu: 1000
-                words-per-chat-gpt-response: 412.8
-                words-per-page: 250
-              inputs:
-                - timestamp: '2024-09-01T10:00:00'
-                  duration: 86400
-              outputs:
-                - timestamp: '2024-09-01T10:00:00'
-                  duration: 86400
-                  training-carbon-chat-gpt: 552000000
-                  queries-per-month-chat-gpt: 300000000
-                  operational-carbon-per-day-chat-gpt: 3820000
-                  queries-per-day-chat-gpt: 10000000
-                  chat-gpt-gpu-embodied-carbon: 36974.31507
-                  fraction-of-gpu-lifetime-used-for-training-chat-gpt: 0.2448630137
-                  embodied-energy-of-a100-gpu: 150000
-                  carbon-footprint-for-recycling-gpu: 1000
-                  words-per-chat-gpt-response: 412.8
-                  words-per-page: 250
-                  carbon-per-query-chat-gpt-training: 1.84
-                  carbon-per-query-chat-gpt-inference: 0.382
-                  total-carbon-per-query-chat-gpt: 2.222
-                  embodied-carbon-chat-gpt: 151000
-                  embodied-carbon-chat-gpt-scaled-by-time: 36974.3150687
-                  embodied-carbon-per-query-chat-gpt: 0.00012324771689566669
-                  carbon-per-word-chat-gpt: 555.5
-                  intermediate-value-summing-words-per-response-and-carbon-per-response: 412.8001232477169
-                  carbon: 1.345687582720634
-          outputs:
-            - carbon: 1.345687582720634
-              timestamp: '2024-09-01T10:00:00'
-              duration: 86400
-          aggregated:
-            carbon: 1.345687582720634
-      outputs:
-        - carbon: 1.345687582720634
-          timestamp: '2024-09-01T10:00:00'
+      pipeline:
+        compute:
+          - divide-training-carbon-by-queries-per-month-chat-gpt
+          - divide-inference-carbon-by-n-queries-chat-gpt
+          - sum-training-and-inference-carbon-per-query
+          - sum-embodied-carbon-components-chat-gpt
+          - scale-embodied-carbon-to-training-time-period-chat-gpt
+          - scale-embodied-carbon-to-queries-per-month-chat-gpt
+          - convert-carbon-per-query-to-carbon-per-word-chat-gpt
+          - sum-words-per-query-and-embodied-carbon-per-query-chat-gpt
+          - calculate-total-footprint-per-page-chat-gpt
+      defaults:
+        training-carbon-chat-gpt: 552000000
+        queries-per-month-chat-gpt: 300000000
+        operational-carbon-per-day-chat-gpt: 3820000
+        queries-per-day-chat-gpt: 10000000
+        chat-gpt-gpu-embodied-carbon: 36974.31507
+        fraction-of-gpu-lifetime-used-for-training-chat-gpt: 0.2448630137
+        embodied-energy-of-a100-gpu: 150000
+        carbon-footprint-for-recycling-gpu: 1000
+        words-per-chat-gpt-response: 412.8
+        words-per-page: 250
+      inputs:
+        - timestamp: '2024-09-01T10:00:00'
           duration: 86400
-      aggregated:
-        carbon: 1.345687582720634
+      outputs:
+        - timestamp: '2024-09-01T10:00:00'
+          duration: 86400
+          training-carbon-chat-gpt: 552000000
+          queries-per-month-chat-gpt: 300000000
+          operational-carbon-per-day-chat-gpt: 3820000
+          queries-per-day-chat-gpt: 10000000
+          chat-gpt-gpu-embodied-carbon: 36974.31507
+          fraction-of-gpu-lifetime-used-for-training-chat-gpt: 0.2448630137
+          embodied-energy-of-a100-gpu: 150000
+          carbon-footprint-for-recycling-gpu: 1000
+          words-per-chat-gpt-response: 412.8
+          words-per-page: 250
+          carbon-per-query-chat-gpt-training: 1.84
+          carbon-per-query-chat-gpt-inference: 0.382
+          total-carbon-per-query-chat-gpt: 2.222
+          embodied-carbon-chat-gpt: 151000
+          embodied-carbon-chat-gpt-scaled-by-time: 36974.3150687
+          embodied-carbon-per-query-chat-gpt: 0.00012324771689566669
+          carbon-per-word-chat-gpt: 555.5
+          intermediate-value-summing-words-per-response-and-carbon-per-response: 412.8001232477169
+          carbon: 1.345687582720634
     human:
       pipeline:
         compute:

@@ -335,37 +335,33 @@ initialize:
 tree:
   children:
     chat-gpt: #bottom-up
-      children:
-        training:
-          children:
-            operational:
-              pipeline:
-                compute:
-                  - divide-training-carbon-by-queries-per-month-chat-gpt
-                  - divide-inference-carbon-by-n-queries-chat-gpt
-                  - sum-training-and-inference-carbon-per-query
-                  - sum-embodied-carbon-components-chat-gpt
-                  - scale-embodied-carbon-to-training-time-period-chat-gpt
-                  - scale-embodied-carbon-to-queries-per-month-chat-gpt
-                  - convert-carbon-per-query-to-carbon-per-word-chat-gpt
-                  - sum-words-per-query-and-embodied-carbon-per-query-chat-gpt
-                  - calculate-total-footprint-per-page-chat-gpt
+      pipeline:
+        compute:
+          - divide-training-carbon-by-queries-per-month-chat-gpt
+          - divide-inference-carbon-by-n-queries-chat-gpt
+          - sum-training-and-inference-carbon-per-query
+          - sum-embodied-carbon-components-chat-gpt
+          - scale-embodied-carbon-to-training-time-period-chat-gpt
+          - scale-embodied-carbon-to-queries-per-month-chat-gpt
+          - convert-carbon-per-query-to-carbon-per-word-chat-gpt
+          - sum-words-per-query-and-embodied-carbon-per-query-chat-gpt
+          - calculate-total-footprint-per-page-chat-gpt
 
-              defaults:
-                training-carbon-chat-gpt: 552000000 # from https://medium.com/@chrispointon/the-carbon-footprint-of-chatgpt-e1bc14e4cc2a
-                queries-per-month-chat-gpt: 300000000 # from https://medium.com/@chrispointon/the-carbon-footprint-of-chatgpt-e1bc14e4cc2a
-                operational-carbon-per-day-chat-gpt: 3820000 # from https://medium.com/@chrispointon/the-carbon-footprint-of-chatgpt-e1bc14e4cc2a
-                queries-per-day-chat-gpt: 10000000 # from https://medium.com/@chrispointon/the-carbon-footprint-of-chatgpt-e1bc14e4cc2a
-                chat-gpt-gpu-embodied-carbon: 36974.31507
-                fraction-of-gpu-lifetime-used-for-training-chat-gpt: 0.2448630137 # 3217.5 hours out of 1.5 year lifetime
-                embodied-energy-of-a100-gpu: 150000
-                carbon-footprint-for-recycling-gpu: 1000
-                words-per-chat-gpt-response: 412.8    
-                words-per-page: 250  
+      defaults:
+        training-carbon-chat-gpt: 552000000 # from https://medium.com/@chrispointon/the-carbon-footprint-of-chatgpt-e1bc14e4cc2a
+        queries-per-month-chat-gpt: 300000000 # from https://medium.com/@chrispointon/the-carbon-footprint-of-chatgpt-e1bc14e4cc2a
+        operational-carbon-per-day-chat-gpt: 3820000 # from https://medium.com/@chrispointon/the-carbon-footprint-of-chatgpt-e1bc14e4cc2a
+        queries-per-day-chat-gpt: 10000000 # from https://medium.com/@chrispointon/the-carbon-footprint-of-chatgpt-e1bc14e4cc2a
+        chat-gpt-gpu-embodied-carbon: 36974.31507
+        fraction-of-gpu-lifetime-used-for-training-chat-gpt: 0.2448630137 # 3217.5 hours out of 1.5 year lifetime
+        embodied-energy-of-a100-gpu: 150000
+        carbon-footprint-for-recycling-gpu: 1000
+        words-per-chat-gpt-response: 412.8    
+        words-per-page: 250  
 
-              inputs:
-                - timestamp: '2024-09-01T10:00:00'
-                  duration: 86400
+      inputs:
+        - timestamp: '2024-09-01T10:00:00'
+          duration: 86400
 
     human:            
       pipeline:
