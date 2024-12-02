@@ -1,10 +1,8 @@
 name: >-
-  Human vs ai writing and illustrations - baseline study replicating subset of
-  Tomlinson et al 2024 calculations.
+  BU Human, BU Chat-GPT, assuming 3 queries used to generate a page of text.
 description: >-
-  Aims to replicate the methodology described by Tomlinson et al 2024
-  (https://www.nature.com/articles/s41598-024-54271-x#data-availibility), i.e.
-  top down human, bottom up AI. Only considers USA human and Chat-GPT model.
+  Forked and modified version of Tomlinson et al 2024 
+  (https://www.nature.com/articles/s41598-024-54271-x#data-availibility).
 tags: null
 explainer: true
 aggregation:

@@ -70,33 +70,6 @@ initialize:
               time: sum
               component: sum  
 
-    # sum-training-and-inference-carbon-per-query:
-    #   method: Sum
-    #   path: builtin
-    #   config:
-    #     input-parameters: [carbon-per-query-chat-gpt-training, carbon-per-query-chat-gpt-inference]
-    #     output-parameter: 'total-carbon-per-query-chat-gpt'    
-    #     inputs:
-    #       carbon-per-query-chat-gpt-training:
-    #         unit: gCO2e/query
-    #         description: carbon emitted during model training.
-    #         aggregation-method:
-    #           time: sum
-    #           component: sum 
-    #       carbon-per-query-chat-gpt-inference:
-    #         unit: gCO2e/query
-    #         description: carbon emitted during model inference.
-    #         aggregation-method:
-    #           time: sum
-    #           component: sum  
-    #     outputs:
-    #       total-carbon-per-query-chat-gpt:
-    #         unit: gCO2e/query
-    #         description: total carbon emitted per query by chat-gpt model, as sum of training and inference carbon. In paper supp info sheet, it is cell B14.
-    #         aggregation-method:
-    #           time: sum
-    #           component: sum  
-
     sum-embodied-carbon-components-chat-gpt:
       method: Sum
       path: builtin
