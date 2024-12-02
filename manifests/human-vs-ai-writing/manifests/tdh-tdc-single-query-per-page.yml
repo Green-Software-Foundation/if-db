@@ -1,0 +1,191 @@
+name: TD human, TD Chat-GPT, assuming 1 query per page of text.
+description: Forked and modified from Tomlinson et al 2024 (https://www.nature.com/articles/s41598-024-54271-x#data-availibility).
+tags:
+aggregation:
+  metrics:
+    - carbon
+  type: component
+explainer: true
+initialize:
+  plugins:
+
+    ## chat-gpt carbon emissions per page written
+    ##########################################
+    multiply-carbon-per-billion-revenue-by-chatgpt-cost:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [carbon-per-billion-dollars-revenue, chat-gpt-cost-in-billions-of-dollars]
+        output-parameter: carbon-to-train-and-serve-chat-gpt    
+      parameter-metadata:
+        inputs:
+          carbon-per-billion-dollars-revenue:
+            unit: gCO2e
+            description: carbon emitted per billion dollars of revenue.
+            aggregation-method:
+              time: copy
+              component: copy 
+          chat-gpt-cost-in-billions-of-dollars:
+            unit: gCO2e/hour
+            description: How much OpenAI paid Microsoft to train and serve Chat-GPT
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          carbon-to-train-and-serve-chat-gpt:
+            unit: gCO2e
+            description: Carbon emitted to train and serve chat-gpt
+            aggregation-method:
+              time: sum
+              component: sum  
+
+
+    carbon-per-request:
+      method: Divide
+      path: "builtin"
+      config:
+        numerator: carbon-to-train-and-serve-chat-gpt
+        denominator: queries-per-year
+        output: carbon-per-query
+      parameter-metadata:
+        inputs:
+          carbon-to-train-and-serve-chat-gpt:
+            unit: gCO2e
+            description: Carbon emitted to train and serve chat-gpt
+            aggregation-method:
+              time: sum
+              component: sum  
+          queries-per-year:
+            unit: queries
+            description: how many queries are sevred by chat-gpt per year
+            aggregation-method:
+              time: copy
+              component: copy  
+        outputs:
+          carbon-per-query:
+            unit: gCO2e
+            description: carbon emitted.
+            aggregation-method:
+              time: sum
+              component: sum  
+
+    carbon-per-page:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [carbon-per-query, queries-per-page]
+        output-parameter: carbon    
+      parameter-metadata:         
+        inputs:
+          carbon-per-query:
+            unit: gCO2e
+            description: How much carbon is emitted when a person writes a page of text. in the paper it is cell B72 (USA) or B73 (India)
+            aggregation-method:
+              time: sum
+              component: sum  
+          queries-per-page:
+            unit: queries
+            description: how many queries does it take to write a page
+            aggregation-method:
+              time: copy
+              component: copy
+        outputs:
+          carbon:
+            unit: gCO2e
+            description: carbon emitted.
+            aggregation-method:
+              time: sum
+              component: sum
+
+
+    ## human carbon emissions per page written
+    ##########################################
+
+    compute-writing-rate-in-hours-per-page:
+      method: Divide
+      path: "builtin"
+      config:
+        numerator: writing-rate-words-per-page
+        denominator: writing-rate-words-per-hour
+        output: writing-rate-hours-per-page
+      parameter-metadata:
+        inputs:
+          writing-rate-words-per-page:
+            unit: words/page
+            description: number of words on a page of writing, per common knowledge, or https://wordcounter.net/words-per-page
+            aggregation-method:
+              time: copy
+              component: copy 
+          writing-rate-words-per-hour:
+            unit: words/hour
+            description: number of words a human writes in an hour
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          writing-rate-hours-per-page:
+            unit: hours/page
+            description: How long it takes a human to write a page of text. Int he paper supp info sheet it is cell B20.
+            aggregation-method:
+              time: copy
+              component: copy  
+
+
+    multiply-human-carbon-footprint-by-writing-rate:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: [writing-rate-hours-per-page, human-footprint-in-gco2-per-hour]
+        output-parameter: carbon  
+      parameter-metadata:
+        inputs:
+          writing-rate-hours-per-page:
+            unit: hours/page
+            description: How long it takes a human to write a page of text. Int he paper supp info sheet it is cell B20.
+            aggregation-method:
+              time: copy
+              component: copy 
+          human-footprint-in-gco2-per-hour:
+            unit: gCO2e/hour
+            description: ow much carbon a human emits per hour for a given country, from https://ourworldindata.org/co2-and-other-greenhouse-gas-emissions and scaled to per hour.In the paper supp info sheet it is cell B21 or B22 (USA or India).
+            aggregation-method:
+              time: sum
+              component: sum  
+        outputs:
+          carbon:
+            unit: gCO2e
+            description: How much carbon is emitted when a person writes a page of text. in the paper it is cell B72 (USA) or B73 (India)
+            aggregation-method:
+              time: sum
+              component: sum  
+
+
+tree:
+  children:
+    human:            
+      pipeline:
+        compute:
+          - compute-writing-rate-in-hours-per-page
+          - multiply-human-carbon-footprint-by-writing-rate
+      defaults:
+        writing-rate-words-per-hour: 300 # from https://www.writermag.com/writing-inspiration/the-writing-life/many-words-one-write-per-day/
+        writing-rate-words-per-page: 250 # Common knowledge, or https://wordcounter.net/words-per-page
+        human-footprint-in-gco2-per-hour: 1712.328767123329 # derived from https://ourworldindata.org/co2-and-other-greenhouse-gas-emissions and converted from per year to per hour
+      inputs:
+        - timestamp: '2024-09-01T10:00:00'
+          duration: 86400
+
+    chat-gpt:
+      pipeline:
+        compute:
+          - multiply-carbon-per-billion-revenue-by-chatgpt-cost
+          - carbon-per-request
+          - carbon-per-page
+      defaults:
+        carbon-per-billion-dollars-revenue: 539325842696.62
+        chat-gpt-cost-in-billions-of-dollars: 4
+        queries-per-year: 3650000000 # 10,000,000 per day
+        queries-per-page: 1
+      inputs:
+        - timestamp: '2024-09-01T10:00:00'
+          duration: 86400
