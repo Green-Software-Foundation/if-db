@@ -1,0 +1,227 @@
+name: IF course demo
+description: generates SCI score (gCO2eq/visit) for dummy application
+tags:
+aggregation:
+  metrics:
+    - carbon
+    - sci
+  type: both
+  
+initialize:
+  plugins:
+
+    duration-to-hours:
+      path: "builtin"
+      method: Coefficient
+      config:
+        input-parameter: duration
+        coefficient: 0.000278 # 1/3600
+        output-parameter: duration-in-hours    
+
+    storage-energy-in-watts:
+      method: Multiply
+      path: builtin
+      config:
+        input-parameters: ["storage-tb", "watts-per-tb"]
+        output-parameter: "storage-watts"
+
+    storage-energy-in-wh:
+      method: Multiply
+      path: builtin
+      config:
+        input-parameters: ["storage-watts", "duration-in-hours"]
+        output-parameter: "storage-wh"
+
+    storage-energy-to-kwh:
+      path: "builtin"
+      method: Coefficient
+      config:
+        input-parameter: storage-wh
+        coefficient: 0.001
+        output-parameter: energy
+    
+    energy-to-carbon:
+      method: Multiply
+      path: "builtin"
+      config:
+        input-parameters: ["energy", "grid-intensity"]
+        output-parameter: "carbon"
+
+
+    # # Networking energy to serve static site to users
+    # #################################################
+
+    network-energy-serving-static-site-per-view:
+      method: Multiply
+      path: builtin
+      config:
+        input-parameters: ["site-size-in-gb", "kwh-per-gb-network"]
+        output-parameter: "network-energy-kwh-serving-static-site-per-view"
+
+    network-energy-serving-static-site-total:
+      method: Multiply
+      path: builtin
+      config:
+        input-parameters: [network-energy-kwh-serving-static-site-per-view, 'site-visits']
+        output-parameter: energy
+
+
+    ## CPU
+    ######
+    interpolate:
+      method: Interpolation
+      path: "builtin"
+      config:
+        method: linear
+        x: [0, 10, 50, 100]
+        y: [0.12, 0.32, 0.75, 1.02]
+        input-parameter: "cpu/utilization"
+        output-parameter: "cpu-factor"
+    cpu-factor-to-wattage:
+      method: Multiply
+      path: builtin
+      config:
+        input-parameters: ["cpu-factor", "thermal-design-power"]
+        output-parameter: "cpu-wattage"
+    wattage-times-duration:
+      method: Multiply
+      path: builtin
+      config:
+        input-parameters: ["cpu-wattage", "duration"]
+        output-parameter: "cpu-wattage-times-duration"
+    wattage-to-energy-kwh:
+      method: Divide
+      path: "builtin"
+      config:
+        numerator: cpu-wattage-times-duration
+        denominator: 3600000
+        output: cpu-energy-raw
+    calculate-vcpu-ratio:
+      method: Divide
+      path: "builtin"
+      config:
+        numerator: vcpus-total
+        denominator: vcpus-allocated
+        output: vcpu-ratio
+    correct-cpu-energy-for-vcpu-ratio:
+      method: Divide
+      path: "builtin"
+      config:
+        numerator: cpu-energy-raw
+        denominator: vcpu-ratio
+        output: energy
+
+
+    ## MEM
+    ######
+
+    memory-coefficient-correction: # memory coefficient in CCF is given /GB/hr - we want to convert to /GB/run-time-duration then x by run duration in s
+      path: builtin
+      method: Coefficient
+      config:
+        input-parameter: duration
+        coefficient: 0.000006533333 # this is 0.000392/60 = KW/GB/H -> KW/GB/s
+        output-parameter: memory-coefficient
+
+
+    memory-energy:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters: [memory-gb, memory-coefficient]
+        output-parameter: energy
+
+
+    ## SCI
+    ######
+
+    sci:
+      path: builtin
+      method: Sci
+      config:
+        functional-unit: site-visits
+      parameter-metadata:
+        outputs:
+          sci:
+            description: software carbon intensity
+            unit: gCO2 / visit
+            aggregation-method: 
+              component: 'sum'
+              time: 'sum'
+
+tree:
+  children:
+    storage:
+      pipeline:
+        compute:
+          - duration-to-hours
+          - storage-energy-in-watts
+          - storage-energy-in-wh
+          - storage-energy-to-kwh
+          - energy-to-carbon
+          - sci
+      defaults:
+        watts-per-tb: 1.2 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
+        grid-intensity: 765.49 # US average
+      inputs:
+        - timestamp: '2024-07-22T00:00:00'
+          duration:	86400	
+          site-visits: 228
+          storage-tb: 0.02
+
+
+    networking:
+      pipeline:
+        compute:
+          - network-energy-serving-static-site-per-view
+          - network-energy-serving-static-site-total
+          - energy-to-carbon
+          - sci
+      defaults:
+        site-size-in-gb: 0.00809473 # from google pagespeed api
+        kwh-per-gb-network: 0.001 # https://www.cloudcarbonfootprint.org/docs/methodology/#networking
+        watts-per-tb: 1.2 # https://www.cloudcarbonfootprint.org/docs/methodology/#storage
+        grid-intensity: 765.49 # US average
+        visits-per-month: 325 # from google analytics
+      inputs:
+        - timestamp: '2024-07-22T00:00:00'
+          duration:	86400	
+          site-visits: 228
+
+
+    cpu:
+      pipeline:
+        compute:
+          - interpolate
+          - cpu-factor-to-wattage
+          - wattage-times-duration
+          - wattage-to-energy-kwh
+          - calculate-vcpu-ratio
+          - correct-cpu-energy-for-vcpu-ratio
+          - energy-to-carbon
+          - sci
+      defaults:
+        thermal-design-power: 100
+        vcpus-total: 8
+        vcpus-allocated: 2
+        grid-intensity: 165
+      inputs:
+        - timestamp: '2024-07-22T00:00:00'
+          duration:	86400	
+          site-visits: 228
+          cpu/utilization: 35
+    
+    memory:
+      pipeline:
+        compute:
+          - memory-coefficient-correction # memory coefficient in CCF is given /GB/hr - we want to convert to /GB/run-time-duration then x by run duration in s
+          - memory-energy
+          - energy-to-carbon
+          - sci
+      defaults:
+        grid-intensity: 165
+      inputs:
+        - timestamp: '2024-07-22T00:00:00'
+          duration:	86400	
+          site-visits: 228
+          memory-gb: 3
