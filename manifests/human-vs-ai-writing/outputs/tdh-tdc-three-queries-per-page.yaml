@@ -1,4 +1,4 @@
-name: TD human, TD Chat-GPT, assuming 1 query per page of text.
+name: TD human, TD Chat-GPT, assuming 3 query per page of text.
 description: >-
   Forked and modified from Tomlinson et al 2024 
   (https://www.nature.com/articles/s41598-024-54271-x#data-availibility).
