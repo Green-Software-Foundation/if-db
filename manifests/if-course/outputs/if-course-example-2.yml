@@ -1,0 +1,710 @@
+name: IF course demo
+description: generates SCI score (gCO2eq/visit) for dummy application
+tags: null
+aggregation:
+  metrics:
+    - carbon
+    - sci
+  type: both
+initialize:
+  plugins:
+    duration-to-hours:
+      path: builtin
+      method: Coefficient
+      config:
+        input-parameter: duration
+        coefficient: 0.000278
+        output-parameter: duration-in-hours
+    storage-energy-in-watts:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters:
+          - storage-tb
+          - watts-per-tb
+        output-parameter: storage-watts
+    storage-energy-in-wh:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters:
+          - storage-watts
+          - duration-in-hours
+        output-parameter: storage-wh
+    storage-energy-to-kwh:
+      path: builtin
+      method: Coefficient
+      config:
+        input-parameter: storage-wh
+        coefficient: 0.001
+        output-parameter: energy
+    energy-to-carbon:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters:
+          - energy
+          - grid-intensity
+        output-parameter: carbon
+    network-energy-serving-static-site-per-view:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters:
+          - site-size-in-gb
+          - kwh-per-gb-network
+        output-parameter: network-energy-kwh-serving-static-site-per-view
+    network-energy-serving-static-site-total:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters:
+          - network-energy-kwh-serving-static-site-per-view
+          - site-visits
+        output-parameter: energy
+    interpolate:
+      path: builtin
+      method: Interpolation
+      config:
+        method: linear
+        x:
+          - 0
+          - 10
+          - 50
+          - 100
+        'y':
+          - 0.12
+          - 0.32
+          - 0.75
+          - 1.02
+        input-parameter: cpu/utilization
+        output-parameter: cpu-factor
+    cpu-factor-to-wattage:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters:
+          - cpu-factor
+          - thermal-design-power
+        output-parameter: cpu-wattage
+    wattage-times-duration:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters:
+          - cpu-wattage
+          - duration
+        output-parameter: cpu-wattage-times-duration
+    wattage-to-energy-kwh:
+      path: builtin
+      method: Divide
+      config:
+        numerator: cpu-wattage-times-duration
+        denominator: 3600000
+        output: cpu-energy-raw
+    calculate-vcpu-ratio:
+      path: builtin
+      method: Divide
+      config:
+        numerator: vcpus-total
+        denominator: vcpus-allocated
+        output: vcpu-ratio
+    correct-cpu-energy-for-vcpu-ratio:
+      path: builtin
+      method: Divide
+      config:
+        numerator: cpu-energy-raw
+        denominator: vcpu-ratio
+        output: energy
+    memory-coefficient-correction:
+      path: builtin
+      method: Coefficient
+      config:
+        input-parameter: duration
+        coefficient: 0.000006533333
+        output-parameter: memory-coefficient
+    memory-energy:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters:
+          - memory-gb
+          - memory-coefficient
+        output-parameter: energy
+    sci:
+      path: builtin
+      method: Sci
+      config:
+        functional-unit: site-visits
+      parameter-metadata:
+        outputs:
+          sci:
+            unit: gCO2 / visit
+            description: software carbon intensity
+            aggregation-method:
+              time: sum
+              component: sum
+execution:
+  command: >-
+    /home/joe/.nvm/versions/node/v21.4.0/bin/node
+    /home/joe/.nvm/versions/node/v21.4.0/bin/if-run -m
+    manifests/examples/if-course-example-1.yml -o
+    manifests/examples/outputs/if-course-example-2.yml
+  environment:
+    if-version: 0.7.2
+    os: linux
+    os-version: 5.15.0-126-generic
+    node-version: 21.4.0
+    date-time: 2024-12-13T14:09:40.826Z (UTC)
+    dependencies:
+      - '@babel/core@7.22.10'
+      - '@babel/preset-typescript@7.23.3'
+      - '@commitlint/cli@18.6.0'
+      - '@commitlint/config-conventional@18.6.0'
+      - '@grnsft/if-core@0.0.28'
+      - '@jest/globals@29.7.0'
+      - '@types/jest@29.5.8'
+      - '@types/js-yaml@4.0.9'
+      - '@types/luxon@3.4.2'
+      - '@types/node@20.9.0'
+      - axios-mock-adapter@1.22.0
+      - axios@1.7.7
+      - cross-env@7.0.3
+      - csv-parse@5.5.6
+      - csv-stringify@6.4.6
+      - fixpack@4.0.0
+      - gts@5.2.0
+      - husky@8.0.3
+      - jest@29.7.0
+      - js-yaml@4.1.0
+      - lint-staged@15.2.10
+      - luxon@3.4.4
+      - release-it@16.3.0
+      - rimraf@5.0.5
+      - ts-command-line-args@2.5.1
+      - ts-jest@29.1.1
+      - typescript-cubic-spline@1.0.1
+      - typescript@5.2.2
+      - winston@3.11.0
+      - zod@3.23.8
+  status: success
+tree:
+  children:
+    storage:
+      children:
+        database-1:
+          pipeline:
+            compute:
+              - duration-to-hours
+              - storage-energy-in-watts
+              - storage-energy-in-wh
+              - storage-energy-to-kwh
+              - energy-to-carbon
+              - sci
+          defaults:
+            watts-per-tb: 1.2
+            grid-intensity: 765.49
+          inputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              storage-tb: 0.02
+          outputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              storage-tb: 0.02
+              watts-per-tb: 1.2
+              grid-intensity: 765.49
+              duration-in-hours: 24.019199999999998
+              storage-watts: 0.024
+              storage-wh: 0.5764608
+              energy: 0.0005764608
+              carbon: 0.44127497779200003
+              sci: 0.001935416569263158
+          aggregated:
+            carbon: 0.44127497779200003
+            sci: 0.001935416569263158
+        database-2:
+          pipeline:
+            compute:
+              - duration-to-hours
+              - storage-energy-in-watts
+              - storage-energy-in-wh
+              - storage-energy-to-kwh
+              - energy-to-carbon
+              - sci
+          defaults:
+            watts-per-tb: 1.2
+            grid-intensity: 765.49
+          inputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              storage-tb: 0.025
+          outputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              storage-tb: 0.025
+              watts-per-tb: 1.2
+              grid-intensity: 765.49
+              duration-in-hours: 24.019199999999998
+              storage-watts: 0.03
+              storage-wh: 0.7205759999999999
+              energy: 0.0007205759999999999
+              carbon: 0.5515937222399999
+              sci: 0.002419270711578947
+          aggregated:
+            carbon: 0.5515937222399999
+            sci: 0.002419270711578947
+        database-3:
+          pipeline:
+            compute:
+              - duration-to-hours
+              - storage-energy-in-watts
+              - storage-energy-in-wh
+              - storage-energy-to-kwh
+              - energy-to-carbon
+              - sci
+          defaults:
+            watts-per-tb: 1.2
+            grid-intensity: 765.49
+          inputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              storage-tb: 0.005
+          outputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              storage-tb: 0.005
+              watts-per-tb: 1.2
+              grid-intensity: 765.49
+              duration-in-hours: 24.019199999999998
+              storage-watts: 0.006
+              storage-wh: 0.1441152
+              energy: 0.0001441152
+              carbon: 0.11031874444800001
+              sci: 0.0004838541423157895
+          aggregated:
+            carbon: 0.11031874444800001
+            sci: 0.0004838541423157895
+        database-4:
+          pipeline:
+            compute:
+              - duration-to-hours
+              - storage-energy-in-watts
+              - storage-energy-in-wh
+              - storage-energy-to-kwh
+              - energy-to-carbon
+              - sci
+          defaults:
+            watts-per-tb: 1.2
+            grid-intensity: 765.49
+          inputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              storage-tb: 0.06
+          outputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              storage-tb: 0.06
+              watts-per-tb: 1.2
+              grid-intensity: 765.49
+              duration-in-hours: 24.019199999999998
+              storage-watts: 0.072
+              storage-wh: 1.7293823999999998
+              energy: 0.0017293823999999997
+              carbon: 1.3238249333759997
+              sci: 0.005806249707789472
+          aggregated:
+            carbon: 1.3238249333759997
+            sci: 0.005806249707789472
+      outputs:
+        - carbon: 2.4270123778559998
+          sci: 0.010644791130947366
+          timestamp: '2024-07-22T00:00:00'
+          duration: 86400
+      aggregated:
+        carbon: 2.4270123778559998
+        sci: 0.010644791130947366
+    networking:
+      children:
+        server-1:
+          pipeline:
+            compute:
+              - network-energy-serving-static-site-per-view
+              - network-energy-serving-static-site-total
+              - energy-to-carbon
+              - sci
+          defaults:
+            site-size-in-gb: 0.00809473
+            kwh-per-gb-network: 0.001
+            watts-per-tb: 1.2
+            grid-intensity: 765.49
+            visits-per-month: 325
+          inputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+          outputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              site-size-in-gb: 0.00809473
+              kwh-per-gb-network: 0.001
+              watts-per-tb: 1.2
+              grid-intensity: 765.49
+              visits-per-month: 325
+              network-energy-kwh-serving-static-site-per-view: 0.00000809473
+              energy: 0.00184559844
+              carbon: 1.4127871498356
+              sci: 0.006196434867699999
+          aggregated:
+            carbon: 1.4127871498356
+            sci: 0.006196434867699999
+        server-2:
+          pipeline:
+            compute:
+              - network-energy-serving-static-site-per-view
+              - network-energy-serving-static-site-total
+              - energy-to-carbon
+              - sci
+          defaults:
+            site-size-in-gb: 0.00809473
+            kwh-per-gb-network: 0.001
+            watts-per-tb: 1.2
+            grid-intensity: 765.49
+            visits-per-month: 325
+          inputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+          outputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              site-size-in-gb: 0.00809473
+              kwh-per-gb-network: 0.001
+              watts-per-tb: 1.2
+              grid-intensity: 765.49
+              visits-per-month: 325
+              network-energy-kwh-serving-static-site-per-view: 0.00000809473
+              energy: 0.00184559844
+              carbon: 1.4127871498356
+              sci: 0.006196434867699999
+          aggregated:
+            carbon: 1.4127871498356
+            sci: 0.006196434867699999
+      outputs:
+        - carbon: 2.8255742996712
+          sci: 0.012392869735399999
+          timestamp: '2024-07-22T00:00:00'
+          duration: 86400
+      aggregated:
+        carbon: 2.8255742996712
+        sci: 0.012392869735399999
+    cpu:
+      children:
+        server-1:
+          pipeline:
+            compute:
+              - interpolate
+              - cpu-factor-to-wattage
+              - wattage-times-duration
+              - wattage-to-energy-kwh
+              - calculate-vcpu-ratio
+              - correct-cpu-energy-for-vcpu-ratio
+              - energy-to-carbon
+              - sci
+          defaults:
+            thermal-design-power: 100
+            vcpus-total: 8
+            vcpus-allocated: 2
+            grid-intensity: 165
+          inputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              cpu/utilization: 35
+          outputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              cpu/utilization: 35
+              thermal-design-power: 100
+              vcpus-total: 8
+              vcpus-allocated: 2
+              grid-intensity: 165
+              cpu-factor: 0.58875
+              cpu-wattage: 58.875
+              cpu-wattage-times-duration: 5086800
+              cpu-energy-raw: 1.413
+              vcpu-ratio: 4
+              energy: 0.35325
+              carbon: 58.28625
+              sci: 0.25564144736842104
+          aggregated:
+            carbon: 58.28625
+            sci: 0.25564144736842104
+        server-2:
+          pipeline:
+            compute:
+              - interpolate
+              - cpu-factor-to-wattage
+              - wattage-times-duration
+              - wattage-to-energy-kwh
+              - calculate-vcpu-ratio
+              - correct-cpu-energy-for-vcpu-ratio
+              - energy-to-carbon
+              - sci
+          defaults:
+            thermal-design-power: 100
+            vcpus-total: 8
+            vcpus-allocated: 2
+            grid-intensity: 165
+          inputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              cpu/utilization: 20
+          outputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              cpu/utilization: 20
+              thermal-design-power: 100
+              vcpus-total: 8
+              vcpus-allocated: 2
+              grid-intensity: 165
+              cpu-factor: 0.4275
+              cpu-wattage: 42.75
+              cpu-wattage-times-duration: 3693600
+              cpu-energy-raw: 1.026
+              vcpu-ratio: 4
+              energy: 0.2565
+              carbon: 42.3225
+              sci: 0.18562499999999998
+          aggregated:
+            carbon: 42.3225
+            sci: 0.18562499999999998
+        server-3:
+          pipeline:
+            compute:
+              - interpolate
+              - cpu-factor-to-wattage
+              - wattage-times-duration
+              - wattage-to-energy-kwh
+              - calculate-vcpu-ratio
+              - correct-cpu-energy-for-vcpu-ratio
+              - energy-to-carbon
+              - sci
+          defaults:
+            thermal-design-power: 100
+            vcpus-total: 8
+            vcpus-allocated: 2
+            grid-intensity: 165
+          inputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              cpu/utilization: 48
+          outputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              cpu/utilization: 48
+              thermal-design-power: 100
+              vcpus-total: 8
+              vcpus-allocated: 2
+              grid-intensity: 165
+              cpu-factor: 0.7284999999999999
+              cpu-wattage: 72.85
+              cpu-wattage-times-duration: 6294239.999999999
+              cpu-energy-raw: 1.7483999999999997
+              vcpu-ratio: 4
+              energy: 0.43709999999999993
+              carbon: 72.12149999999998
+              sci: 0.31632236842105255
+          aggregated:
+            carbon: 72.12149999999998
+            sci: 0.31632236842105255
+        server-4:
+          pipeline:
+            compute:
+              - interpolate
+              - cpu-factor-to-wattage
+              - wattage-times-duration
+              - wattage-to-energy-kwh
+              - calculate-vcpu-ratio
+              - correct-cpu-energy-for-vcpu-ratio
+              - energy-to-carbon
+              - sci
+          defaults:
+            thermal-design-power: 100
+            vcpus-total: 8
+            vcpus-allocated: 2
+            grid-intensity: 165
+          inputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              cpu/utilization: 55
+          outputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              cpu/utilization: 55
+              thermal-design-power: 100
+              vcpus-total: 8
+              vcpus-allocated: 2
+              grid-intensity: 165
+              cpu-factor: 0.777
+              cpu-wattage: 77.7
+              cpu-wattage-times-duration: 6713280
+              cpu-energy-raw: 1.8648
+              vcpu-ratio: 4
+              energy: 0.4662
+              carbon: 76.923
+              sci: 0.3373815789473684
+          aggregated:
+            carbon: 76.923
+            sci: 0.3373815789473684
+      outputs:
+        - carbon: 249.65324999999999
+          sci: 1.0949703947368419
+          timestamp: '2024-07-22T00:00:00'
+          duration: 86400
+      aggregated:
+        carbon: 249.65324999999999
+        sci: 1.0949703947368419
+    memory:
+      children:
+        server-1:
+          pipeline:
+            compute:
+              - memory-coefficient-correction
+              - memory-energy
+              - energy-to-carbon
+              - sci
+          defaults:
+            grid-intensity: 165
+          inputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              memory-gb: 3
+          outputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              memory-gb: 3
+              grid-intensity: 165
+              memory-coefficient: 0.5644799712
+              energy: 1.6934399136000002
+              carbon: 279.41758574400006
+              sci: 1.2255157269473687
+          aggregated:
+            carbon: 279.41758574400006
+            sci: 1.2255157269473687
+        server-2:
+          pipeline:
+            compute:
+              - memory-coefficient-correction
+              - memory-energy
+              - energy-to-carbon
+              - sci
+          defaults:
+            grid-intensity: 165
+          inputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              memory-gb: 3
+          outputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              memory-gb: 3
+              grid-intensity: 165
+              memory-coefficient: 0.5644799712
+              energy: 1.6934399136000002
+              carbon: 279.41758574400006
+              sci: 1.2255157269473687
+          aggregated:
+            carbon: 279.41758574400006
+            sci: 1.2255157269473687
+        server-3:
+          pipeline:
+            compute:
+              - memory-coefficient-correction
+              - memory-energy
+              - energy-to-carbon
+              - sci
+          defaults:
+            grid-intensity: 165
+          inputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              memory-gb: 3
+          outputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              memory-gb: 3
+              grid-intensity: 165
+              memory-coefficient: 0.5644799712
+              energy: 1.6934399136000002
+              carbon: 279.41758574400006
+              sci: 1.2255157269473687
+          aggregated:
+            carbon: 279.41758574400006
+            sci: 1.2255157269473687
+        server-4:
+          pipeline:
+            compute:
+              - memory-coefficient-correction
+              - memory-energy
+              - energy-to-carbon
+              - sci
+          defaults:
+            grid-intensity: 165
+          inputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              memory-gb: 3
+          outputs:
+            - timestamp: '2024-07-22T00:00:00'
+              duration: 86400
+              site-visits: 228
+              memory-gb: 3
+              grid-intensity: 165
+              memory-coefficient: 0.5644799712
+              energy: 1.6934399136000002
+              carbon: 279.41758574400006
+              sci: 1.2255157269473687
+          aggregated:
+            carbon: 279.41758574400006
+            sci: 1.2255157269473687
+      outputs:
+        - carbon: 1117.6703429760003
+          sci: 4.902062907789475
+          timestamp: '2024-07-22T00:00:00'
+          duration: 86400
+      aggregated:
+        carbon: 1117.6703429760003
+        sci: 4.902062907789475
+  outputs:
+    - carbon: 1372.5761796535276
+      sci: 6.020070963392664
+      timestamp: '2024-07-22T00:00:00'
+      duration: 86400
+  aggregated:
+    carbon: 1372.5761796535276
+    sci: 6.020070963392664
