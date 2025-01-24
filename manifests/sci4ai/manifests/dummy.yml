@@ -1,0 +1,500 @@
+name: Dummy manifest for SCI4AI kick-off call. 
+description: Demo manifest showing how to structure an AI investigation - this is a draft with dummy data!
+tags: AI, sci
+aggregation:
+  metrics:
+    - carbon
+  type: component
+initialize:
+  plugins:
+    arbitrary-op:
+      path: builtin
+      method: Coefficient
+      config:
+        input-parameter: carbon
+        coefficient: 1
+        output-parameter: carbon    
+      parameter-metadata:
+        inputs:
+          carbon:
+            unit: gCO2e
+            description: carbon emission
+            aggregation-method:
+              time: sum
+              component: sum
+tree:
+  children:
+    compute:
+      children:
+        inference:
+          children:
+            embodied:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 4000000
+            operational:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 600000
+        analytics:
+          children:
+            embodied:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 600000
+            operational:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 500000
+        monitoring:
+          children:
+            embodied:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 20000
+            operational:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 4000
+        idle-machines:
+          children:
+            embodied:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 30000
+            operational:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 3000
+        logging:
+          children:
+            embodied:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 10000
+            operational:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs: 
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 100000
+        build-and-deploy-pipelines:
+          children:
+            embodied:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 40000
+            operational:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 40000
+        testing:
+          children:
+            embodied:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 80000
+            operational:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 4000
+      storage:
+        children:
+          training:
+            children:
+              embodied:
+                pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 30000
+              operational:
+                pipeline:
+                compute:
+                  - arbitrary-op
+                inputs:
+                  - timestamp: '2025-01-01T00:00:00.000Z'
+                    duration: 3600
+                    carbon: 6000
+        inference:
+          children:
+            embodied:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 9000000
+            operational:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 7000000
+        monitoring:
+          children:
+            embodied:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 500000
+            operational: 
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 45000
+        backup:
+          children:  
+            embodied:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 350000
+            operational:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 30000
+        operational:
+          children:
+            embodied:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 30000
+            operational:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 60000
+        idle-machines:
+          children:
+            embodied:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 50000
+            operational: 
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 50000
+        build-and-deploy-pipelines:
+          children:  
+            embodied:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 50000
+            operational:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 50000
+        testing:
+          children:
+            embodied:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 50000
+            operational:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 50000
+      networking:
+        children:
+          embodied:
+            pipeline:
+              compute:
+                - arbitrary-op
+            inputs:
+              - timestamp: '2025-01-01T00:00:00.000Z'
+                duration: 3600
+                carbon: 150000
+          operational:
+            pipeline:
+              compute:
+                - arbitrary-op
+            inputs:
+              - timestamp: '2025-01-01T00:00:00.000Z'
+                duration: 3600
+                carbon: 12000
+          idle-machines:
+            children:
+              embodied:
+                pipeline:
+                  compute:
+                    - arbitrary-op
+                inputs:
+                  - timestamp: '2025-01-01T00:00:00.000Z'
+                    duration: 3600
+                    carbon: 15000
+    memory:
+      children:
+        training:
+          children:
+            embodied:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 110000
+            operational:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 11000
+        inference:
+          children:
+            embodied:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 54000
+            operational:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 70000
+        monitoring:
+          children:
+            embodied:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 5000
+            operational: 
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 5000
+        build-and-deploy-pipelines:
+          children:  
+            embodied:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 10000
+            operational:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 20000
+    testing:
+      children:  
+        embodied:
+          pipeline:
+            compute:
+              - arbitrary-op
+          inputs:
+            - timestamp: '2025-01-01T00:00:00.000Z'
+              duration: 3600
+              carbon: 110000
+        operational:
+          pipeline:
+            compute:
+              - arbitrary-op
+          inputs:
+            - timestamp: '2025-01-01T00:00:00.000Z'
+              duration: 3600
+              carbon: 20000
+    ops:
+      children:  
+        data-center-heating:
+          pipeline:
+            compute:
+              - arbitrary-op
+          inputs:
+            - timestamp: '2025-01-01T00:00:00.000Z'
+              duration: 3600
+              carbon: 190000
+        data-center-cooling:
+          pipeline:
+            compute:
+              - arbitrary-op
+          inputs:
+            - timestamp: '2025-01-01T00:00:00.000Z'
+              duration: 3600
+              carbon: 50000
+        data-center-admin:
+          pipeline:
+            compute:
+              - arbitrary-op
+          inputs:
+            - timestamp: '2025-01-01T00:00:00.000Z'
+              duration: 3600
+              carbon: 14000
+    end-user-devices:
+      children:  
+        embodied:
+          pipeline:
+            compute:
+              - arbitrary-op
+          inputs:
+            - timestamp: '2025-01-01T00:00:00.000Z'
+              duration: 3600
+              carbon: 900000
+        operational:
+          pipeline:
+            compute:
+              - arbitrary-op
+          inputs:
+            - timestamp: '2025-01-01T00:00:00.000Z'
+              duration: 3600
+              carbon: 900000
+    iot-devices:
+      children:  
+        embodied:
+          pipeline:
+            compute:
+              - arbitrary-op
+          inputs:
+            - timestamp: '2025-01-01T00:00:00.000Z'
+              duration: 3600
+              carbon: 400000
+        operational:
+          pipeline:
+            compute:
+              - arbitrary-op
+          inputs:
+            - timestamp: '2025-01-01T00:00:00.000Z'
+              duration: 3600
+              carbon: 400000
+    edge-devices:
+      children:  
+        embodied:
+          pipeline:
+            compute:
+              - arbitrary-op
+          inputs:
+            - timestamp: '2025-01-01T00:00:00.000Z'
+              duration: 3600
+              carbon: 300000
+        operational:
+          pipeline:
+            compute:
+              - arbitrary-op
+          inputs:
+            - timestamp: '2025-01-01T00:00:00.000Z'
+              duration: 3600
+              carbon: 200000
