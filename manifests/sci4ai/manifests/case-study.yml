@@ -22,20 +22,38 @@ initialize:
             aggregation-method:
               time: sum
               component: sum
+    amortize-embodied:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters: ['embodied-carbon', 'amortization-factor'] # amortization factor is time used / total lifespan
+        output-parameter: 'carbon'    
+      parameter-metadata:
+        inputs:
+          carbon:
+            unit: gCO2e
+            description: carbon emission
+            aggregation-method:
+              time: sum
+              component: sum
 tree:
   children:
     model-conception:
       children:
         download-and-storage-of-training-data:
+        # we'll assume 11 Trillion words used to train model (same as Llama3) at 5bytes/word = 55 Trillion bytes (i.e. 55 TB))
           children:
             embodied:
-              pipeline:
-                compute:
-                  - arbitrary-op
-              inputs:
-                - timestamp: '2025-01-01T00:00:00.000Z'
-                  duration: 3600
-                  carbon: 4000000
+              children:
+                storage-servers: # assume we use 2U server with 12x 16TB HDDs, e.g. https://www.broadberry.co.uk/xeon-e-rackmount-servers/cyberserve-xeon-e-212s-g14 - estimated 800kg of embodied emissions
+                  pipeline:
+                    compute:
+                      - amortize-embodied
+                  inputs:
+                    - timestamp: '2025-01-01T00:00:00.000Z'
+                      duration: 3600
+                      embodied-carbon: 800000
+                      amortization-factor: 0.0625
             operational:
               pipeline:
                 compute:
