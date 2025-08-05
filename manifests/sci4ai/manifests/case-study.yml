@@ -1,0 +1,154 @@
+name: Case study inspired by Mistral LCA. 
+description: SCI4AI case study inspired by Mistral LCA at https://mistral.ai/news/our-contribution-to-a-global-environmental-standard-for-ai
+tags:
+aggregation:
+  metrics:
+    - carbon
+  type: component
+initialize:
+  plugins:
+    arbitrary-op:
+      path: builtin
+      method: Coefficient
+      config:
+        input-parameter: carbon
+        coefficient: 1
+        output-parameter: carbon    
+      parameter-metadata:
+        inputs:
+          carbon:
+            unit: gCO2e
+            description: carbon emission
+            aggregation-method:
+              time: sum
+              component: sum
+tree:
+  children:
+    model-conception:
+      children:
+        download-and-storage-of-training-data:
+          children:
+            embodied:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 4000000
+            operational:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 600000
+        developers-laptops:
+          children:
+            embodied:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 4000000
+            operational:
+              pipeline:
+                compute:
+                  - arbitrary-op
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 3600
+                  carbon: 600000
+    datacenter-construction:
+      children:
+        embodied:
+          pipeline:
+            compute:
+              - arbitrary-op
+          inputs:
+            - timestamp: '2025-01-01T00:00:00.000Z'
+              duration: 3600
+              carbon: 4000000
+        operational:
+          pipeline:
+            compute:
+              - arbitrary-op
+          inputs:
+            - timestamp: '2025-01-01T00:00:00.000Z'
+              duration: 3600
+              carbon: 600000
+    model-training:
+      children:
+        embodied:
+          pipeline:
+            compute:
+              - arbitrary-op
+          inputs:
+            - timestamp: '2025-01-01T00:00:00.000Z'
+              duration: 3600
+              carbon: 4000000
+        operational:
+          pipeline:
+            compute:
+              - arbitrary-op
+          inputs:
+            - timestamp: '2025-01-01T00:00:00.000Z'
+              duration: 3600
+              carbon: 600000
+    model-inference:
+      children:
+        embodied:
+          pipeline:
+            compute:
+              - arbitrary-op
+          inputs:
+            - timestamp: '2025-01-01T00:00:00.000Z'
+              duration: 3600
+              carbon: 4000000
+        operational:
+          pipeline:
+            compute:
+              - arbitrary-op
+          inputs:
+            - timestamp: '2025-01-01T00:00:00.000Z'
+              duration: 3600
+              carbon: 600000
+    network-traffic-of-tokens:
+      children:
+        embodied:
+          pipeline:
+            compute:
+              - arbitrary-op
+          inputs:
+            - timestamp: '2025-01-01T00:00:00.000Z'
+              duration: 3600
+              carbon: 4000000
+        operational:
+          pipeline:
+            compute:
+              - arbitrary-op
+          inputs:
+            - timestamp: '2025-01-01T00:00:00.000Z'
+              duration: 3600
+              carbon: 600000
+    end-user-equipment:
+      children:
+        embodied:
+          pipeline:
+            compute:
+              - arbitrary-op
+          inputs:
+            - timestamp: '2025-01-01T00:00:00.000Z'
+              duration: 3600
+              carbon: 4000000
+        operational:
+          pipeline:
+            compute:
+              - arbitrary-op
+          inputs:
+            - timestamp: '2025-01-01T00:00:00.000Z'
+              duration: 3600
+              carbon: 600000
