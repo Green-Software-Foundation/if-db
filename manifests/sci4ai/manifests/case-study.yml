@@ -36,6 +36,20 @@ initialize:
             aggregation-method:
               time: sum
               component: sum
+    scale-operational-energy-training:
+      path: builtin
+      method: Multiply
+      config:
+        input-parameters: ['operational-energy-kWh', 'amortization-factor'] # amortization factor is hours in training period
+        output-parameter: 'carbon'
+      parameter-metadata:
+        inputs:
+          carbon:
+            unit: gCO2e
+            description: carbon emission
+            aggregation-method:
+              time: sum
+              component: sum
 tree:
   children:
     model-conception:
@@ -81,16 +95,46 @@ tree:
                     - timestamp: '2025-01-01T00:00:00.000Z'
                       duration: 7889400
                       embodied-carbon: 600000 # assuming 160 kg embodied for all 8 servers
-                      amortization-factor: 0.0625 # assume this is in use foir a 3 month training period
+                      amortization-factor: 0.0625 # assume this is in use for a 3 month training period
                     
             operational:
-              pipeline:
-                compute:
-                  - arbitrary-op
-              inputs:
-                - timestamp: '2025-01-01T00:00:00.000Z'
-                  duration: 3600
-                  carbon: 600000
+              children:
+                storage-server: # estimated energy in kWh assuming full utilization
+                  pipeline:
+                    compute:
+                      - scale-operational-energy-training
+                  inputs:
+                    - timestamp: '2025-01-01T00:00:00.000Z'
+                      duration: 7889400
+                      operational-energy-kWh: 2.4 
+                      amortization-factor: 2192 # hours in a 3 month training period
+                network-switch: 
+                  pipeline:
+                    compute:
+                      - scale-operational-energy-training
+                  inputs:
+                    - timestamp: '2025-01-01T00:00:00.000Z'
+                      duration: 7889400
+                      operational-energy-kWh: 0.35 
+                      amortization-factor: 2192 # hours in a 3 month training period
+                network-cards: 
+                  pipeline:
+                    compute:
+                      - scale-operational-energy-training
+                  inputs:
+                    - timestamp: '2025-01-01T00:00:00.000Z'
+                      duration: 7889400
+                      operational-energy-kWh: 0.12 
+                      amortization-factor: 2192 # hours in a 3 month training period
+                preprocessing-server: # estimated energy in kWh assuming full utilization
+                  pipeline:
+                    compute:
+                      - scale-operational-energy-training
+                  inputs:
+                    - timestamp: '2025-01-01T00:00:00.000Z'
+                      duration: 7889400
+                      operational-energy-kWh: 0.45 # assuming 160 kg embodied for all 8 servers
+                      amortization-factor: 2192 # hours in a 3 month training period
         developers-laptops:
           children:
             embodied:
