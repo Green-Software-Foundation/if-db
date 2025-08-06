@@ -133,26 +133,28 @@ tree:
                   inputs:
                     - timestamp: '2025-01-01T00:00:00.000Z'
                       duration: 7889400
-                      operational-energy-kWh: 0.45 # assuming 160 kg embodied for all 8 servers
+                      operational-energy-kWh: 0.45 
                       amortization-factor: 2192 # hours in a 3 month training period
-        developers-laptops:
+        developers-laptops: # let's assume 5 developers 14" Apple Macbook pro @ 202 kg embodied CO2e (https://www.apple.com/environment/pdf/products/notebooks/14-inch_MacBook_Pro_PER_Oct2023.pdf) and 0.05kWh operational energy per 8 hr working day
           children:
             embodied:
               pipeline:
                 compute:
-                  - arbitrary-op
+                  - amortize-embodied
               inputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
-                  duration: 3600
-                  carbon: 4000000
+                  duration: 7889400
+                  embodied-carbon: 1010000 # assuming 160 kg embodied for all 8 servers
+                  amortization-factor: 0.0625 # assume this is in use for a 3 month training period
             operational:
               pipeline:
                 compute:
-                  - arbitrary-op
+                  - scale-operational-energy-training
               inputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
-                  duration: 3600
-                  carbon: 600000
+                  duration: 7889400
+                  operational-energy-kWh: 0.25
+                  amortization-factor: 720 # 8 hour day * days in a 3 month training period
     datacenter-construction:
       children:
         embodied:
