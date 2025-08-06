@@ -96,7 +96,6 @@ tree:
                       duration: 7889400
                       embodied-carbon: 600000 # assuming 160 kg embodied for all 8 servers
                       amortization-factor: 0.0625 # assume this is in use for a 3 month training period
-                    
             operational:
               children:
                 storage-server: # estimated energy in kWh assuming full utilization
@@ -153,26 +152,54 @@ tree:
               inputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
-                  operational-energy-kWh: 0.25
+                  operational-energy-kWh: 0.25 # 5 devs @ 0.05 kWh/day
                   amortization-factor: 720 # 8 hour day * days in a 3 month training period
     datacenter-construction:
       children:
-        embodied:
-          pipeline:
-            compute:
-              - arbitrary-op
-          inputs:
-            - timestamp: '2025-01-01T00:00:00.000Z'
-              duration: 3600
-              carbon: 4000000
-        operational:
-          pipeline:
-            compute:
-              - arbitrary-op
-          inputs:
-            - timestamp: '2025-01-01T00:00:00.000Z'
-              duration: 3600
-              carbon: 600000
+        building-structure:
+          children:
+            embodied:
+              pipeline:
+                compute:
+                  - amortize-embodied
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 7889400
+                  embodied-carbon: 2500000000 # assuming 2.5 kT emissions and 20 year data center lifespan
+                  amortization-factor: 0.01875 # assume this is in use for 18 months out of 20 yr lifespan, and 1/4 of total data center space used (1/5/20)*0.25 = 0.01875
+        power-infrastructure:
+          children:
+            embodied:
+              pipeline:
+                compute:
+                  - amortize-embodied
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 7889400
+                  embodied-carbon: 1500000000 # assuming 1.5 kT emissions and 20 year data center lifespan
+                  amortization-factor: 0.01875 # assume this is in use for 18 months out of 20 yr lifespan, and 1/4 of total data center space used (1/5/20)*0.25 = 0.01875
+        cooling-infrastructure:
+          children:
+            embodied:
+              pipeline:
+                compute:
+                  - amortize-embodied
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 7889400
+                  embodied-carbon: 150000000 # assuming 150 T emissions and 20 year data center lifespan
+                  amortization-factor: 0.01875 # assume this is in use for 18 months out of 20 yr lifespan, and 1/4 of total data center space used (1/5/20)*0.25 = 0.01875
+        support-infrastructure:
+          children:
+            embodied:
+              pipeline:
+                compute:
+                  - amortize-embodied
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 7889400
+                  embodied-carbon: 20000000 # assuming 20 T emissions and 20 year data center lifespan
+                  amortization-factor: 0.01875 # assume this is in use for 18 months out of 20 yr lifespan, and 1/4 of total data center space used (1/5/20)*0.25 = 0.01875
     model-training:
       children:
         embodied:
