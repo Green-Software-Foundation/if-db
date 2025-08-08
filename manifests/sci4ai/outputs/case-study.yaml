@@ -88,7 +88,7 @@ execution:
     os: linux
     os-version: 5.15.0-139-generic
     node-version: 21.4.0
-    date-time: 2025-08-08T14:12:37.596Z (UTC)
+    date-time: 2025-08-08T14:23:40.873Z (UTC)
     dependencies:
       - next@14.2.4
       - nextra-theme-blog@2.13.4
@@ -1340,17 +1340,17 @@ tree:
               inputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
-                  embodied-carbon: 0.03
+                  embodied-carbon: 0.01
                   amortization-factor: 10000000000
                   requests: 10000000000
               outputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
-                  embodied-carbon: 0.03
+                  embodied-carbon: 0.01
                   amortization-factor: 10000000000
                   requests: 10000000000
-                  carbon: 300000000
-                  sci: 0.03
+                  carbon: 100000000
+                  sci: 0.01
             operational:
               pipeline:
                 compute:
@@ -1361,40 +1361,40 @@ tree:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   carbon-intensity: 50
-                  operational-energy-kWh: 41600000000
+                  operational-energy-kWh: 1388500000
                   requests: 10000000000
                   amortization-factor: 1
               outputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   carbon-intensity: 50
-                  operational-energy-kWh: 41600000000
+                  operational-energy-kWh: 1388500000
                   requests: 10000000000
                   amortization-factor: 1
-                  energy-kWh: 41600000000
-                  carbon: 2080000000000
-                  sci: 208
+                  energy-kWh: 1388500000
+                  carbon: 69425000000
+                  sci: 6.9425
           outputs:
-            - carbon: 2080300000000
-              sci: 208.03
+            - carbon: 69525000000
+              sci: 6.9525
               timestamp: '2025-01-01T00:00:00.000Z'
               duration: 7889400
           aggregated:
-            carbon: 2080300000000
-            sci: 208.03
+            carbon: 69525000000
+            sci: 6.9525
       outputs:
-        - carbon: 2080300000000
-          sci: 208.03
+        - carbon: 69525000000
+          sci: 6.9525
           timestamp: '2025-01-01T00:00:00.000Z'
           duration: 7889400
       aggregated:
-        carbon: 2080300000000
-        sci: 208.03
+        carbon: 69525000000
+        sci: 6.9525
   outputs:
-    - carbon: 2457041828097
-      sci: 245.7041828097
+    - carbon: 446266828097
+      sci: 44.6266828097
       timestamp: '2025-01-01T00:00:00.000Z'
       duration: 7889400
   aggregated:
-    carbon: 2457041828097
-    sci: 245.7041828097
+    carbon: 446266828097
+    sci: 44.6266828097
