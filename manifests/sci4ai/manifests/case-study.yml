@@ -4,6 +4,7 @@ tags:
 aggregation:
   metrics:
     - carbon
+    - sci
   type: component
 initialize:
   plugins:
