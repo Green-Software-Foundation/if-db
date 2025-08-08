@@ -88,7 +88,7 @@ execution:
     os: linux
     os-version: 5.15.0-139-generic
     node-version: 21.4.0
-    date-time: 2025-08-08T14:23:40.873Z (UTC)
+    date-time: 2025-08-08T14:41:32.968Z (UTC)
     dependencies:
       - next@14.2.4
       - nextra-theme-blog@2.13.4
@@ -622,27 +622,27 @@ tree:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   carbon-intensity: 50
-                  operational-energy-kWh: 810000000
+                  operational-energy-kWh: 810000
                   amortization-factor: 1
                   requests: 10000000000
               outputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   carbon-intensity: 50
-                  operational-energy-kWh: 810000000
+                  operational-energy-kWh: 810000
                   amortization-factor: 1
                   requests: 10000000000
-                  energy-kWh: 810000000
-                  carbon: 40500000000
-                  sci: 4.05
+                  energy-kWh: 810000
+                  carbon: 40500000
+                  sci: 0.00405
           outputs:
-            - carbon: 40511718750
-              sci: 4.051171875
+            - carbon: 52218750
+              sci: 0.005221875
               timestamp: '2025-01-01T00:00:00.000Z'
               duration: 7889400
           aggregated:
-            carbon: 40511718750
-            sci: 4.051171875
+            carbon: 52218750
+            sci: 0.005221875
         system-memory:
           children:
             embodied:
@@ -674,35 +674,35 @@ tree:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   carbon-intensity: 50
-                  operational-energy-kWh: 810000000
+                  operational-energy-kWh: 691200
                   amortization-factor: 1
                   requests: 10000000000
               outputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   carbon-intensity: 50
-                  operational-energy-kWh: 810000000
+                  operational-energy-kWh: 691200
                   amortization-factor: 1
                   requests: 10000000000
-                  energy-kWh: 810000000
-                  carbon: 40500000000
-                  sci: 4.05
+                  energy-kWh: 691200
+                  carbon: 34560000
+                  sci: 0.003456
           outputs:
-            - carbon: 40500048000
-              sci: 4.0500048
+            - carbon: 34608000
+              sci: 0.0034608
               timestamp: '2025-01-01T00:00:00.000Z'
               duration: 7889400
           aggregated:
-            carbon: 40500048000
-            sci: 4.0500048
+            carbon: 34608000
+            sci: 0.0034608
       outputs:
-        - carbon: 82977016750
-          sci: 8.297701674999999
+        - carbon: 2052076750
+          sci: 0.20520767499999998
           timestamp: '2025-01-01T00:00:00.000Z'
           duration: 7889400
       aggregated:
-        carbon: 82977016750
-        sci: 8.297701674999999
+        carbon: 2052076750
+        sci: 0.20520767499999998
     model-inference:
       children:
         nvidia-l140S-gpus:
@@ -1391,10 +1391,10 @@ tree:
         carbon: 69525000000
         sci: 6.9525
   outputs:
-    - carbon: 446266828097
-      sci: 44.6266828097
+    - carbon: 365341888097
+      sci: 36.5341888097
       timestamp: '2025-01-01T00:00:00.000Z'
       duration: 7889400
   aggregated:
-    carbon: 446266828097
-    sci: 44.6266828097
+    carbon: 365341888097
+    sci: 36.5341888097

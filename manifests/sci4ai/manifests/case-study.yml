@@ -332,10 +332,10 @@ tree:
                   - timestamp: '2025-01-01T00:00:00.000Z'
                     duration: 7889400
                     carbon-intensity: 50
-                    operational-energy-kWh: 810000000 # 2500 * 24 hours * 90 days * 150 W TDP
+                    operational-energy-kWh: 810000 # 2500 * 24 hours * 90 days * 150 W TDP
                     amortization-factor: 1 # full utilization across time period
                     requests: 10000000000
-        system-memory: # assume 2 cpus per server = 2500 cpus
+        system-memory:
           children:
             embodied:
               pipeline:
@@ -358,7 +358,7 @@ tree:
                   - timestamp: '2025-01-01T00:00:00.000Z'
                     duration: 7889400
                     carbon-intensity: 50
-                    operational-energy-kWh: 810000000 # 2500 * 24 hours * 90 days * 150 W TDP
+                    operational-energy-kWh: 691200 # 1250 servers * 24 hours * 90 days * 4 W per /32GB TDP
                     amortization-factor: 1 # full utilization across time period
                     requests: 10000000000
 
@@ -439,7 +439,7 @@ tree:
                   - timestamp: '2025-01-01T00:00:00.000Z'
                     duration: 7889400
                     carbon-intensity: 50
-                    operational-energy-kWh: 1296000000 # 200W * 500 CPUs * 24 hours * 90 days * 150 W TDP
+                    operational-energy-kWh: 1296000 # 200W * 500 CPUs * 24 hours * 90 days * 150 W TDP
                     amortization-factor: 1 # full utilization across time period
                     requests: 10000000000
         system-memory: # 256 GB per server
