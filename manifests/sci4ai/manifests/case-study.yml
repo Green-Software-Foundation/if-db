@@ -679,7 +679,7 @@ tree:
               inputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
-                  embodied-carbon: 3 # 159000 g divided by 30 seconds of 5 year lifespan (factor 1.902587e-7)
+                  embodied-carbon: 0.03 # 159000 g divided by 30 seconds of 5 year lifespan (factor 1.902587e-7)
                   amortization-factor: 10000000000 # multiply by 10B requests
                   requests: 10000000000
             operational:
@@ -692,7 +692,7 @@ tree:
                   - timestamp: '2025-01-01T00:00:00.000Z'
                     duration: 7889400
                     carbon-intensity: 50
-                    operational-energy-kWh: 4160000000000 # estimate 500 W laptop power for 30 seconds and multiply by 10B requests
+                    operational-energy-kWh: 41600000000 # estimate 500 W laptop power for 30 seconds and multiply by 10B requests
                     requests: 10000000000
                     amortization-factor: 1 # full utilization across time period
                     
