@@ -7,21 +7,6 @@ aggregation:
   type: component
 initialize:
   plugins:
-    arbitrary-op:
-      path: builtin
-      method: Coefficient
-      config:
-        input-parameter: carbon
-        coefficient: 1
-        output-parameter: carbon    
-      parameter-metadata:
-        inputs:
-          carbon:
-            unit: gCO2e
-            description: carbon emission
-            aggregation-method:
-              time: sum
-              component: sum
     amortize-embodied:
       path: builtin
       method: Multiply
@@ -76,7 +61,11 @@ initialize:
             aggregation-method:
               time: copy
               component: copy
-
+    sci:
+      path: builtin
+      method: Sci
+      config:
+        functional-unit: requests
 tree:
   children:
     model-conception:
@@ -91,38 +80,46 @@ tree:
                   pipeline:
                     compute:
                       - amortize-embodied
+                      - sci
                   inputs:
                     - timestamp: '2025-01-01T00:00:00.000Z'
                       duration: 7889400
                       embodied-carbon: 800000
                       amortization-factor: 0.0625 # assume this is in use for a 3 month training period
+                      requests: 10000000000
                 switch: # 10GbE 48 port enterprise switch for storage network
                   pipeline:
                     compute:
                       - amortize-embodied
+                      - sci
                   inputs:
                     - timestamp: '2025-01-01T00:00:00.000Z'
                       duration: 7889400
                       embodied-carbon: 300000 # assuming 300 kg embodied
                       amortization-factor: 0.0625 # assume this is in use foir a 3 month training period
+                      requests: 10000000000
                 network-cards: # assume 8 cards
                   pipeline:
                     compute:
                       - amortize-embodied
+                      - sci
                   inputs:
                     - timestamp: '2025-01-01T00:00:00.000Z'
                       duration: 7889400
                       embodied-carbon: 160000 # assuming 160 kg embodied for all 8 servers
                       amortization-factor: 0.0625 # assume this is in use foir a 3 month training period
+                      requests: 10000000000
                 preprocessing-server: # single 2U server for data deduplication and preparation, 2 CPUs, 256 GB RAM
                   pipeline:
                     compute:
                       - amortize-embodied
+                      - sci
                   inputs:
                     - timestamp: '2025-01-01T00:00:00.000Z'
                       duration: 7889400
                       embodied-carbon: 600000 # assuming 160 kg embodied for all 8 servers
                       amortization-factor: 0.0625 # assume this is in use for a 3 month training period
+                      requests: 10000000000
             operational:
               children:
                 storage-server: # estimated energy in kWh assuming full utilization
@@ -130,67 +127,79 @@ tree:
                     compute:
                       - scale-operational-energy-training
                       - convert-energy-to-carbon
+                      - sci
                   inputs:
                     - timestamp: '2025-01-01T00:00:00.000Z'
                       duration: 7889400
                       carbon-intensity: 50
                       operational-energy-kWh: 2.4 
                       amortization-factor: 2192 # hours in a 3 month training period
+                      requests: 10000000000
                 network-switch: 
                   pipeline:
                     compute:
                       - scale-operational-energy-training
                       - convert-energy-to-carbon
+                      - sci
                   inputs:
                     - timestamp: '2025-01-01T00:00:00.000Z'
                       duration: 7889400
                       carbon-intensity: 50
                       operational-energy-kWh: 0.35 
                       amortization-factor: 2192 # hours in a 3 month training period
+                      requests: 10000000000
                 network-cards: 
                   pipeline:
                     compute:
                       - scale-operational-energy-training
                       - convert-energy-to-carbon
+                      - sci
                   inputs:
                     - timestamp: '2025-01-01T00:00:00.000Z'
                       duration: 7889400
                       carbon-intensity: 50
                       operational-energy-kWh: 0.12 
                       amortization-factor: 2192 # hours in a 3 month training period
+                      requests: 10000000000
                 preprocessing-server: # estimated energy in kWh assuming full utilization
                   pipeline:
                     compute:
                       - scale-operational-energy-training
                       - convert-energy-to-carbon
+                      - sci
                   inputs:
                     - timestamp: '2025-01-01T00:00:00.000Z'
                       duration: 7889400
                       carbon-intensity: 50
                       operational-energy-kWh: 0.45 
                       amortization-factor: 2192 # hours in a 3 month training period
+                      requests: 10000000000
         developers-laptops: # let's assume 5 developers 14" Apple Macbook pro @ 202 kg embodied CO2e (https://www.apple.com/environment/pdf/products/notebooks/14-inch_MacBook_Pro_PER_Oct2023.pdf) and 0.05kWh operational energy per 8 hr working day
           children:
             embodied:
               pipeline:
                 compute:
                   - amortize-embodied
+                  - sci
               inputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   embodied-carbon: 1010000 # assuming 160 kg embodied for all 8 servers
                   amortization-factor: 0.0625 # assume this is in use for a 3 month training period
+                  requests: 10000000000
             operational:
               pipeline:
                 compute:
                   - scale-operational-energy-training
                   - convert-energy-to-carbon
+                  - sci
               inputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   carbon-intensity: 50
                   operational-energy-kWh: 0.25 # 5 devs @ 0.05 kWh/day
                   amortization-factor: 720 # 8 hour day * days in a 3 month training period
+                  requests: 10000000000
     datacenter-construction:
       children:
         building-structure:
@@ -199,44 +208,52 @@ tree:
               pipeline:
                 compute:
                   - amortize-embodied
+                  - sci
               inputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   embodied-carbon: 2500000000 # assuming 2.5 kT emissions and 20 year data center lifespan
                   amortization-factor: 0.01875 # assume this is in use for 18 months out of 20 yr lifespan, and 1/4 of total data center space used (1/5/20)*0.25 = 0.01875
+                  requests: 10000000000
         power-infrastructure:
           children:
             embodied:
               pipeline:
                 compute:
                   - amortize-embodied
+                  - sci
               inputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   embodied-carbon: 1500000000 # assuming 1.5 kT emissions and 20 year data center lifespan
                   amortization-factor: 0.01875 # assume this is in use for 18 months out of 20 yr lifespan, and 1/4 of total data center space used (1/5/20)*0.25 = 0.01875
+                  requests: 10000000000
         cooling-infrastructure:
           children:
             embodied:
               pipeline:
                 compute:
                   - amortize-embodied
+                  - sci
               inputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   embodied-carbon: 150000000 # assuming 150 T emissions and 20 year data center lifespan
                   amortization-factor: 0.01875 # assume this is in use for 18 months out of 20 yr lifespan, and 1/4 of total data center space used (1/5/20)*0.25 = 0.01875
+                  requests: 10000000000
         support-infrastructure:
           children:
             embodied:
               pipeline:
                 compute:
                   - amortize-embodied
+                  - sci
               inputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   embodied-carbon: 20000000 # assuming 20 T emissions and 20 year data center lifespan
                   amortization-factor: 0.01875 # assume this is in use for 18 months out of 20 yr lifespan, and 1/4 of total data center space used (1/5/20)*0.25 = 0.01875
+                  requests: 10000000000
     model-training:
       children:
         nvidia-h100-gpus: # assume 10,000 GPUs
@@ -245,90 +262,104 @@ tree:
               pipeline:
                 compute:
                   - amortize-embodied
+                  - sci
               inputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   embodied-carbon: 1500000000
                   amortization-factor: 0.0625 # 3 months of 4 year lifespan
+                  requests: 10000000000
             operational:
                 pipeline:
                   compute:
                     - scale-operational-energy-training
                     - convert-energy-to-carbon
+                    - sci
                 inputs:
                   - timestamp: '2025-01-01T00:00:00.000Z'
                     duration: 7889400
                     carbon-intensity: 50
                     operational-energy-kWh: 8640000 # 10,000 GPUs * 0.4 kW/GPU * 24 hours * 90 days
                     amortization-factor: 1 # full utilization across time period
-
+                    requests: 10000000000
         training-servers: # assume dgx-h100 systems - 1250 required for 10,000 GPUs
           children:
             embodied:
               pipeline:
                 compute:
                   - amortize-embodied
+                  - sci
               inputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   embodied-carbon: 1000000000 # claude says 1000 tonnes total
                   amortization-factor: 0.0625 # 3 months of 4 year lifespan
+                  requests: 10000000000
             operational:
                 pipeline:
                   compute:
                     - scale-operational-energy-training
                     - convert-energy-to-carbon
+                    - sci
                 inputs:
                   - timestamp: '2025-01-01T00:00:00.000Z'
                     duration: 7889400
                     carbon-intensity: 50
                     operational-energy-kWh: 27540000 # 2500 * 24 hours * 90 days * 350 W TDP
                     amortization-factor: 1 # full utilization across time period
+                    requests: 10000000000
         host-cpus: # assume 2 cpus per server = 2500 cpus
           children:
             embodied:
               pipeline:
                 compute:
                   - amortize-embodied
+                  - sci
               inputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   embodied-carbon: 187500000 # claude says 75 kg per CPU
                   amortization-factor: 0.0625 # 3 months of 4 year lifespan
+                  requests: 10000000000
             operational:
                 pipeline:
                   compute:
                     - scale-operational-energy-training
                     - convert-energy-to-carbon
+                    - sci
                 inputs:
                   - timestamp: '2025-01-01T00:00:00.000Z'
                     duration: 7889400
                     carbon-intensity: 50
                     operational-energy-kWh: 810000000 # 2500 * 24 hours * 90 days * 150 W TDP
                     amortization-factor: 1 # full utilization across time period
-
+                    requests: 10000000000
         system-memory: # assume 2 cpus per server = 2500 cpus
           children:
             embodied:
               pipeline:
                 compute:
                   - amortize-embodied
+                  - sci
               inputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   embodied-carbon: 768000 # 1250 servers * 0.3 kg CO2/GB * 2048 GB/server 
                   amortization-factor: 0.0625 # 3 months of 4 year lifespan
+                  requests: 10000000000
             operational:
                 pipeline:
                   compute:
                     - scale-operational-energy-training
                     - convert-energy-to-carbon
+                    - sci
                 inputs:
                   - timestamp: '2025-01-01T00:00:00.000Z'
                     duration: 7889400
                     carbon-intensity: 50
                     operational-energy-kWh: 810000000 # 2500 * 24 hours * 90 days * 150 W TDP
                     amortization-factor: 1 # full utilization across time period
+                    requests: 10000000000
 
     model-inference: # 18 month inference period
       children:
@@ -338,88 +369,104 @@ tree:
               pipeline:
                 compute:
                   - amortize-embodied
+                  - sci
               inputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   embodied-carbon: 100000000 # 100000 g * 1000 units 
                   amortization-factor: 0.375 # 18 months of 4 year lifespan
+                  requests: 10000000000
             operational:
                 pipeline:
                   compute:
                     - scale-operational-energy-training
                     - convert-energy-to-carbon
+                    - sci
                 inputs:
                   - timestamp: '2025-01-01T00:00:00.000Z'
                     duration: 7889400
                     carbon-intensity: 50
                     operational-energy-kWh: 4536000000 #350W * 1000 units * 24 hours * 30 days * 18 months # 10,000 GPUs * 0.4 kW/GPU * 24 hours * 90 days
                     amortization-factor: 1 # full utilization across time period
+                    requests: 10000000000
         inference-servers: # 250 servers each hosting 4 GPUs, @ 1T embodied per server
           children:
             embodied:
               pipeline:
                 compute:
                   - amortize-embodied
+                  - sci
               inputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   embodied-carbon: 250000000 # 250 servers * 1T CO2e
                   amortization-factor: 0.375 # 18 months of 4 year lifespan
+                  requests: 10000000000
             operational: 
                 pipeline:
                   compute:
                     - scale-operational-energy-training
                     - convert-energy-to-carbon
+                    - sci
                 inputs:
                   - timestamp: '2025-01-01T00:00:00.000Z'
                     duration: 7889400
                     carbon-intensity: 50
                     operational-energy-kWh: 6480000 # 2kW / server * 250 units * 24 hr * 30 days * 18 months
                     amortization-factor: 1 # full utilization across time period
+                    requests: 10000000000
         host-cpus: # assume 2 cpus per server = 500 cpus
           children:
             embodied:
               pipeline:
                 compute:
                   - amortize-embodied
+                  - sci
               inputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   embodied-carbon: 250000000 # claude says 75 kg per CPU
                   amortization-factor: 0.375 # 18 months of 4 year lifespan
+                  requests: 10000000000
             operational:
                 pipeline:
                   compute:
                     - scale-operational-energy-training
                     - convert-energy-to-carbon
+                    - sci
                 inputs:
                   - timestamp: '2025-01-01T00:00:00.000Z'
                     duration: 7889400
                     carbon-intensity: 50
                     operational-energy-kWh: 1296000000 # 200W * 500 CPUs * 24 hours * 90 days * 150 W TDP
                     amortization-factor: 1 # full utilization across time period
+                    requests: 10000000000
         system-memory: # 256 GB per server
           children:
             embodied:
               pipeline:
                 compute:
                   - amortize-embodied
+                  - sci
               inputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   embodied-carbon: 19200 # 250 servers * 0.3 kg CO2/GB * 256 GB/server 
                   amortization-factor: 0.375 # 3 months of 4 year lifespan
+                  requests: 10000000000
             operational:
                 pipeline:
                   compute:
                     - scale-operational-energy-training
                     - convert-energy-to-carbon
+                    - sci
                 inputs:
                   - timestamp: '2025-01-01T00:00:00.000Z'
                     duration: 7889400
                     carbon-intensity: 50
                     operational-energy-kWh: 40500 # 250 * 24 hours * 30 days * 18 months * 0.125 W / GB
                     amortization-factor: 1 # full utilization across time period
+                    requests: 10000000000
         model-storage: # 256 GB per server
           children:
             high-speed-nvme-for-model-weights: # assume 40 TB in total, 40 kg CO2e per TB
@@ -428,22 +475,26 @@ tree:
                   pipeline:
                     compute:
                       - amortize-embodied
+                      - sci
                   inputs:
                     - timestamp: '2025-01-01T00:00:00.000Z'
                       duration: 7889400
                       embodied-carbon: 1600000 # 40 kg/TB * 40 TB
                       amortization-factor: 0.375 # 18 months of 4 year lifespan
+                      requests: 10000000000
                 operational:
                     pipeline:
                       compute:
                         - scale-operational-energy-training
                         - convert-energy-to-carbon
+                        - sci
                     inputs:
                       - timestamp: '2025-01-01T00:00:00.000Z'
                         duration: 7889400
                         carbon-intensity: 50
                         operational-energy-kWh: 3888 # 20 (2TB) drives * 15 W * 24 * 30  18
                         amortization-factor: 1 # full utilization across time period
+                        requests: 10000000000
             caching-layer: # SSD array, 10TB total
               children:
                 embodied:
@@ -455,18 +506,20 @@ tree:
                       duration: 7889400
                       embodied-carbon: 400000000 # 40 kg/TB * 10 TB = 400 kg
                       amortization-factor: 0.375 # 18 months of 4 year lifespan
+                      requests: 10000000000
                 operational:
                     pipeline:
                       compute:
                         - scale-operational-energy-training
                         - convert-energy-to-carbon
+                        - sci
                     inputs:
                       - timestamp: '2025-01-01T00:00:00.000Z'
                         duration: 7889400
                         carbon-intensity: 50
                         operational-energy-kWh: 1296 # 10 (1TB) drives * 10 W * 24 * 30 * 18
                         amortization-factor: 1 # full utilization across time period
-
+                        requests: 10000000000
         networking:
           children:
             load-balancers: # 2 units
@@ -475,137 +528,169 @@ tree:
                   pipeline:
                     compute:
                       - amortize-embodied
+                      - sci
                   inputs:
                     - timestamp: '2025-01-01T00:00:00.000Z'
                       duration: 7889400
                       embodied-carbon: 1200000 # 600 kg/unit * 2 units
                       amortization-factor: 0.375 # 18 months of 4 year lifespan
+                      requests: 10000000000
                 operational:
                     pipeline:
                       compute:
                         - scale-operational-energy-training
                         - convert-energy-to-carbon
+                        - sci
                     inputs:
                       - timestamp: '2025-01-01T00:00:00.000Z'
                         duration: 7889400
                         carbon-intensity: 50
                         operational-energy-kWh: 12960 # 500W * 2 * 24 * 30 * 18
                         amortization-factor: 1 # full utilization across time period
+                        requests: 10000000000
             switches: # 4 units
               children:
                 embodied:
                   pipeline:
                     compute:
                       - amortize-embodied
+                      - sci
                   inputs:
                     - timestamp: '2025-01-01T00:00:00.000Z'
                       duration: 7889400
                       embodied-carbon: 1200000 # 300 kg/unit * 4 units
                       amortization-factor: 0.375 # 18 months of 4 year lifespan
+                      requests: 10000000000
                 operational:
                     pipeline:
                       compute:
                         - scale-operational-energy-training
                         - convert-energy-to-carbon
+                        - sci
                     inputs:
                       - timestamp: '2025-01-01T00:00:00.000Z'
                         duration: 7889400
                         carbon-intensity: 50
                         operational-energy-kWh: 18144 # 350W * 4 * 24 * 30 * 18
                         amortization-factor: 1 # full utilization across time period
+                        requests: 10000000000
             network-cards: # 2 cards per server, 20 kg per card
               children:
                 embodied:
                   pipeline:
                     compute:
                       - amortize-embodied
+                      - sci
                   inputs:
                     - timestamp: '2025-01-01T00:00:00.000Z'
                       duration: 7889400
                       embodied-carbon: 10000000 # 300 kg/unit * 4 units
                       amortization-factor: 0.375 # 18 months of 4 year lifespan
+                      requests: 10000000000
                 operational:
                     pipeline:
                       compute:
                         - scale-operational-energy-training
                         - convert-energy-to-carbon
+                        - sci
                     inputs:
                       - timestamp: '2025-01-01T00:00:00.000Z'
                         duration: 7889400
                         carbon-intensity: 50
                         operational-energy-kWh: 97200 # 150W * 500 * 24 * 30 * 18
                         amortization-factor: 1 # full utilization across time period
+                        requests: 10000000000
             network-traffic-of-tokens:  #account for sending tokens between client and server over the internet - wrap it all in one coefficient
               pipeline:
                 compute:
                   - scale-operational-energy-training
                   - convert-energy-to-carbon
+                  - sci
               inputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   carbon-intensity: 50
                   operational-energy-kWh: 27200000 # 0.00272 * 10B
                   amortization-factor: 1 # full utilization across time period
+                  requests: 10000000000
         edge-cdn-infra: # 10 edge servers@ 600 kg/server
           children:
             embodied:
               pipeline:
                 compute:
                   - amortize-embodied
+                  - sci
               inputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   embodied-carbon: 6000000 # 600 kg/unit * 10 units
                   amortization-factor: 0.375 # 18 months of 4 year lifespan
+                  requests: 10000000000
             operational:
                 pipeline:
                   compute:
                     - scale-operational-energy-training
                     - convert-energy-to-carbon
+                    - sci
                 inputs:
                   - timestamp: '2025-01-01T00:00:00.000Z'
                     duration: 7889400
                     carbon-intensity: 50
                     operational-energy-kWh: 64800 # 500W * 10 * 24 * 30 * 18
                     amortization-factor: 1 # full utilization across time period
+                    requests: 10000000000
         dc-cooling: # 10 edge servers@ 600 kg/server
           children:
             embodied: # claude says to amortize 5T kg CO2e for CRAC units 
               pipeline:
                 compute:
                   - amortize-embodied
+                  - sci
               inputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   embodied-carbon: 5000000 # 5T as recommended by Claude
                   amortization-factor: 0.375 # 18 months of 4 year lifespan
+                  requests: 10000000000
             operational:
                 pipeline:
                   compute:
                     - scale-operational-energy-training
                     - convert-energy-to-carbon
+                    - sci
                 inputs:
                   - timestamp: '2025-01-01T00:00:00.000Z'
                     duration: 7889400
                     carbon-intensity: 50
                     operational-energy-kWh: 115000 # estimated by claude
                     amortization-factor: 1 # full utilization across time period
-    end-user-equipment:
+                    requests: 10000000000
+    end-user-equipment: # we'll assume all the users are on laptops - let's say 14" macbook pro at approx 159 kg embodied per device
       children:
-        embodied:
-          pipeline:
-            compute:
-              - arbitrary-op
-          inputs:
-            - timestamp: '2025-01-01T00:00:00.000Z'
-              duration: 3600
-              carbon: 4000000
-        operational:
-          pipeline:
-            compute:
-              - arbitrary-op
-          inputs:
-            - timestamp: '2025-01-01T00:00:00.000Z'
-              duration: 3600
-              carbon-intensity: 50
-              carbon: 600000
+        laptops:
+          children:
+            embodied: # we'll assume a request is a 30s interaction. Assume all itneractions are via 14" macbook pros with embodied emissions ~ 159 kg 
+              pipeline:
+                compute:
+                  - amortize-embodied
+                  - sci
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 7889400
+                  embodied-carbon: 3 # 159000 g divided by 30 seconds of 5 year lifespan (factor 1.902587e-7)
+                  amortization-factor: 10000000000 # multiply by 10B requests
+                  requests: 10000000000
+            operational:
+                pipeline:
+                  compute:
+                    - scale-operational-energy-training
+                    - convert-energy-to-carbon
+                    - sci
+                inputs:
+                  - timestamp: '2025-01-01T00:00:00.000Z'
+                    duration: 7889400
+                    carbon-intensity: 50
+                    operational-energy-kWh: 4160000000000 # estimate 500 W laptop power for 30 seconds and multiply by 10B requests
+                    requests: 10000000000
+                    amortization-factor: 1 # full utilization across time period
+                    
