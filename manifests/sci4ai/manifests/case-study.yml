@@ -535,6 +535,17 @@ tree:
                         carbon-intensity: 50
                         operational-energy-kWh: 97200 # 150W * 500 * 24 * 30 * 18
                         amortization-factor: 1 # full utilization across time period
+            network-traffic-of-tokens:  #account for sending tokens between client and server over the internet - wrap it all in one coefficient
+              pipeline:
+                compute:
+                  - scale-operational-energy-training
+                  - convert-energy-to-carbon
+              inputs:
+                - timestamp: '2025-01-01T00:00:00.000Z'
+                  duration: 7889400
+                  carbon-intensity: 50
+                  operational-energy-kWh: 27200000 # 0.00272 * 10B
+                  amortization-factor: 1 # full utilization across time period
         edge-cdn-infra: # 10 edge servers@ 600 kg/server
           children:
             embodied:
@@ -579,25 +590,6 @@ tree:
                     carbon-intensity: 50
                     operational-energy-kWh: 115000 # estimated by claude
                     amortization-factor: 1 # full utilization across time period
-    network-traffic-of-tokens:
-      children:
-        embodied:
-          pipeline:
-            compute:
-              - arbitrary-op
-          inputs:
-            - timestamp: '2025-01-01T00:00:00.000Z'
-              duration: 3600
-              carbon: 4000000
-        operational:
-          pipeline:
-            compute:
-              - arbitrary-op
-          inputs:
-            - timestamp: '2025-01-01T00:00:00.000Z'
-              duration: 3600
-              carbon-intensity: 50
-              carbon: 600000
     end-user-equipment:
       children:
         embodied:
