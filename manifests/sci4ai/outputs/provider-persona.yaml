@@ -1,7 +1,7 @@
-name: Case study inspired by Mistral LCA.
+name: SCI4AI case study, Provider persona.
 description: >-
-  SCI4AI case study inspired by Mistral LCA at
-  https://mistral.ai/news/our-contribution-to-a-global-environmental-standard-for-ai
+  Provider focused SCI4AI, boundary = prepare, data engineering, training,
+  system integration. FU = per model parameter.
 tags: null
 aggregation:
   metrics:
@@ -76,7 +76,7 @@ initialize:
       path: builtin
       method: Sci
       config:
-        functional-unit: requests
+        functional-unit: parameters
 execution:
   command: >-
     /home/joe/.nvm/versions/node/v21.4.0/bin/node
@@ -88,7 +88,7 @@ execution:
     os: linux
     os-version: 5.15.0-139-generic
     node-version: 21.4.0
-    date-time: 2025-08-11T15:19:18.197Z (UTC)
+    date-time: 2025-08-11T15:25:34.723Z (UTC)
     dependencies:
       - next@14.2.4
       - nextra-theme-blog@2.13.4
@@ -115,15 +115,15 @@ tree:
                       duration: 7889400
                       embodied-carbon: 800000
                       amortization-factor: 0.0625
-                      requests: 10000000000
+                      parameters: 176000000000
                   outputs:
                     - timestamp: '2025-01-01T00:00:00.000Z'
                       duration: 7889400
                       embodied-carbon: 800000
                       amortization-factor: 0.0625
-                      requests: 10000000000
+                      parameters: 176000000000
                       carbon: 50000
-                      sci: 0.000005
+                      sci: 2.840909090909091e-7
                 switch:
                   pipeline:
                     compute:
@@ -134,15 +134,15 @@ tree:
                       duration: 7889400
                       embodied-carbon: 300000
                       amortization-factor: 0.0625
-                      requests: 10000000000
+                      parameters: 176000000000
                   outputs:
                     - timestamp: '2025-01-01T00:00:00.000Z'
                       duration: 7889400
                       embodied-carbon: 300000
                       amortization-factor: 0.0625
-                      requests: 10000000000
+                      parameters: 176000000000
                       carbon: 18750
-                      sci: 0.000001875
+                      sci: 1.0653409090909091e-7
                 network-cards:
                   pipeline:
                     compute:
@@ -153,15 +153,15 @@ tree:
                       duration: 7889400
                       embodied-carbon: 160000
                       amortization-factor: 0.0625
-                      requests: 10000000000
+                      parameters: 176000000000
                   outputs:
                     - timestamp: '2025-01-01T00:00:00.000Z'
                       duration: 7889400
                       embodied-carbon: 160000
                       amortization-factor: 0.0625
-                      requests: 10000000000
+                      parameters: 176000000000
                       carbon: 10000
-                      sci: 0.000001
+                      sci: 5.6818181818181815e-8
                 preprocessing-server:
                   pipeline:
                     compute:
@@ -172,23 +172,23 @@ tree:
                       duration: 7889400
                       embodied-carbon: 600000
                       amortization-factor: 0.0625
-                      requests: 10000000000
+                      parameters: 176000000000
                   outputs:
                     - timestamp: '2025-01-01T00:00:00.000Z'
                       duration: 7889400
                       embodied-carbon: 600000
                       amortization-factor: 0.0625
-                      requests: 10000000000
+                      parameters: 176000000000
                       carbon: 37500
-                      sci: 0.00000375
+                      sci: 2.1306818181818182e-7
               outputs:
                 - carbon: 116250
-                  sci: 0.000011625
+                  sci: 6.605113636363637e-7
                   timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
               aggregated:
                 carbon: 116250
-                sci: 0.000011625
+                sci: 6.605113636363637e-7
             operational:
               children:
                 storage-server:
@@ -203,17 +203,17 @@ tree:
                       carbon-intensity: 50
                       operational-energy-kWh: 2.4
                       amortization-factor: 2192
-                      requests: 10000000000
+                      parameters: 176000000000
                   outputs:
                     - timestamp: '2025-01-01T00:00:00.000Z'
                       duration: 7889400
                       carbon-intensity: 50
                       operational-energy-kWh: 2.4
                       amortization-factor: 2192
-                      requests: 10000000000
+                      parameters: 176000000000
                       energy-kWh: 5260.8
                       carbon: 263040
-                      sci: 0.000026304
+                      sci: 0.0000014945454545454545
                 network-switch:
                   pipeline:
                     compute:
@@ -226,17 +226,17 @@ tree:
                       carbon-intensity: 50
                       operational-energy-kWh: 0.35
                       amortization-factor: 2192
-                      requests: 10000000000
+                      parameters: 176000000000
                   outputs:
                     - timestamp: '2025-01-01T00:00:00.000Z'
                       duration: 7889400
                       carbon-intensity: 50
                       operational-energy-kWh: 0.35
                       amortization-factor: 2192
-                      requests: 10000000000
+                      parameters: 176000000000
                       energy-kWh: 767.1999999999999
                       carbon: 38360
-                      sci: 0.000003836
+                      sci: 2.1795454545454545e-7
                 network-cards:
                   pipeline:
                     compute:
@@ -249,17 +249,17 @@ tree:
                       carbon-intensity: 50
                       operational-energy-kWh: 0.12
                       amortization-factor: 2192
-                      requests: 10000000000
+                      parameters: 176000000000
                   outputs:
                     - timestamp: '2025-01-01T00:00:00.000Z'
                       duration: 7889400
                       carbon-intensity: 50
                       operational-energy-kWh: 0.12
                       amortization-factor: 2192
-                      requests: 10000000000
+                      parameters: 176000000000
                       energy-kWh: 263.03999999999996
                       carbon: 13151.999999999998
-                      sci: 0.0000013152
+                      sci: 7.472727272727272e-8
                 preprocessing-server:
                   pipeline:
                     compute:
@@ -272,33 +272,33 @@ tree:
                       carbon-intensity: 50
                       operational-energy-kWh: 0.45
                       amortization-factor: 2192
-                      requests: 10000000000
+                      parameters: 176000000000
                   outputs:
                     - timestamp: '2025-01-01T00:00:00.000Z'
                       duration: 7889400
                       carbon-intensity: 50
                       operational-energy-kWh: 0.45
                       amortization-factor: 2192
-                      requests: 10000000000
+                      parameters: 176000000000
                       energy-kWh: 986.4
                       carbon: 49320
-                      sci: 0.000004932
+                      sci: 2.802272727272727e-7
               outputs:
                 - carbon: 363872
-                  sci: 0.000036387199999999996
+                  sci: 0.0000020674545454545453
                   timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
               aggregated:
                 carbon: 363872
-                sci: 0.000036387199999999996
+                sci: 0.0000020674545454545453
           outputs:
             - carbon: 480122
-              sci: 0.000048012199999999994
+              sci: 0.000002727965909090909
               timestamp: '2025-01-01T00:00:00.000Z'
               duration: 7889400
           aggregated:
             carbon: 480122
-            sci: 0.000048012199999999994
+            sci: 0.000002727965909090909
         developers-laptops:
           children:
             embodied:
@@ -311,15 +311,15 @@ tree:
                   duration: 7889400
                   embodied-carbon: 1010000
                   amortization-factor: 0.0625
-                  requests: 10000000000
+                  parameters: 176000000000
               outputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   embodied-carbon: 1010000
                   amortization-factor: 0.0625
-                  requests: 10000000000
+                  parameters: 176000000000
                   carbon: 63125
-                  sci: 0.0000063125
+                  sci: 3.586647727272727e-7
             operational:
               pipeline:
                 compute:
@@ -332,33 +332,33 @@ tree:
                   carbon-intensity: 50
                   operational-energy-kWh: 0.25
                   amortization-factor: 720
-                  requests: 10000000000
+                  parameters: 176000000000
               outputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   carbon-intensity: 50
                   operational-energy-kWh: 0.25
                   amortization-factor: 720
-                  requests: 10000000000
+                  parameters: 176000000000
                   energy-kWh: 180
                   carbon: 9000
-                  sci: 9.e-7
+                  sci: 5.113636363636364e-8
           outputs:
             - carbon: 72125
-              sci: 0.0000072125
+              sci: 4.0980113636363635e-7
               timestamp: '2025-01-01T00:00:00.000Z'
               duration: 7889400
           aggregated:
             carbon: 72125
-            sci: 0.0000072125
+            sci: 4.0980113636363635e-7
       outputs:
         - carbon: 552247
-          sci: 0.00005522469999999999
+          sci: 0.0000031377670454545455
           timestamp: '2025-01-01T00:00:00.000Z'
           duration: 7889400
       aggregated:
         carbon: 552247
-        sci: 0.00005522469999999999
+        sci: 0.0000031377670454545455
     datacenter-construction:
       children:
         building-structure:
@@ -373,23 +373,23 @@ tree:
                   duration: 7889400
                   embodied-carbon: 2500000000
                   amortization-factor: 0.01875
-                  requests: 10000000000
+                  parameters: 176000000000
               outputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   embodied-carbon: 2500000000
                   amortization-factor: 0.01875
-                  requests: 10000000000
+                  parameters: 176000000000
                   carbon: 46875000
-                  sci: 0.0046875
+                  sci: 0.00026633522727272725
           outputs:
             - carbon: 46875000
-              sci: 0.0046875
+              sci: 0.00026633522727272725
               timestamp: '2025-01-01T00:00:00.000Z'
               duration: 7889400
           aggregated:
             carbon: 46875000
-            sci: 0.0046875
+            sci: 0.00026633522727272725
         power-infrastructure:
           children:
             embodied:
@@ -402,23 +402,23 @@ tree:
                   duration: 7889400
                   embodied-carbon: 1500000000
                   amortization-factor: 0.01875
-                  requests: 10000000000
+                  parameters: 176000000000
               outputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   embodied-carbon: 1500000000
                   amortization-factor: 0.01875
-                  requests: 10000000000
+                  parameters: 176000000000
                   carbon: 28125000
-                  sci: 0.0028125
+                  sci: 0.00015980113636363636
           outputs:
             - carbon: 28125000
-              sci: 0.0028125
+              sci: 0.00015980113636363636
               timestamp: '2025-01-01T00:00:00.000Z'
               duration: 7889400
           aggregated:
             carbon: 28125000
-            sci: 0.0028125
+            sci: 0.00015980113636363636
         cooling-infrastructure:
           children:
             embodied:
@@ -431,23 +431,23 @@ tree:
                   duration: 7889400
                   embodied-carbon: 150000000
                   amortization-factor: 0.01875
-                  requests: 10000000000
+                  parameters: 176000000000
               outputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   embodied-carbon: 150000000
                   amortization-factor: 0.01875
-                  requests: 10000000000
+                  parameters: 176000000000
                   carbon: 2812500
-                  sci: 0.00028125
+                  sci: 0.000015980113636363638
           outputs:
             - carbon: 2812500
-              sci: 0.00028125
+              sci: 0.000015980113636363638
               timestamp: '2025-01-01T00:00:00.000Z'
               duration: 7889400
           aggregated:
             carbon: 2812500
-            sci: 0.00028125
+            sci: 0.000015980113636363638
         support-infrastructure:
           children:
             embodied:
@@ -460,31 +460,31 @@ tree:
                   duration: 7889400
                   embodied-carbon: 20000000
                   amortization-factor: 0.01875
-                  requests: 10000000000
+                  parameters: 176000000000
               outputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   embodied-carbon: 20000000
                   amortization-factor: 0.01875
-                  requests: 10000000000
+                  parameters: 176000000000
                   carbon: 375000
-                  sci: 0.0000375
+                  sci: 0.0000021306818181818183
           outputs:
             - carbon: 375000
-              sci: 0.0000375
+              sci: 0.0000021306818181818183
               timestamp: '2025-01-01T00:00:00.000Z'
               duration: 7889400
           aggregated:
             carbon: 375000
-            sci: 0.0000375
+            sci: 0.0000021306818181818183
       outputs:
         - carbon: 78187500
-          sci: 0.00781875
+          sci: 0.00044424715909090906
           timestamp: '2025-01-01T00:00:00.000Z'
           duration: 7889400
       aggregated:
         carbon: 78187500
-        sci: 0.00781875
+        sci: 0.00044424715909090906
     model-training:
       children:
         nvidia-h100-gpus:
@@ -499,15 +499,15 @@ tree:
                   duration: 7889400
                   embodied-carbon: 1500000000
                   amortization-factor: 0.0625
-                  requests: 10000000000
+                  parameters: 176000000000
               outputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   embodied-carbon: 1500000000
                   amortization-factor: 0.0625
-                  requests: 10000000000
+                  parameters: 176000000000
                   carbon: 93750000
-                  sci: 0.009375
+                  sci: 0.0005326704545454545
             operational:
               pipeline:
                 compute:
@@ -520,25 +520,25 @@ tree:
                   carbon-intensity: 50
                   operational-energy-kWh: 8640000
                   amortization-factor: 1
-                  requests: 10000000000
+                  parameters: 176000000000
               outputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   carbon-intensity: 50
                   operational-energy-kWh: 8640000
                   amortization-factor: 1
-                  requests: 10000000000
+                  parameters: 176000000000
                   energy-kWh: 8640000
                   carbon: 432000000
-                  sci: 0.0432
+                  sci: 0.0024545454545454545
           outputs:
             - carbon: 525750000
-              sci: 0.052575000000000004
+              sci: 0.002987215909090909
               timestamp: '2025-01-01T00:00:00.000Z'
               duration: 7889400
           aggregated:
             carbon: 525750000
-            sci: 0.052575000000000004
+            sci: 0.002987215909090909
         training-servers:
           children:
             embodied:
@@ -551,15 +551,15 @@ tree:
                   duration: 7889400
                   embodied-carbon: 1000000000
                   amortization-factor: 0.0625
-                  requests: 10000000000
+                  parameters: 176000000000
               outputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   embodied-carbon: 1000000000
                   amortization-factor: 0.0625
-                  requests: 10000000000
+                  parameters: 176000000000
                   carbon: 62500000
-                  sci: 0.00625
+                  sci: 0.0003551136363636364
             operational:
               pipeline:
                 compute:
@@ -572,25 +572,25 @@ tree:
                   carbon-intensity: 50
                   operational-energy-kWh: 27540000
                   amortization-factor: 1
-                  requests: 10000000000
+                  parameters: 176000000000
               outputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   carbon-intensity: 50
                   operational-energy-kWh: 27540000
                   amortization-factor: 1
-                  requests: 10000000000
+                  parameters: 176000000000
                   energy-kWh: 27540000
                   carbon: 1377000000
-                  sci: 0.1377
+                  sci: 0.007823863636363636
           outputs:
             - carbon: 1439500000
-              sci: 0.14395
+              sci: 0.008178977272727272
               timestamp: '2025-01-01T00:00:00.000Z'
               duration: 7889400
           aggregated:
             carbon: 1439500000
-            sci: 0.14395
+            sci: 0.008178977272727272
         host-cpus:
           children:
             embodied:
@@ -603,15 +603,15 @@ tree:
                   duration: 7889400
                   embodied-carbon: 187500000
                   amortization-factor: 0.0625
-                  requests: 10000000000
+                  parameters: 176000000000
               outputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   embodied-carbon: 187500000
                   amortization-factor: 0.0625
-                  requests: 10000000000
+                  parameters: 176000000000
                   carbon: 11718750
-                  sci: 0.001171875
+                  sci: 0.00006658380681818181
             operational:
               pipeline:
                 compute:
@@ -624,25 +624,25 @@ tree:
                   carbon-intensity: 50
                   operational-energy-kWh: 810000
                   amortization-factor: 1
-                  requests: 10000000000
+                  parameters: 176000000000
               outputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   carbon-intensity: 50
                   operational-energy-kWh: 810000
                   amortization-factor: 1
-                  requests: 10000000000
+                  parameters: 176000000000
                   energy-kWh: 810000
                   carbon: 40500000
-                  sci: 0.00405
+                  sci: 0.00023011363636363637
           outputs:
             - carbon: 52218750
-              sci: 0.005221875
+              sci: 0.0002966974431818182
               timestamp: '2025-01-01T00:00:00.000Z'
               duration: 7889400
           aggregated:
             carbon: 52218750
-            sci: 0.005221875
+            sci: 0.0002966974431818182
         system-memory:
           children:
             embodied:
@@ -655,15 +655,15 @@ tree:
                   duration: 7889400
                   embodied-carbon: 768000
                   amortization-factor: 0.0625
-                  requests: 10000000000
+                  parameters: 176000000000
               outputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   embodied-carbon: 768000
                   amortization-factor: 0.0625
-                  requests: 10000000000
+                  parameters: 176000000000
                   carbon: 48000
-                  sci: 0.0000048
+                  sci: 2.7272727272727274e-7
             operational:
               pipeline:
                 compute:
@@ -676,38 +676,38 @@ tree:
                   carbon-intensity: 50
                   operational-energy-kWh: 691200
                   amortization-factor: 1
-                  requests: 10000000000
+                  parameters: 176000000000
               outputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   carbon-intensity: 50
                   operational-energy-kWh: 691200
                   amortization-factor: 1
-                  requests: 10000000000
+                  parameters: 176000000000
                   energy-kWh: 691200
                   carbon: 34560000
-                  sci: 0.003456
+                  sci: 0.00019636363636363636
           outputs:
             - carbon: 34608000
-              sci: 0.0034608
+              sci: 0.00019663636363636365
               timestamp: '2025-01-01T00:00:00.000Z'
               duration: 7889400
           aggregated:
             carbon: 34608000
-            sci: 0.0034608
+            sci: 0.00019663636363636365
       outputs:
         - carbon: 2052076750
-          sci: 0.20520767499999998
+          sci: 0.011659526988636362
           timestamp: '2025-01-01T00:00:00.000Z'
           duration: 7889400
       aggregated:
         carbon: 2052076750
-        sci: 0.20520767499999998
+        sci: 0.011659526988636362
   outputs:
     - carbon: 2130816497
-      sci: 0.2130816497
+      sci: 0.012106911914772726
       timestamp: '2025-01-01T00:00:00.000Z'
       duration: 7889400
   aggregated:
     carbon: 2130816497
-    sci: 0.2130816497
+    sci: 0.012106911914772726
