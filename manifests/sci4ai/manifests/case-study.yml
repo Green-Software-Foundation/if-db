@@ -387,7 +387,7 @@ tree:
                   - timestamp: '2025-01-01T00:00:00.000Z'
                     duration: 7889400
                     carbon-intensity: 50
-                    operational-energy-kWh: 4536000000 #350W * 1000 units * 24 hours * 30 days * 18 months # 10,000 GPUs * 0.4 kW/GPU * 24 hours * 90 days
+                    operational-energy-kWh: 4536000 #350W * 1000 units * 24 hours * 30 days * 18 months # 10,000 GPUs * 0.4 kW/GPU * 24 hours * 90 days
                     amortization-factor: 1 # full utilization across time period
                     requests: 10000000000
         inference-servers: # 250 servers each hosting 4 GPUs, @ 1T embodied per server

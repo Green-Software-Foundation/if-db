@@ -86,7 +86,7 @@ execution:
     os: linux
     os-version: 5.15.0-139-generic
     node-version: 21.4.0
-    date-time: 2025-08-11T15:18:09.994Z (UTC)
+    date-time: 2025-08-12T12:51:03.443Z (UTC)
     dependencies:
       - next@14.2.4
       - nextra-theme-blog@2.13.4
@@ -130,27 +130,27 @@ tree:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   carbon-intensity: 50
-                  operational-energy-kWh: 4536000000
+                  operational-energy-kWh: 4536000
                   amortization-factor: 1
                   requests: 10000000000
               outputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   carbon-intensity: 50
-                  operational-energy-kWh: 4536000000
+                  operational-energy-kWh: 4536000
                   amortization-factor: 1
                   requests: 10000000000
-                  energy-kWh: 4536000000
-                  carbon: 226800000000
-                  sci: 22.68
+                  energy-kWh: 4536000
+                  carbon: 226800000
+                  sci: 0.02268
           outputs:
-            - carbon: 226837500000
-              sci: 22.68375
+            - carbon: 264300000
+              sci: 0.02643
               timestamp: '2025-01-01T00:00:00.000Z'
               duration: 7889400
           aggregated:
-            carbon: 226837500000
-            sci: 22.68375
+            carbon: 264300000
+            sci: 0.02643
         inference-servers:
           children:
             embodied:
@@ -715,13 +715,13 @@ tree:
             carbon: 7625000
             sci: 0.0007624999999999999
       outputs:
-        - carbon: 228950871600
-          sci: 22.89508716
+        - carbon: 2377671600
+          sci: 0.23776716
           timestamp: '2025-01-01T00:00:00.000Z'
           duration: 7889400
       aggregated:
-        carbon: 228950871600
-        sci: 22.89508716
+        carbon: 2377671600
+        sci: 0.23776716
     end-user-equipment:
       children:
         laptops:
@@ -785,10 +785,10 @@ tree:
         carbon: 69525000000
         sci: 6.9525
   outputs:
-    - carbon: 298475871600
-      sci: 29.84758716
+    - carbon: 71902671600
+      sci: 7.190267159999999
       timestamp: '2025-01-01T00:00:00.000Z'
       duration: 7889400
   aggregated:
-    carbon: 298475871600
-    sci: 29.84758716
+    carbon: 71902671600
+    sci: 7.190267159999999
