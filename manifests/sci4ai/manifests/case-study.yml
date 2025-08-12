@@ -692,7 +692,7 @@ tree:
                   - timestamp: '2025-01-01T00:00:00.000Z'
                     duration: 7889400
                     carbon-intensity: 50
-                    operational-energy-kWh: 1388500000 # estimate 500 W laptop power for 10 seconds and multiply by 10B requests
+                    operational-energy-kWh: 1388500 # estimate 500 W laptop power for 10 seconds and multiply by 10B requests
                     requests: 10000000000
                     amortization-factor: 1 # full utilization across time period
                     

@@ -88,7 +88,7 @@ execution:
     os: linux
     os-version: 5.15.0-139-generic
     node-version: 21.4.0
-    date-time: 2025-08-12T12:51:07.410Z (UTC)
+    date-time: 2025-08-12T12:54:49.480Z (UTC)
     dependencies:
       - next@14.2.4
       - nextra-theme-blog@2.13.4
@@ -1361,40 +1361,40 @@ tree:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   carbon-intensity: 50
-                  operational-energy-kWh: 1388500000
+                  operational-energy-kWh: 1388500
                   requests: 10000000000
                   amortization-factor: 1
               outputs:
                 - timestamp: '2025-01-01T00:00:00.000Z'
                   duration: 7889400
                   carbon-intensity: 50
-                  operational-energy-kWh: 1388500000
+                  operational-energy-kWh: 1388500
                   requests: 10000000000
                   amortization-factor: 1
-                  energy-kWh: 1388500000
-                  carbon: 69425000000
-                  sci: 6.9425
+                  energy-kWh: 1388500
+                  carbon: 69425000
+                  sci: 0.0069425
           outputs:
-            - carbon: 69525000000
-              sci: 6.9525
+            - carbon: 169425000
+              sci: 0.0169425
               timestamp: '2025-01-01T00:00:00.000Z'
               duration: 7889400
           aggregated:
-            carbon: 69525000000
-            sci: 6.9525
+            carbon: 169425000
+            sci: 0.0169425
       outputs:
-        - carbon: 69525000000
-          sci: 6.9525
+        - carbon: 169425000
+          sci: 0.0169425
           timestamp: '2025-01-01T00:00:00.000Z'
           duration: 7889400
       aggregated:
-        carbon: 69525000000
-        sci: 6.9525
+        carbon: 169425000
+        sci: 0.0169425
   outputs:
-    - carbon: 74033488097
-      sci: 7.4033488097
+    - carbon: 4677913097
+      sci: 0.46779130969999994
       timestamp: '2025-01-01T00:00:00.000Z'
       duration: 7889400
   aggregated:
-    carbon: 74033488097
-    sci: 7.4033488097
+    carbon: 4677913097
+    sci: 0.46779130969999994
